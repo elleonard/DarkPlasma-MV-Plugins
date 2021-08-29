@@ -10,6 +10,7 @@ DarkPlasma_EnemyBook:
     - description: 'ゲームアップデートによるエネミー増減に対応'
     - description: '戦闘中、リスト中の出現モンスターに色をつける機能を追加'
     - description: '横型レイアウトの廃止'
+    - description: '図鑑表示名設定機能の追加'
     - date: '2021/06/06'
       version: '2.4.2'
       description: 'Window_EnemyBookStatusのインターフェース公開 リファクタ'
