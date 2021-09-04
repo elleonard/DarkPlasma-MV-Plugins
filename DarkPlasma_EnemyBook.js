@@ -1,10 +1,11 @@
-// DarkPlasma_EnemyBook 3.1.0
+// DarkPlasma_EnemyBook 3.2.0
 // Copyright (c) 2021 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
- * 2021/09/04 3.1.0 戦闘中最初に開いた時、出現している敵にカーソルを合わせる
+ * 2021/09/04 3.2.0 エネミーごとに図鑑上の画像拡大率を指定する機能を追加
+ *            3.1.0 戦闘中最初に開いた時、出現している敵にカーソルを合わせる
  *                  戦闘中、ページ切り替えで出現している敵を行き来する
  *                  戦闘中のリストへの色つけ不具合を修正
  * 2021/08/29 3.0.0 rollup構成に移行
@@ -167,7 +168,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.1.0
+ * version: 3.2.0
  * このプラグインはYoji Ojima氏によって書かれたRPGツクール公式プラグインを元に
  * DarkPlasmaが改変を加えたものです。
  *
@@ -186,6 +187,7 @@
  *   <desc2:かんとか>       # 説明２行目
  *   <book:no>              # 図鑑に載せない場合
  *   <nameAliasInBook:表示名> # 図鑑に載せる際の表示名
+ *   <scaleInBook:80> # 図鑑上の画像の拡大率
  */
 /*~struct~DebuffStatusIcons:
  * @param mhp
@@ -396,7 +398,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.1.0
+ * version: 3.2.0
  * The original plugin is RMMV official plugin written by Yoji Ojima.
  * Arranged by DarkPlasma.
  * Script:
@@ -408,6 +410,7 @@
  *   <desc2:blahblah>       # Description text in the enemy book, line 2
  *   <book:no>              # This enemy does not appear in the enemy book
  *   <nameAliasInBook:表示名> # Enemy name displayed in book
+ *   <scaleInBook:80> # Enemy image scale in book
  */
 /*~struct~DebuffStatusIconsEn:
  * @param mhp
@@ -864,7 +867,6 @@
 
   class EnemyBookWindows {
     constructor(cancelHandler, parentLayer, isInBattle) {
-      this._detailMode = false;
       this._percentWindow = new Window_EnemyBookPercent(0, 0);
       this._indexWindow = new Window_EnemyBookIndex(0, this._percentWindow.height, isInBattle);
       this._indexWindow.setHandler('cancel', cancelHandler);
@@ -1116,7 +1118,6 @@
       super.initialize(x, y, width, height);
       this._enemy = null;
       this.setupEnemySprite(width, height);
-      this._detailMode = false;
       this.refresh();
     }
 
@@ -1140,20 +1141,6 @@
       }
     }
 
-    update() {
-      super.update();
-      if (this._enemySprite.bitmap) {
-        const bitmapHeight = this._enemySprite.bitmap.height;
-        const contentsHeight = this.contents.height;
-        let scale = 1;
-        if (bitmapHeight > contentsHeight) {
-          scale = contentsHeight / bitmapHeight;
-        }
-        this._enemySprite.scale.x = scale;
-        this._enemySprite.scale.y = scale;
-      }
-    }
-
     refresh() {
       const enemy = this._enemy;
       this.contents.clear();
@@ -1172,6 +1159,11 @@
         bitmap = ImageManager.loadEnemy(name, hue);
       }
       this._enemySprite.bitmap = bitmap;
+      if (enemy.meta.scaleInBook) {
+        const scale = Number(enemy.meta.scaleInBook);
+        this._enemySprite.scale.x = scale / 100;
+        this._enemySprite.scale.y = scale / 100;
+      }
 
       this.resetTextColor();
       this.drawText(enemy.meta.nameAliasInBook || enemy.name, 0, 0);
@@ -1209,54 +1201,6 @@
       const descWidth = 480;
       this.drawTextEx(enemy.meta.desc1, descX, this.textPadding() + lineHeight * 14, descWidth);
       this.drawTextEx(enemy.meta.desc2, descX, this.textPadding() + lineHeight * 15, descWidth);
-    }
-
-    drawPageWithDetailMode() {
-      const enemy = this._enemy;
-      const lineHeight = this.lineHeight();
-      this.drawLevel(this.textPadding(), lineHeight + this.textPadding());
-      this.drawStatus(this.textPadding(), lineHeight * 2 + this.textPadding());
-
-      this.drawExpAndGold(this.textPadding(), lineHeight * 10 + this.textPadding());
-
-      const dropItemWidth = 480;
-
-      this.drawDropItems(this.contentsWidth() - dropItemWidth, lineHeight * 7 + this.textPadding(), dropItemWidth);
-
-      const weakAndResistWidth = 280;
-      this._weakLines = 1;
-      this._resistLines = 1;
-      this.drawWeakElementsAndStates(
-        this.contentsWidth() - weakAndResistWidth,
-        lineHeight + this.textPadding(),
-        weakAndResistWidth
-      );
-      this.drawResistElementsAndStates(
-        this.contentsWidth() - weakAndResistWidth,
-        lineHeight * (2 + this._weakLines),
-        weakAndResistWidth
-      );
-      if (settings.devideResistAndNoEffect) {
-        this.drawNoEffectElementsAndStates(
-          this.contentsWidth() - weakAndResistWidth,
-          lineHeight * (4 + this._weakLines + this._resistLines),
-          weakAndResistWidth
-        );
-      }
-
-      const descWidth = 480;
-      this.drawTextEx(
-        enemy.meta.desc1,
-        this.contentsWidth() - descWidth,
-        this.textPadding() + lineHeight * 10,
-        descWidth
-      );
-      this.drawTextEx(
-        enemy.meta.desc2,
-        this.contentsWidth() - descWidth,
-        this.textPadding() + lineHeight * 11,
-        descWidth
-      );
     }
 
     drawPage() {
@@ -1374,7 +1318,7 @@
     drawDropItems(x, y, rewardsWidth) {
       const enemy = this._enemy;
       const lineHeight = this.lineHeight();
-      const displayDropRate = settings.displayDropRate || this._detailMode;
+      const displayDropRate = settings.displayDropRate;
       enemy.dropItems.forEach((dropItems, index) => {
         if (dropItems.kind > 0) {
           const dropRateWidth = this.textWidth('0000000');
@@ -1412,7 +1356,7 @@
      * @param {number} width 横幅
      */
     drawDropRate(denominator, x, y, width) {
-      if ((!settings.displayDropRate && !this._detailMode) || !denominator) {
+      if (!settings.displayDropRate || !denominator) {
         return;
       }
       const dropRate = Number(100 / denominator).toFixed(1);
