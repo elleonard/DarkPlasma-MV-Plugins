@@ -649,9 +649,9 @@ class Window_EnemyBookStatus extends Window_Base {
     const enemy = this._enemy;
     if (enemy.level) {
       this.changeTextColor(this.systemColor());
-      this.drawText(`Lv.`, x, y, 160);
+      this.drawText(`Lv.`, x, y, this.paramNameWidth());
       this.resetTextColor();
-      this.drawText(enemy.level, x + 160, y, 60, 'right');
+      this.drawText(enemy.level, x, y, this.paramWidth(), 'right');
     }
   }
 
@@ -665,7 +665,7 @@ class Window_EnemyBookStatus extends Window_Base {
     const enemy = this._enemy;
     [...Array(8).keys()].forEach(i => {
       this.drawParamName(x, y, i);
-      this.drawText(enemy.params[i], x + this.paramNameWidth(), y, this.paramWidth(), 'right');
+      this.drawText(enemy.params[i], x, y, this.paramWidth(), 'right');
       y += lineHeight;
     });
   }
@@ -695,7 +695,7 @@ class Window_EnemyBookStatus extends Window_Base {
    * @return {number}
    */
   paramWidth() {
-    return 60;
+    return this.contentsWidth() / 2 - this.standardPadding() / 2;
   }
 
   /**

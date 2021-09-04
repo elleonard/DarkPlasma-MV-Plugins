@@ -4,6 +4,9 @@ DarkPlasma_EnemyBook:
   license: MIT
   histories:
     - date: '2021/09/04'
+      version: '3.2.1'
+      description: 'レイアウト微調整'
+    - date: '2021/09/04'
       version: '3.2.0'
       description: 'エネミーごとに図鑑上の画像拡大率を指定する機能を追加'
     - date: '2021/09/04'
