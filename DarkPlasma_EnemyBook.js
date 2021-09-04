@@ -1,9 +1,12 @@
-// DarkPlasma_EnemyBook 3.0.0
+// DarkPlasma_EnemyBook 3.1.0
 // Copyright (c) 2021 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2021/09/04 3.1.0 戦闘中最初に開いた時、出現している敵にカーソルを合わせる
+ *                  戦闘中、ページ切り替えで出現している敵を行き来する
+ *                  戦闘中のリストへの色つけ不具合を修正
  * 2021/08/29 3.0.0 rollup構成に移行
  *                  登録不可エネミーがコンプ率計算に含まれる不具合の修正
  *                  ゲームアップデートによるエネミー増減に対応
@@ -164,7 +167,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.0.0
+ * version: 3.1.0
  * このプラグインはYoji Ojima氏によって書かれたRPGツクール公式プラグインを元に
  * DarkPlasmaが改変を加えたものです。
  *
@@ -393,7 +396,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.0.0
+ * version: 3.1.0
  * The original plugin is RMMV official plugin written by Yoji Ojima.
  * Arranged by DarkPlasma.
  * Script:
@@ -946,8 +949,23 @@
       const height = Graphics.boxHeight - this.fittingHeight(2);
       super.initialize(x, y, width, height);
       this.refresh();
-      this.setTopRow(Window_EnemyBookIndex.lastTopRow);
-      this.select(Window_EnemyBookIndex.lastIndex);
+      if (this._isInBattle) {
+        this._battlerEnemyIndexes = Array.from(
+          new Set(
+            $gameTroop
+              .members()
+              .map((gameEnemy) => this._list.indexOf(gameEnemy.enemy()))
+              .filter((index) => index > 0)
+          )
+        ).sort((a, b) => a - b);
+      }
+      if (this.battlerEnemyIsInBook()) {
+        this.setTopRow(this._battlerEnemyIndexes[0]);
+        this.select(this._battlerEnemyIndexes[0]);
+      } else {
+        this.setTopRow(Window_EnemyBookIndex.lastTopRow);
+        this.select(Window_EnemyBookIndex.lastIndex);
+      }
       this.activate();
     }
 
@@ -1032,6 +1050,38 @@
       }
       this.drawText(name, rect.x, rect.y, rect.width);
       this.changePaintOpacity(true);
+      this.resetTextColor();
+    }
+
+    battlerEnemyIsInBook() {
+      return this._battlerEnemyIndexes && this._battlerEnemyIndexes.length > 0;
+    }
+
+    cursorPagedown() {
+      if (this.battlerEnemyIsInBook()) {
+        this.selectNextBattlerEnemy();
+      } else {
+        super.cursorPagedown();
+      }
+    }
+
+    cursorPageup() {
+      if (this.battlerEnemyIsInBook()) {
+        this.selectPreviousBattlerEnemy();
+      } else {
+        super.cursorPageup();
+      }
+    }
+
+    selectNextBattlerEnemy() {
+      const nextIndex = this._battlerEnemyIndexes.find((index) => index > this.index()) || this._battlerEnemyIndexes[0];
+      this.select(nextIndex);
+    }
+
+    selectPreviousBattlerEnemy() {
+      const candidates = this._battlerEnemyIndexes.filter((index) => index < this.index());
+      const prevIndex = candidates.length > 0 ? candidates.slice(-1)[0] : this._battlerEnemyIndexes.slice(-1)[0];
+      this.select(prevIndex);
     }
 
     processHandling() {
@@ -1047,16 +1097,6 @@
       super.processCancel();
       Window_EnemyBookIndex.lastTopRow = this.topRow();
       Window_EnemyBookIndex.lastIndex = this.index();
-    }
-
-    /**
-     * 詳細モードを切り替える
-     * @param {boolean} mode 詳細モードONかOFFか
-     */
-    setDetailMode(mode) {
-      this.height = this.fittingHeight(mode ? 1 : 4);
-      this.setTopRow(this.row());
-      this.refresh();
     }
   }
 
@@ -1579,14 +1619,6 @@
      */
     isExcludedResistState(stateId) {
       return settings.excludeResistStates.includes(stateId);
-    }
-
-    setDetailMode(mode) {
-      const y = mode ? this.fittingHeight(1) * 2 : this.fittingHeight(1) + this.fittingHeight(4);
-      this.y = y;
-      this.height = Graphics.boxHeight - y;
-      this._detailMode = mode;
-      this.refresh();
     }
   }
 
