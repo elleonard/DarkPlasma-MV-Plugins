@@ -3,6 +3,11 @@ DarkPlasma_EnemyBook:
   year: 2021
   license: MIT
   histories:
+    - date: '2021/09/04'
+      version: '3.1.0'
+      description: '戦闘中最初に開いた時、出現している敵にカーソルを合わせる'
+    - description: '戦闘中、ページ切り替えで出現している敵を行き来する'
+    - description: '戦闘中のリストへの色つけ不具合を修正'
     - date: '2021/08/29'
       version: '3.0.0'
       description: 'rollup構成に移行'

@@ -16,7 +16,7 @@ const STATUS_NAMES = [
  * @param {RPG.Enemy} enemy エネミーデータ
  * @return {boolean}
  */
- function isRegisterableEnemy(enemy) {
+function isRegisterableEnemy(enemy) {
   return enemy && enemy.name && enemy.meta.book !== 'no';
 }
 
@@ -24,7 +24,7 @@ const STATUS_NAMES = [
  * 図鑑登録可能なエネミー一覧
  * @return {RPG.Enemy[]}
  */
- function registerableEnemies() {
+function registerableEnemies() {
   return $dataEnemies.filter((enemy) => isRegisterableEnemy(enemy));
 }
 
@@ -84,9 +84,9 @@ class EnemyBook {
         $dataEnemies.slice(this._pages.length).map((enemy) => {
           return isRegisterableEnemy(enemy)
             ? new EnemyBookPage(
-                false,
-                enemy.dropItems.map((_) => false)
-              )
+              false,
+              enemy.dropItems.map((_) => false)
+            )
             : null;
         })
       );
@@ -357,8 +357,20 @@ class Window_EnemyBookIndex extends Window_Selectable {
     const height = Graphics.boxHeight - this.fittingHeight(2);
     super.initialize(x, y, width, height);
     this.refresh();
-    this.setTopRow(Window_EnemyBookIndex.lastTopRow);
-    this.select(Window_EnemyBookIndex.lastIndex);
+    if (this._isInBattle) {
+      this._battlerEnemyIndexes = Array.from(new Set(
+        $gameTroop.members()
+          .map((gameEnemy) => this._list.indexOf(gameEnemy.enemy()))
+          .filter(index => index > 0)
+      )).sort((a, b) => a - b);
+    }
+    if (this.battlerEnemyIsInBook()) {
+      this.setTopRow(this._battlerEnemyIndexes[0]);
+      this.select(this._battlerEnemyIndexes[0]);
+    } else {
+      this.setTopRow(Window_EnemyBookIndex.lastTopRow);
+      this.select(Window_EnemyBookIndex.lastIndex);
+    }
     this.activate();
   }
 
@@ -443,6 +455,38 @@ class Window_EnemyBookIndex extends Window_Selectable {
     }
     this.drawText(name, rect.x, rect.y, rect.width);
     this.changePaintOpacity(true);
+    this.resetTextColor();
+  }
+
+  battlerEnemyIsInBook() {
+    return this._battlerEnemyIndexes && this._battlerEnemyIndexes.length > 0;
+  }
+
+  cursorPagedown() {
+    if (this.battlerEnemyIsInBook()) {
+      this.selectNextBattlerEnemy();
+    } else {
+      super.cursorPagedown();
+    }
+  }
+
+  cursorPageup() {
+    if (this.battlerEnemyIsInBook()) {
+      this.selectPreviousBattlerEnemy();
+    } else {
+      super.cursorPageup();
+    }
+  }
+
+  selectNextBattlerEnemy() {
+    const nextIndex = this._battlerEnemyIndexes.find(index => index > this.index()) || this._battlerEnemyIndexes[0];
+    this.select(nextIndex);
+  }
+
+  selectPreviousBattlerEnemy() {
+    const candidates = this._battlerEnemyIndexes.filter(index => index < this.index());
+    const prevIndex = candidates.length > 0 ? candidates.slice(-1)[0] : this._battlerEnemyIndexes.slice(-1)[0];
+    this.select(prevIndex);
   }
 
   processHandling() {
@@ -458,16 +502,6 @@ class Window_EnemyBookIndex extends Window_Selectable {
     super.processCancel();
     Window_EnemyBookIndex.lastTopRow = this.topRow();
     Window_EnemyBookIndex.lastIndex = this.index();
-  }
-
-  /**
-   * 詳細モードを切り替える
-   * @param {boolean} mode 詳細モードONかOFFか
-   */
-  setDetailMode(mode) {
-    this.height = this.fittingHeight(mode ? 1 : 4);
-    this.setTopRow(this.row());
-    this.refresh();
   }
 }
 
@@ -961,14 +995,6 @@ class Window_EnemyBookStatus extends Window_Base {
    */
   isExcludedResistState(stateId) {
     return settings.excludeResistStates.includes(stateId);
-  }
-
-  setDetailMode(mode) {
-    const y = mode ? this.fittingHeight(1) * 2 : this.fittingHeight(1) + this.fittingHeight(4);
-    this.y = y;
-    this.height = Graphics.boxHeight - y;
-    this._detailMode = mode;
-    this.refresh();
   }
 }
 
