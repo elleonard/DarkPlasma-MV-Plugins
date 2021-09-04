@@ -1,10 +1,11 @@
-// DarkPlasma_EnemyBook 3.2.0
+// DarkPlasma_EnemyBook 3.2.1
 // Copyright (c) 2021 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
- * 2021/09/04 3.2.0 エネミーごとに図鑑上の画像拡大率を指定する機能を追加
+ * 2021/09/04 3.2.1 レイアウト微調整
+ *            3.2.0 エネミーごとに図鑑上の画像拡大率を指定する機能を追加
  *            3.1.0 戦闘中最初に開いた時、出現している敵にカーソルを合わせる
  *                  戦闘中、ページ切り替えで出現している敵を行き来する
  *                  戦闘中のリストへの色つけ不具合を修正
@@ -168,7 +169,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.2.0
+ * version: 3.2.1
  * このプラグインはYoji Ojima氏によって書かれたRPGツクール公式プラグインを元に
  * DarkPlasmaが改変を加えたものです。
  *
@@ -398,7 +399,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.2.0
+ * version: 3.2.1
  * The original plugin is RMMV official plugin written by Yoji Ojima.
  * Arranged by DarkPlasma.
  * Script:
@@ -1239,9 +1240,9 @@
       const enemy = this._enemy;
       if (enemy.level) {
         this.changeTextColor(this.systemColor());
-        this.drawText(`Lv.`, x, y, 160);
+        this.drawText(`Lv.`, x, y, this.paramNameWidth());
         this.resetTextColor();
-        this.drawText(enemy.level, x + 160, y, 60, 'right');
+        this.drawText(enemy.level, x, y, this.paramWidth(), 'right');
       }
     }
 
@@ -1255,7 +1256,7 @@
       const enemy = this._enemy;
       [...Array(8).keys()].forEach((i) => {
         this.drawParamName(x, y, i);
-        this.drawText(enemy.params[i], x + this.paramNameWidth(), y, this.paramWidth(), 'right');
+        this.drawText(enemy.params[i], x, y, this.paramWidth(), 'right');
         y += lineHeight;
       });
     }
@@ -1285,7 +1286,7 @@
      * @return {number}
      */
     paramWidth() {
-      return 60;
+      return this.contentsWidth() / 2 - this.standardPadding() / 2;
     }
 
     /**
