@@ -4,6 +4,9 @@ DarkPlasma_EnemyBook:
   license: MIT
   histories:
     - date: '2021/09/04'
+      version: '3.2.0'
+      description: 'エネミーごとに図鑑上の画像拡大率を指定する機能を追加'
+    - date: '2021/09/04'
       version: '3.1.0'
       description: '戦闘中最初に開いた時、出現している敵にカーソルを合わせる'
     - description: '戦闘中、ページ切り替えで出現している敵を行き来する'
@@ -414,6 +417,7 @@ DarkPlasma_EnemyBook:
         <desc2:かんとか>       # 説明２行目
         <book:no>              # 図鑑に載せない場合
         <nameAliasInBook:表示名> # 図鑑に載せる際の表示名
+        <scaleInBook:80> # 図鑑上の画像の拡大率
     en: |
       The original plugin is RMMV official plugin written by Yoji Ojima.
       Arranged by DarkPlasma.
@@ -426,3 +430,4 @@ DarkPlasma_EnemyBook:
         <desc2:blahblah>       # Description text in the enemy book, line 2
         <book:no>              # This enemy does not appear in the enemy book
         <nameAliasInBook:表示名> # Enemy name displayed in book
+        <scaleInBook:80> # Enemy image scale in book

@@ -263,7 +263,6 @@ window[Scene_EnemyBook.name] = Scene_EnemyBook;
 
 class EnemyBookWindows {
   constructor(cancelHandler, parentLayer, isInBattle) {
-    this._detailMode = false;
     this._percentWindow = new Window_EnemyBookPercent(0, 0);
     this._indexWindow = new Window_EnemyBookIndex(0, this._percentWindow.height, isInBattle);
     this._indexWindow.setHandler('cancel', cancelHandler);
@@ -521,7 +520,6 @@ class Window_EnemyBookStatus extends Window_Base {
     super.initialize(x, y, width, height);
     this._enemy = null;
     this.setupEnemySprite(width, height);
-    this._detailMode = false;
     this.refresh();
   }
 
@@ -545,20 +543,6 @@ class Window_EnemyBookStatus extends Window_Base {
     }
   }
 
-  update() {
-    super.update();
-    if (this._enemySprite.bitmap) {
-      const bitmapHeight = this._enemySprite.bitmap.height;
-      const contentsHeight = this.contents.height;
-      let scale = 1;
-      if (bitmapHeight > contentsHeight) {
-        scale = contentsHeight / bitmapHeight;
-      }
-      this._enemySprite.scale.x = scale;
-      this._enemySprite.scale.y = scale;
-    }
-  }
-
   refresh() {
     const enemy = this._enemy;
     this.contents.clear();
@@ -577,6 +561,11 @@ class Window_EnemyBookStatus extends Window_Base {
       bitmap = ImageManager.loadEnemy(name, hue);
     }
     this._enemySprite.bitmap = bitmap;
+    if (enemy.meta.scaleInBook) {
+      const scale = Number(enemy.meta.scaleInBook);
+      this._enemySprite.scale.x = scale/100;
+      this._enemySprite.scale.y = scale/100;
+    }
 
     this.resetTextColor();
     this.drawText(enemy.meta.nameAliasInBook || enemy.name, 0, 0);
@@ -632,44 +621,6 @@ class Window_EnemyBookStatus extends Window_Base {
       this.textPadding() + lineHeight * 15,
       descWidth
     );
-  }
-
-  drawPageWithDetailMode() {
-    const enemy = this._enemy;
-    const lineHeight = this.lineHeight();
-    this.drawLevel(this.textPadding(), lineHeight + this.textPadding());
-    this.drawStatus(this.textPadding(), lineHeight * 2 + this.textPadding());
-
-    this.drawExpAndGold(this.textPadding(), lineHeight * 10 + this.textPadding());
-
-    const dropItemWidth = 480;
-
-    this.drawDropItems(this.contentsWidth() - dropItemWidth, lineHeight * 7 + this.textPadding(), dropItemWidth);
-
-    const weakAndResistWidth = 280;
-    this._weakLines = 1;
-    this._resistLines = 1;
-    this.drawWeakElementsAndStates(
-      this.contentsWidth() - weakAndResistWidth,
-      lineHeight + this.textPadding(),
-      weakAndResistWidth
-    );
-    this.drawResistElementsAndStates(
-      this.contentsWidth() - weakAndResistWidth,
-      lineHeight * (2 + this._weakLines),
-      weakAndResistWidth
-    );
-    if (settings.devideResistAndNoEffect) {
-      this.drawNoEffectElementsAndStates(
-        this.contentsWidth() - weakAndResistWidth,
-        lineHeight * (4 + this._weakLines + this._resistLines),
-        weakAndResistWidth
-      );
-    }
-
-    const descWidth = 480;
-    this.drawTextEx(enemy.meta.desc1, this.contentsWidth() - descWidth, this.textPadding() + lineHeight * 10, descWidth);
-    this.drawTextEx(enemy.meta.desc2, this.contentsWidth() - descWidth, this.textPadding() + lineHeight * 11, descWidth);
   }
 
   drawPage() {
@@ -777,7 +728,7 @@ class Window_EnemyBookStatus extends Window_Base {
   drawDropItems(x, y, rewardsWidth) {
     const enemy = this._enemy;
     const lineHeight = this.lineHeight();
-    const displayDropRate = settings.displayDropRate || this._detailMode;
+    const displayDropRate = settings.displayDropRate;
     enemy.dropItems.forEach((dropItems, index) => {
       if (dropItems.kind > 0) {
         const dropRateWidth = this.textWidth('0000000');
@@ -810,7 +761,7 @@ class Window_EnemyBookStatus extends Window_Base {
    * @param {number} width 横幅
    */
   drawDropRate(denominator, x, y, width) {
-    if (!settings.displayDropRate && !this._detailMode || !denominator) {
+    if (!settings.displayDropRate || !denominator) {
       return;
     }
     const dropRate = Number(100 / denominator).toFixed(1);
