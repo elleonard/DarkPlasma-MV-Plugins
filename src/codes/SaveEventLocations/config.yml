@@ -1,0 +1,51 @@
+DarkPlasma_SaveEventLocations:
+  name: DarkPlasma_SaveEventLocations
+  year: 2021
+  license: MIT
+  histories:
+    - date: '2021/09/05'
+      version: '1.0.2'
+      description: '位置ロード時、歩行アニメーションが一瞬だけパターン1になる不具合の修正'
+    - description: 'rollup構成へ移行'
+    - description: 'リファクタ'
+    - date: '2021/05/23'
+      version: '1.0.1'
+      description: 'リファクタ'
+    - date: '2020/06/11'
+      version: '1.0.0'
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: 'マップ上のイベント位置を記録する'
+  parameters: []
+  commands: []
+  structures:
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      このプラグインは YEP_SaveEventLocations.js の代替として利用できます。
+
+      マップ上のイベント位置を記録します。
+      マップを去った後、同じマップに戻ってきた際に
+      位置を記録したイベントの位置が、初期配置ではなく
+      記録した位置になるようにします。
+
+      マップのメモ欄に以下のように記録すると、
+      そのマップのイベントすべての位置を記録します。
+        <Save Event Locations>
+
+      イベントのメモ欄に以下のように記録すると、
+      そのイベントの位置を記録します。
+        <Save Event Location>
+
+      ただし、記録した位置はセーブデータに含まれることに注意してください。
+      記録するイベント数が多くなればなるほど、
+      セーブデータの容量も大きくなります。
+
+      下記プラグインコマンドで現在のマップ上のイベント位置をすべてリセットできます。
+        ResetAllEventLocations
