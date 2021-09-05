@@ -62,6 +62,7 @@ function generateParser(config, parameter, forTest) {
     case 'actor':
     case 'class':
     case 'enemy':
+    case 'troop':
     case 'skill':
     case 'item':
     case 'weapon':

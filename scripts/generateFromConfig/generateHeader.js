@@ -40,6 +40,7 @@ class TypedParameter {
         'actor',
         'class',
         'enemy',
+        'troop',
         'skill',
         'item',
         'weapon',

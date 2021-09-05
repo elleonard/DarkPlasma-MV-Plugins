@@ -1,0 +1,78 @@
+DarkPlasma_CustomEncounterList:
+  name: DarkPlasma_CustomEncounterList
+  year: 2021
+  license: MIT
+  histories:
+    - date: '2021/09/05'
+      version: '1.0.0'
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: 'エンカウントを変数やスイッチで変更する'
+  parameters:
+    - param: encounters
+      text:
+        ja: エンカウント設定一覧
+      type: EncounterSetting[]
+      default: []
+  commands: []
+  structures:
+    EncounterSetting:
+      - param: id
+        text:
+          ja: ID
+        desc:
+          ja: エンカウント設定ID。マップのメモ欄に設定します。重複しないようにしてください
+        type: number
+        default: 1
+      - param: list
+        text:
+          ja: エンカウント一覧
+        type: Encounter[]
+        default: []
+      - param: conditionSwitch
+        text:
+          ja: スイッチ条件
+        desc:
+          ja: このスイッチがONの場合にエンカウント設定が有効になります
+        type: switch
+        default: 0
+    Encounter:
+      - param: troopId
+        text:
+          ja: 敵グループ
+        type: troop
+        default: 0
+      - param: weight
+        text:
+          ja: 重み
+        type: number
+        default: 5
+      - param: regionSet
+        text:
+          ja: 出現範囲
+        type: number[]
+        default: []
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      マップごとにエンカウント設定を複数行うことができます。
+
+      マップのメモ欄に <customEncounter:e1,e2,e3,...> と指定します。
+      
+      設定例:
+        <customEncounter:1>
+        ID:1の設定を対象マップに適用します。
+        ID:1設定のスイッチがONの場合、
+        マップに直接指定したエンカウント設定は無効になり、ID:1の設定が適用されます。
+      
+        <customEncounter:2,3>
+        ID:2及び3の設定を対象マップに適用します。
+        ID:2設定のスイッチがONの場合、ID:2の設定が適用されます。
+        ID:3設定のスイッチがONの場合、Id:3の設定が適用されます。
+        ID:2と3両方がONの場合、ID:2の設定が優先されます。
