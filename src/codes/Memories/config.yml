@@ -1,0 +1,188 @@
+DarkPlasma_Memories:
+  name: DarkPlasma_Memories
+  year: 2017
+  license: MIT
+  histories:
+    - date: '2021/09/09'
+      version: '3.0.0'
+      description: 'rollup構成に移行'
+    - description: 'シーン全開放プラグインコマンドを追加'
+    - date: '2021/05/05'
+      version: '2.0.0'
+      description: '解放条件スイッチのロード処理を別プラグインに委譲'
+    - version: '1.4.2'
+      description: 'CG/シーンに含まれないタグを表示しないよう修正'
+    - description: 'json定義不足時のエラーをわかりやすく修正'
+    - date: '2020/04/25'
+      version: '1.4.1'
+      description: '回想シーンから戻った際にカーソルがリセットされる不具合を修正'
+    - date: '2020/04/24'
+      version: '1.4.0'
+      description: 'Memories.json のタグ一覧をスイッチで解放するかどうか記述できるよう拡張'
+    - date: '2020/04/30'
+      version: '1.3.1'
+      description: '合成画像でない場合にエラーになる不具合を修正'
+    - version: '1.3.0'
+      description: 'Memories.json の合成画像に関する記法を拡張'
+    - date: '2020/04/16'
+      version: '1.2.0'
+      description: 'DarkPlasma_ImageComposer.js に対応'
+    - version: '1.1.1'
+      description: 'リファクタ'
+    - date: '2019/01/10'
+      version: '1.1.0'
+      description: '回想モードのウィンドウカラーを設定項目に追加'
+    - date: '2018/09/30'
+      version: '1.0.3'
+      description: 'ブラウザでプレイするとシーン一覧が点滅する不具合の修正'
+    - date: '2017/11/04'
+      version: '1.0.2'
+      description: '未開放シーンを閲覧できる不具合の修正'
+    - version: '1.0.1'
+      description: 'キャンセルキーで回想モードから抜けられるように'
+    - description: 'コモンイベントが終わると強制的に回想モードになる不具合の修正'
+    - date: '2017/11/03'
+      version: '1.0.0'
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: 'シーン回想 CG閲覧'
+  parameters:
+    - param: bgm
+      text:
+        ja: 回想モードで再生するBGM
+      type: BGM
+    - param: adultIcon
+      text:
+        ja: アイコン
+      desc:
+        ja: R18イベント/CGに表示するアイコン
+      type: number
+      default: 84
+    - param: blankThumbnail
+      text:
+        ja: 未開放サムネ
+      desc:
+        ja: 未開放シーン/CGのサムネイルファイル名
+      type: file
+      dir: img/pictures/
+    - param: sandboxMap
+      text:
+        ja: 回想用マップ
+      desc:
+        ja: シーン回想時に一時的に用いるマップID
+      type: number
+      default: 1
+    - param: terminateLabel
+      text:
+        ja: 回想終了ラベル
+      desc:
+        ja: 回想シーン終了時を表すラベル
+      type: string
+      default: END_SCENE
+    - param: waitAfterMemory
+      text:
+        ja: シーン終了後ウェイト
+      desc:
+        ja: 回想シーン終了後の入力ウェイト（ミリ秒）
+      type: number
+      default: 500
+      min: 0
+    - param: windowTone
+      text:
+        ja: ウィンドウ色
+      desc:
+        ja: 回想モードのウィンドウの色
+      type: Tone
+      default:
+        red: 0
+        green: 0
+        blue: 100
+  commands: []
+  structures:
+    BGM:
+      - param: name
+        text:
+          ja: ファイル
+        desc:
+          ja: 回想モードで再生するBGMのファイル
+        type: file
+        dir: audio/bgm/
+      - param: volume
+        text:
+          ja: 音量
+        desc:
+          ja: 回想モードで再生するBGMの音量
+        type: number
+        default: 90
+        max: 100
+        min: 0
+      - param: pitch
+        text:
+          ja: ピッチ
+        desc:
+          ja: 回想モードで再生するBGMのピッチ
+        type: number
+        default: 100
+        max: 150
+        min: 50
+      - param: pan
+        text:
+          ja: 位相
+        desc:
+          ja: 回想モードで再生するBGMの位相
+        type: number
+        default: 0
+        max: 100
+        min: -100
+        decimal: 1
+    Tone:
+      - param: red
+        text:
+          ja: トーン（赤）
+        type: number
+        default: 0
+      - param: green
+        text:
+          ja: トーン（緑）
+        type: number
+        default: 0
+      - param: blue
+        text:
+          ja: トーン（青）
+        type: number
+        default: 0
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      タイトルメニューに回想シーンリストを追加します
+      回想シーンの内容は data/Memories.json に記入してください
+
+      シーンやCGにはタグをつけて分類することができ、
+      タグ一覧は左側のメニューに表示されます
+      jsonの記法の詳細については仕様書をご参照ください
+      https://github.com/elleonard/RPGtkoolMV-Plugins/blob/master/Memories.md
+
+      回想画面では pageup, pagedown, 左右キーで
+      CG閲覧とシーン閲覧を切り替えることができます
+
+      回想シーン（コモンイベント）の終了時に
+      Terminate Labelで指定したラベルを定義してください
+
+      サムネイルのサイズは130x130程度です
+
+      本プラグインの利用には、下記プラグイン等の
+      スイッチ読み込みロジックを提供するプラグインが必須となります
+      - DarkPlasma_MemoriesSwitchLoader
+      必ず、スイッチ読み込みプラグインを本プラグインよりも下に配置してください
+
+      追加プラグインで MemoriesManager.loadSwitches を定義することにより、
+      独自にスイッチ読み込みロジックを記述することも可能です
+
+      下記プラグインコマンドにより、回想の全開放が行えます
+      completeMemories
