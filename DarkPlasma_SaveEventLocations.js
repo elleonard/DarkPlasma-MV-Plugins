@@ -1,5 +1,5 @@
 // DarkPlasma_SaveEventLocations 1.0.2
-// Copyright (c) 2021 DarkPlasma
+// Copyright (c) 2020 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
