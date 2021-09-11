@@ -1,9 +1,10 @@
-// DarkPlasma_CustomEncounterList 1.0.0
+// DarkPlasma_CustomEncounterList 1.0.1
 // Copyright (c) 2021 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2021/09/11 1.0.1 Game_Mapクラスを操作するようなプラグインとの競合を修正
  * 2021/09/05 1.0.0 公開
  */
 
@@ -21,7 +22,7 @@
  * @default []
  *
  * @help
- * version: 1.0.0
+ * version: 1.0.1
  * マップごとにエンカウント設定を複数行うことができます。
  *
  * マップのメモ欄に <customEncounter:e1,e2,e3,...> と指定します。
@@ -118,23 +119,25 @@
     }
   };
 
-  Game_Map = class extends Game_Map {
-    encounterList() {
+  function Game_Map_CustomEncounterListMixIn(gameMap) {
+    const _encounterList = gameMap.encounterList;
+    gameMap.encounterList = function () {
       const result = this.enabledCustomEncounterList();
-      return result ? result : super.encounterList();
-    }
+      return result ? result : _encounterList.call(this);
+    };
 
     /**
      * 有効なエンカウント一覧を取得する
      * @return {RPG.Map.Encounter[]|null}
      */
-    enabledCustomEncounterList() {
+    gameMap.enabledCustomEncounterList = function () {
       const setting = settings.encounters.find(
         (encounterSetting) =>
           $dataMap.customEncounterList.includes(encounterSetting.id) &&
           $gameSwitches.value(encounterSetting.conditionSwitch)
       );
       return setting ? setting.list : null;
-    }
-  };
+    };
+  }
+  Game_Map_CustomEncounterListMixIn(Game_Map.prototype);
 })();
