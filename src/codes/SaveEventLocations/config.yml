@@ -3,6 +3,9 @@ DarkPlasma_SaveEventLocations:
   year: 2020
   license: MIT
   histories:
+    - date: '2021/09/11'
+      version: '1.0.3'
+      description: '特定クラスを操作するプラグインとの競合を修正'
     - date: '2021/09/05'
       version: '1.0.2'
       description: '位置ロード時、歩行アニメーションが一瞬だけパターン1になる不具合の修正'

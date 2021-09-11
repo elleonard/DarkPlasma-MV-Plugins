@@ -140,10 +140,11 @@ function eventIdentifier(mapId, eventId) {
  */
 const initializingEvents = new Map();
 
-Game_Event = class extends Game_Event {
-  initialize(mapId, eventId) {
+function Game_Event_SaveLocationMixIn(gameEvent) {
+  const _initialize = gameEvent.initialize;
+  gameEvent.initialize = function (mapId, eventId) {
     this.startInitializing(mapId, eventId);
-    super.initialize(mapId, eventId);
+    _initialize.call(this, mapId, eventId);
     if (savedEventLocations.isLocationSavedEvent(mapId, eventId)) {
       this.loadLocation(mapId, eventId);
     }
@@ -155,7 +156,7 @@ Game_Event = class extends Game_Event {
    * @param {number} mapId マップID
    * @param {number} eventId イベントID
    */
-  loadLocation(mapId, eventId) {
+  gameEvent.loadLocation = function (mapId, eventId) {
     const defaultPattern = this._pattern;
     const savedLocation = savedEventLocations.getSavedLocation(mapId, eventId);
     this.locate(savedLocation.x, savedLocation.y);
@@ -174,7 +175,7 @@ Game_Event = class extends Game_Event {
    * @param {number} mapId マップID
    * @param {number} eventId イベントID
    */
-  startInitializing(mapId, eventId) {
+  gameEvent.startInitializing = function (mapId, eventId) {
     if (!this.isInitializing(mapId, eventId)) {
       initializingEvents.set(eventIdentifier(mapId, eventId), true);
     }
@@ -183,7 +184,7 @@ Game_Event = class extends Game_Event {
   /**
    * 初期化処理を終了する
    */
-  endInitializing() {
+  gameEvent.endInitializing = function () {
     if (this.isInitializing(this._mapId, this._eventId)) {
       initializingEvents.set(eventIdentifier(this._mapId, this._eventId), false);
     }
@@ -195,12 +196,13 @@ Game_Event = class extends Game_Event {
    * @param {number} eventId イベントID
    * @returns 
    */
-  isInitializing(mapId, eventId) {
+  gameEvent.isInitializing = function (mapId, eventId) {
     return initializingEvents.get(eventIdentifier(mapId, eventId));
   }
 
-  locate(x, y) {
-    super.locate(x, y);
+  const _locate = gameEvent.locate;
+  gameEvent.locate = function (x, y) {
+    _locate.call(this, x, y);
     if (this.mustSaveLocation() && !this.isInitializing(this._mapId, this._eventId)) {
       savedEventLocations.saveLocation(
         this._mapId, this.eventId(), x, y, this.direction()
@@ -208,8 +210,9 @@ Game_Event = class extends Game_Event {
     }
   }
 
-  updateMove() {
-    super.updateMove();
+  const _updateMove = gameEvent.updateMove;
+  gameEvent.updateMove = function () {
+    _updateMove.call(this);
     if (!this.isMoving() && this.mustSaveLocation()) {
       savedEventLocations.saveLocation(
         this._mapId, this.eventId(), this.x, this.y, this.direction()
@@ -217,8 +220,9 @@ Game_Event = class extends Game_Event {
     }
   }
 
-  updateJump() {
-    super.updateJump();
+  const _updateJump = gameEvent.updateJump;
+  gameEvent.updateJump = function () {
+    _updateJump.call(this);
     if (!this.isJumping() && this.mustSaveLocation()) {
       savedEventLocations.saveLocation(
         this._mapId, this.eventId(), this.x, this.y, this.direction()
@@ -226,8 +230,9 @@ Game_Event = class extends Game_Event {
     }
   }
 
-  setDirection(direction) {
-    super.setDirection(direction);
+  const _setDirection = gameEvent.setDirection;
+  gameEvent.setDirection = function (direction) {
+    _setDirection.call(this, direction);
     if (this.mustSaveLocation() && !this.isInitializing(this._mapId, this._eventId) && direction > 0) {
       savedEventLocations.saveLocation(
         this._mapId, this.eventId(), this.x, this.y, direction
@@ -239,48 +244,54 @@ Game_Event = class extends Game_Event {
    * 位置を記録すべきかどうか
    * @return {boolean}
    */
-  mustSaveLocation() {
+  gameEvent.mustSaveLocation = function () {
     return $gameMap.mustSaveEventLocations() || this.event().saveEventLocation;
   }
 
   /**
    * 位置をリセットする
    */
-  resetLocation() {
+  gameEvent.resetLocation = function () {
     const pattern = this._pattern;
     this.locate(this.event().x, this.event().y);
     this.setDirection(this._originalDirection);
     this.setPattern(pattern);
   }
-}
+};
 
-Game_Map = class extends Game_Map {
+Game_Event_SaveLocationMixIn(Game_Event.prototype);
+
+function Game_Map_SaveLocationMixIn(gameMap) {
   /**
    * マップ内のイベント位置を記録すべきかどうか
    * @return {boolean}
    */
-  mustSaveEventLocations() {
+  gameMap.mustSaveEventLocations = function () {
     return $dataMap.saveEventLocations;
   }
 
   /**
    * マップ内の全イベントの位置をリセットする
    */
-  resetAllEventLocations() {
+  gameMap.resetAllEventLocations = function () {
     this.events().forEach(event => {
       event.resetLocation();
     });
   }
-}
+};
 
-Game_System = class extends Game_System {
-  initialize() {
-    super.initialize();
+Game_Map_SaveLocationMixIn(Game_Map.prototype);
+
+function Game_System_SaveLocationMixIn(gameSystem) {
+  const _initialize = gameSystem.initialize;
+  gameSystem.initialize = function () {
+    _initialize.call(this);
     savedEventLocations.clear();
   }
 
-  onAfterLoad() {
-    super.onAfterLoad();
+  const _onAfterLoad = gameSystem.onAfterLoad;
+  gameSystem.onAfterLoad = function () {
+    _onAfterLoad.call(this);
     if (!this._savedEventLocations || !this._savedEventLocaions instanceof EventLocations) {
       savedEventLocations.clear();
     } else {
@@ -288,17 +299,19 @@ Game_System = class extends Game_System {
     }
   }
 
-  onBeforeSave() {
-    super.onBeforeSave();
+  const _onBeforeSave = gameSystem.onBeforeSave;
+  gameSystem.onBeforeSave = function () {
+    _onBeforeSave.call(this);
     this._savedEventLocations = savedEventLocations;
   }
-}
+};
 
-Game_Interpreter = class extends Game_Interpreter {
-  pluginCommand(command, args) {
-    super.pluginCommand(command, args);
-    if (command === 'ResetAllEventLocations') {
-      $gameMap.resetAllEventLocations();
-    }
+Game_System_SaveLocationMixIn(Game_System.prototype);
+
+const _Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
+Game_Interpreter.prototype.pluginCommand = function(command, args) {
+  _Game_Interpreter_pluginCommand.call(this, command, args);
+  if (command === 'ResetAllEventLocations') {
+    $gameMap.resetAllEventLocations();
   }
 }
