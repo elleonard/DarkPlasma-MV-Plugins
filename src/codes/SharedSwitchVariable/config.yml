@@ -1,0 +1,84 @@
+DarkPlasma_SharedSwitchVariable:
+  name: DarkPlasma_SharedSwitchVariable
+  year: 2021
+  license: MIT
+  histories:
+    - date: '2021/09/21'
+      version: '1.0.1'
+      description: 'ニューゲームを開始すると共有セーブデータがリセットされる不具合を修正'
+    - description: 'rollup構成へ移行'
+    - date: '2021/05/05'
+      version: '1.0.0'
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: '全てのセーブデータで共有するスイッチ・変数を指定する'
+  parameters:
+    - param: switchRangeList
+      text:
+        ja: スイッチ範囲リスト
+      desc:
+        ja: 共有セーブに保存するスイッチの範囲リストを指定します
+      type: SwitchRange[]
+      default: []
+    - param: variableRangeList
+      text:
+        ja: 変数範囲リスト
+      desc:
+        ja: 共有セーブに保存する変数の範囲リストを指定します
+      type: VariableRange[]
+      default: []
+    - param: savefileId
+      text:
+        ja: 共有セーブID
+      desc:
+        ja: 共有セーブのIDを指定します。セーブデータの数より必ず大きくしてください
+      type: number
+      default: 20210505
+      min: 21
+  commands: []
+  structures:
+    SwitchRange:
+      - param: from
+        text:
+          ja: 閉区間開始
+        desc:
+          ja: このスイッチ以降、終端で指定したスイッチまでをグローバルセーブに保存します
+        type: switch
+        default: 1
+        min: 1
+      - param: to
+        text:
+          ja: 閉区間終端
+        desc:
+          ja: 開始で指定したスイッチからこのスイッチまでをグローバルセーブに保存します
+        type: switch
+        default: 1
+        min: 1
+    VariableRange:
+      - param: from
+        text:
+          ja: 閉区間開始
+        desc:
+          ja: この変数以降、終端で指定した変数までをグローバルセーブに保存します
+        type: variable
+        default: 1
+        min: 1
+      - param: to
+        text:
+          ja: 閉区間終端
+        desc:
+          ja: 開始で指定した変数からこの変数までをグローバルセーブに保存します
+        type: variable
+        default: 1
+        min: 1
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      全てのセーブデータで共有するスイッチ・変数を指定します。
+      指定したスイッチ・変数の値は共有セーブデータ(save/shared.rpgsave)に保存します。
