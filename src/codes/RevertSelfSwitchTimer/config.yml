@@ -1,0 +1,50 @@
+DarkPlasma_RevertSelfSwitchTimer:
+  name: DarkPlasma_RevertSelfSwitchTimer
+  year: 2021
+  license: MIT
+  histories:
+    - date: '2021/09/23'
+      version: '1.0.0'
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: 'セルフスイッチを時間経過でOFFに戻すプラグインコマンド'
+  parameters:
+    - param: defaultTimer
+      text:
+        ja: デフォルトタイマー
+      desc:
+        ja: タイマー起動時に時間を指定しなかった場合の発動時間
+      type: number
+      default: 10
+  commands: []
+  structures:
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      イベントのセルフスイッチを
+      時間経過でOFFにするプラグインコマンドを提供します。
+      例えば、時間経過で復活する宝箱を実現できます。
+
+      本プラグインでは、
+      - タイマーのカウント開始を「起動する」
+      - 指定時刻になり、セルフスイッチをOFFにする挙動を「発動する」
+      と表現します。
+
+      プラグインコマンド:
+        startRevertSelfSwitchTimer switch=X seconds=Y
+        セルフスイッチXをY秒後にOFFにするタイマーを起動する
+        switch=X seconds=Yは半角スペース区切りで自由な順序で指定できる
+        switch=Xを省略した場合、セルフスイッチAを対象とする
+        seconds=Yを省略した場合、プラグインパラメータで設定した時間を使用する
+      
+      タイマーはリアル時間に依存しており、マップ上で指定時間になると
+      セルフスイッチをOFFにしてタイマーを消去します。
+      消去されていないタイマーはセーブデータに記録されます。
+
+      起動中のタイマーが増えると、タイマーを起動する処理が遅くなることがあります。
