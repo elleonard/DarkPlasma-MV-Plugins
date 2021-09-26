@@ -1,9 +1,12 @@
-// DarkPlasma_EnemyBook 3.2.1
+// DarkPlasma_EnemyBook 3.2.2
 // Copyright (c) 2019 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2021/09/26 3.2.2 名前とレベルがかぶる不具合を修正
+ *                  図鑑登録前の表示をカスタマイズするためのインターフェース追加
+ *                  不要コードを削除
  * 2021/09/04 3.2.1 レイアウト微調整
  *            3.2.0 エネミーごとに図鑑上の画像拡大率を指定する機能を追加
  *            3.1.0 戦闘中最初に開いた時、出現している敵にカーソルを合わせる
@@ -169,7 +172,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.2.1
+ * version: 3.2.2
  * このプラグインはYoji Ojima氏によって書かれたRPGツクール公式プラグインを元に
  * DarkPlasmaが改変を加えたものです。
  *
@@ -399,7 +402,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.2.1
+ * version: 3.2.2
  * The original plugin is RMMV official plugin written by Yoji Ojima.
  * Arranged by DarkPlasma.
  * Script:
@@ -1148,6 +1151,7 @@
 
       if (!enemy || !$gameSystem.isInEnemyBook(enemy)) {
         this._enemySprite.bitmap = null;
+        this.drawPageBeforeRegister();
         return;
       }
 
@@ -1167,12 +1171,14 @@
       }
 
       this.resetTextColor();
-      this.drawText(enemy.meta.nameAliasInBook || enemy.name, 0, 0);
+      this.drawText(enemy.meta.nameAliasInBook || enemy.name, 0, 0, this.contentsWidth() / 2);
 
-      this.drawPageWithVerticalLayout();
+      this.drawPage();
     }
 
-    drawPageWithVerticalLayout() {
+    drawPageBeforeRegister() {}
+
+    drawPage() {
       const enemy = this._enemy;
       const lineHeight = this.lineHeight();
       this.drawLevel(this.contentsWidth() / 2 + this.standardPadding() / 2, 0);
@@ -1202,33 +1208,6 @@
       const descWidth = 480;
       this.drawTextEx(enemy.meta.desc1, descX, this.textPadding() + lineHeight * 14, descWidth);
       this.drawTextEx(enemy.meta.desc2, descX, this.textPadding() + lineHeight * 15, descWidth);
-    }
-
-    drawPage() {
-      const enemy = this._enemy;
-      const lineHeight = this.lineHeight();
-      this.drawLevel(this.contentsWidth() - 280, this.textPadding());
-      this.drawStatus(this.textPadding(), lineHeight + this.textPadding());
-
-      const rewardsWidth = 280;
-      this.drawExpAndGold(this.contentsWidth() - rewardsWidth, lineHeight + this.textPadding());
-
-      const dropItemWidth = rewardsWidth;
-      this.drawDropItems(this.contentsWidth() - dropItemWidth, lineHeight * 3 + this.textPadding(), dropItemWidth);
-
-      const descWidth = 480;
-      this.drawTextEx(
-        enemy.meta.desc1,
-        this.contentsWidth() - descWidth,
-        this.textPadding() + lineHeight * 7,
-        descWidth
-      );
-      this.drawTextEx(
-        enemy.meta.desc2,
-        this.contentsWidth() - descWidth,
-        this.textPadding() + lineHeight * 8,
-        descWidth
-      );
     }
 
     /**
