@@ -444,10 +444,10 @@ class Window_EnemyBookIndex extends Window_Selectable {
     const enemy = this._list[index];
     const rect = this.itemRectForText(index);
     let name;
+    if (this.mustHighlight(enemy)) {
+      this.changeTextColor(this.textColor(settings.highlightColor));
+    }
     if ($gameSystem.isInEnemyBook(enemy)) {
-      if (this.mustHighlight(enemy)) {
-        this.changeTextColor(this.textColor(settings.highlightColor));
-      }
       name = enemy.meta.nameAliasInBook || enemy.name;
     } else {
       this.changePaintOpacity(!settings.grayOutUnknown);
@@ -464,7 +464,9 @@ class Window_EnemyBookIndex extends Window_Selectable {
    * @return {boolean}
    */
   mustHighlight(enemy) {
-    return this._isInBattle && $gameTroop.members().some(battlerEnemy => battlerEnemy.enemyId() === enemy.id);
+    return this._isInBattle &&
+      $gameSystem.isInEnemyBook(enemy) &&
+      $gameTroop.members().some(battlerEnemy => battlerEnemy.enemyId() === enemy.id);
   }
 
   battlerEnemyIsInBook() {
@@ -516,6 +518,8 @@ class Window_EnemyBookIndex extends Window_Selectable {
 
 Window_EnemyBookIndex.lastTopRow = 0;
 Window_EnemyBookIndex.lastIndex = 0;
+
+window.Window_EnemyBookIndex = Window_EnemyBookIndex;
 
 /**
  * 図鑑ステータスウィンドウ

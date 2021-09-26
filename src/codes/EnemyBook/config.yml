@@ -4,6 +4,9 @@ DarkPlasma_EnemyBook:
   license: MIT
   histories:
     - date: '2021/09/26'
+      version: '3.3.1'
+      description: 'ハイライト条件をカスタマイズするためのインターフェースを公開'
+    - date: '2021/09/26'
       version: '3.3.0'
       description: 'DarkPlasma_OrderIdAliasに対応'
     - date: '2021/09/26'
