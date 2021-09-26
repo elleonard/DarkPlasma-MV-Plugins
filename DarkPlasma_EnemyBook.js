@@ -1,10 +1,11 @@
-// DarkPlasma_EnemyBook 3.2.2
+// DarkPlasma_EnemyBook 3.3.0
 // Copyright (c) 2019 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
- * 2021/09/26 3.2.2 名前とレベルがかぶる不具合を修正
+ * 2021/09/26 3.3.0 DarkPlasma_OrderIdAliasに対応
+ *            3.2.2 名前とレベルがかぶる不具合を修正
  *                  図鑑登録前の表示をカスタマイズするためのインターフェース追加
  *                  不要コードを削除
  * 2021/09/04 3.2.1 レイアウト微調整
@@ -172,7 +173,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.2.2
+ * version: 3.3.0
  * このプラグインはYoji Ojima氏によって書かれたRPGツクール公式プラグインを元に
  * DarkPlasmaが改変を加えたものです。
  *
@@ -402,7 +403,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.2.2
+ * version: 3.3.0
  * The original plugin is RMMV official plugin written by Yoji Ojima.
  * Arranged by DarkPlasma.
  * Script:
@@ -627,7 +628,9 @@
    * @return {RPG.Enemy[]}
    */
   function registerableEnemies() {
-    return $dataEnemies.filter((enemy) => isRegisterableEnemy(enemy));
+    return $dataEnemies
+      .filter((enemy) => isRegisterableEnemy(enemy))
+      .sort((a, b) => (a.orderId || a.id) - (b.orderId || b.id));
   }
 
   const _Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
@@ -1046,7 +1049,7 @@
       const rect = this.itemRectForText(index);
       let name;
       if ($gameSystem.isInEnemyBook(enemy)) {
-        if (this._isInBattle && $gameTroop.members().some((battlerEnemy) => battlerEnemy.enemyId() === enemy.id)) {
+        if (this.mustHighlight(enemy)) {
           this.changeTextColor(this.textColor(settings.highlightColor));
         }
         name = enemy.meta.nameAliasInBook || enemy.name;
@@ -1057,6 +1060,15 @@
       this.drawText(name, rect.x, rect.y, rect.width);
       this.changePaintOpacity(true);
       this.resetTextColor();
+    }
+
+    /**
+     * ハイライトすべきか
+     * @param {RPG.Enemy} enemy
+     * @return {boolean}
+     */
+    mustHighlight(enemy) {
+      return this._isInBattle && $gameTroop.members().some((battlerEnemy) => battlerEnemy.enemyId() === enemy.id);
     }
 
     battlerEnemyIsInBook() {
