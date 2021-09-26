@@ -549,6 +549,7 @@ class Window_EnemyBookStatus extends Window_Base {
 
     if (!enemy || !$gameSystem.isInEnemyBook(enemy)) {
       this._enemySprite.bitmap = null;
+      this.drawPageBeforeRegister();
       return;
     }
 
@@ -568,12 +569,15 @@ class Window_EnemyBookStatus extends Window_Base {
     }
 
     this.resetTextColor();
-    this.drawText(enemy.meta.nameAliasInBook || enemy.name, 0, 0);
+    this.drawText(enemy.meta.nameAliasInBook || enemy.name, 0, 0, this.contentsWidth()/2);
 
-    this.drawPageWithVerticalLayout();
+    this.drawPage();
   }
 
-  drawPageWithVerticalLayout() {
+  drawPageBeforeRegister() {
+  }
+
+  drawPage() {
     const enemy = this._enemy;
     const lineHeight = this.lineHeight();
     this.drawLevel(this.contentsWidth() / 2 + this.standardPadding() / 2, 0);
@@ -621,23 +625,6 @@ class Window_EnemyBookStatus extends Window_Base {
       this.textPadding() + lineHeight * 15,
       descWidth
     );
-  }
-
-  drawPage() {
-    const enemy = this._enemy;
-    const lineHeight = this.lineHeight();
-    this.drawLevel(this.contentsWidth() - 280, this.textPadding());
-    this.drawStatus(this.textPadding(), lineHeight + this.textPadding());
-
-    const rewardsWidth = 280;
-    this.drawExpAndGold(this.contentsWidth() - rewardsWidth, lineHeight + this.textPadding());
-
-    const dropItemWidth = rewardsWidth;
-    this.drawDropItems(this.contentsWidth() - dropItemWidth, lineHeight * 3 + this.textPadding(), dropItemWidth);
-
-    const descWidth = 480;
-    this.drawTextEx(enemy.meta.desc1, this.contentsWidth() - descWidth, this.textPadding() + lineHeight * 7, descWidth);
-    this.drawTextEx(enemy.meta.desc2, this.contentsWidth() - descWidth, this.textPadding() + lineHeight * 8, descWidth);
   }
 
   /**
