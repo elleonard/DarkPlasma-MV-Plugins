@@ -25,7 +25,8 @@ function isRegisterableEnemy(enemy) {
  * @return {RPG.Enemy[]}
  */
 function registerableEnemies() {
-  return $dataEnemies.filter((enemy) => isRegisterableEnemy(enemy));
+  return $dataEnemies.filter((enemy) => isRegisterableEnemy(enemy))
+    .sort((a, b) => (a.orderId || a.id) - (b.orderId || b.id));
 }
 
 
@@ -444,7 +445,7 @@ class Window_EnemyBookIndex extends Window_Selectable {
     const rect = this.itemRectForText(index);
     let name;
     if ($gameSystem.isInEnemyBook(enemy)) {
-      if (this._isInBattle && $gameTroop.members().some(battlerEnemy => battlerEnemy.enemyId() === enemy.id)) {
+      if (this.mustHighlight(enemy)) {
         this.changeTextColor(this.textColor(settings.highlightColor));
       }
       name = enemy.meta.nameAliasInBook || enemy.name;
@@ -455,6 +456,15 @@ class Window_EnemyBookIndex extends Window_Selectable {
     this.drawText(name, rect.x, rect.y, rect.width);
     this.changePaintOpacity(true);
     this.resetTextColor();
+  }
+
+  /**
+   * ハイライトすべきか
+   * @param {RPG.Enemy} enemy
+   * @return {boolean}
+   */
+  mustHighlight(enemy) {
+    return this._isInBattle && $gameTroop.members().some(battlerEnemy => battlerEnemy.enemyId() === enemy.id);
   }
 
   battlerEnemyIsInBook() {
