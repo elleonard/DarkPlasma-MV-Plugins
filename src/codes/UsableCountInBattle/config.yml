@@ -1,0 +1,30 @@
+DarkPlasma_UsableCountInBattle:
+  name: DarkPlasma_UsableCountInBattle
+  year: 2021
+  license: MIT
+  histories:
+    - date: '2021/09/27'
+      version: '1.0.0'
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: '戦闘中一定回数のみ使えるスキル/アイテム'
+  parameters: []
+  commands: []
+  structures:
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      戦闘中に一定回数のみ使えるスキル/アイテムを実現します。
+
+      <usableCountInBattle:1>
+      とメモ欄に記述すると、そのスキルやアイテムは
+      戦闘中に1回までしか使えなくなります。
+
+      <usableCountInBattle:v[1]>
+      のように、回数を変数で指定できます。
