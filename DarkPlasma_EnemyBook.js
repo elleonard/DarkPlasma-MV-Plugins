@@ -1,10 +1,11 @@
-// DarkPlasma_EnemyBook 3.3.0
+// DarkPlasma_EnemyBook 3.3.1
 // Copyright (c) 2019 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
- * 2021/09/26 3.3.0 DarkPlasma_OrderIdAliasに対応
+ * 2021/09/26 3.3.1 ハイライト条件をカスタマイズするためのインターフェースを公開
+ *            3.3.0 DarkPlasma_OrderIdAliasに対応
  *            3.2.2 名前とレベルがかぶる不具合を修正
  *                  図鑑登録前の表示をカスタマイズするためのインターフェース追加
  *                  不要コードを削除
@@ -173,7 +174,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.3.0
+ * version: 3.3.1
  * このプラグインはYoji Ojima氏によって書かれたRPGツクール公式プラグインを元に
  * DarkPlasmaが改変を加えたものです。
  *
@@ -403,7 +404,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.3.0
+ * version: 3.3.1
  * The original plugin is RMMV official plugin written by Yoji Ojima.
  * Arranged by DarkPlasma.
  * Script:
@@ -1048,10 +1049,10 @@
       const enemy = this._list[index];
       const rect = this.itemRectForText(index);
       let name;
+      if (this.mustHighlight(enemy)) {
+        this.changeTextColor(this.textColor(settings.highlightColor));
+      }
       if ($gameSystem.isInEnemyBook(enemy)) {
-        if (this.mustHighlight(enemy)) {
-          this.changeTextColor(this.textColor(settings.highlightColor));
-        }
         name = enemy.meta.nameAliasInBook || enemy.name;
       } else {
         this.changePaintOpacity(!settings.grayOutUnknown);
@@ -1068,7 +1069,11 @@
      * @return {boolean}
      */
     mustHighlight(enemy) {
-      return this._isInBattle && $gameTroop.members().some((battlerEnemy) => battlerEnemy.enemyId() === enemy.id);
+      return (
+        this._isInBattle &&
+        $gameSystem.isInEnemyBook(enemy) &&
+        $gameTroop.members().some((battlerEnemy) => battlerEnemy.enemyId() === enemy.id)
+      );
     }
 
     battlerEnemyIsInBook() {
@@ -1120,6 +1125,8 @@
 
   Window_EnemyBookIndex.lastTopRow = 0;
   Window_EnemyBookIndex.lastIndex = 0;
+
+  window.Window_EnemyBookIndex = Window_EnemyBookIndex;
 
   /**
    * 図鑑ステータスウィンドウ
