@@ -1,9 +1,10 @@
-// DarkPlasma_SkillDetail 2.0.0
+// DarkPlasma_SkillDetail 2.0.1
 // Copyright (c) 2021 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2021/10/01 2.0.1 リファクタ
  * 2021/09/20 2.0.0 一部のキーを指定すると詳細を表示できない不具合を修正
  *                  パラメータを整理
  *                  rollup構成へ移行
@@ -41,7 +42,7 @@
  * @default {"x":"0", "y":"288", "width":"816", "height":"336"}
  *
  * @help
- * version: 2.0.0
+ * version: 2.0.1
  * スキル画面のスキルにカーソルを合わせて特定のボタンを押すと
  * スキル詳細説明画面を開きます。
  *
@@ -127,7 +128,7 @@
       this._itemWindow.activate();
       if (!this._detailWindow.visible) {
         this._detailWindow.show();
-        this._detailWindow.refresh();
+        this._detailWindow.resetCursor();
       } else {
         this._detailWindow.hide();
         this._detailWindow.resetCursor();
@@ -372,8 +373,8 @@
     cursorDown() {
       if (!this.isCursorMax()) {
         this._cursor++;
+        this.refresh();
       }
-      this.refresh();
     }
 
     /**
@@ -384,7 +385,10 @@
     }
 
     resetCursor() {
-      this._cursor = 0;
+      if (this._cursor > 0) {
+        this._cursor = 0;
+        this.refresh();
+      }
     }
   }
   window.Window_SkillDetail = Window_SkillDetail;
