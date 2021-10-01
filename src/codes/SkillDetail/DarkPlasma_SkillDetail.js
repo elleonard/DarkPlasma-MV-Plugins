@@ -38,7 +38,7 @@ function Scene_Skill_SkillDetailMixIn(sceneSkill) {
       if (settings.hideListWindow) {
         this._itemWindow.hide();
       }
-      this._detailWindow.refresh();
+      this._detailWindow.resetCursor();
     } else {
       this._detailWindow.hide();
       this._detailWindow.resetCursor();
@@ -288,8 +288,8 @@ class Window_SkillDetail extends Window_Base {
   cursorDown() {
     if (!this.isCursorMax()) {
       this._cursor++;
+      this.refresh();
     }
-    this.refresh();
   }
 
   /**
@@ -300,7 +300,10 @@ class Window_SkillDetail extends Window_Base {
   }
 
   resetCursor() {
-    this._cursor = 0;
+    if (this._cursor > 0) {
+      this._cursor = 0;
+      this.refresh();
+    }
   }
 };
 
