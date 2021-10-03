@@ -1,9 +1,11 @@
-// DarkPlasma_SkillDetail 2.0.1
+// DarkPlasma_SkillDetail 2.0.2
 // Copyright (c) 2021 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2021/10/03 2.0.2 WordwrapForJapaneseと組み合わせた場合に行末の文字が見切れることがある不具合を修正
+ *                  スクロール操作が正常に行えない場合がある不具合を修正
  * 2021/10/01 2.0.1 リファクタ
  * 2021/09/20 2.0.0 一部のキーを指定すると詳細を表示できない不具合を修正
  *                  パラメータを整理
@@ -42,7 +44,7 @@
  * @default {"x":"0", "y":"288", "width":"816", "height":"336"}
  *
  * @help
- * version: 2.0.1
+ * version: 2.0.2
  * スキル画面のスキルにカーソルを合わせて特定のボタンを押すと
  * スキル詳細説明画面を開きます。
  *
@@ -243,6 +245,10 @@
       this.hide();
     }
 
+    standardPadding() {
+      return super.standardPadding() + 8;
+    }
+
     /**
      * @param {string} detail 詳細説明
      */
@@ -303,7 +309,7 @@
      * 1画面で表示する最大行数
      */
     maxLine() {
-      return Math.floor(this.height / this.lineHeight());
+      return Math.floor(this.contentsHeight() / this.lineHeight());
     }
 
     clear() {
@@ -381,7 +387,7 @@
      * @return {boolean}
      */
     isCursorMax() {
-      return this.maxLine() + this._cursor > this._lineCount;
+      return this.maxLine() + this._cursor >= this._lineCount;
     }
 
     resetCursor() {
