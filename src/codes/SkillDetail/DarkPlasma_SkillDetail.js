@@ -158,6 +158,10 @@ class Window_SkillDetail extends Window_Base {
     this.hide();
   }
 
+  standardPadding() {
+    return super.standardPadding() + 8;
+  }
+
   /**
    * @param {string} detail 詳細説明
    */
@@ -218,7 +222,7 @@ class Window_SkillDetail extends Window_Base {
    * 1画面で表示する最大行数
    */
   maxLine() {
-    return Math.floor(this.height / this.lineHeight());
+    return Math.floor(this.contentsHeight() / this.lineHeight());
   }
 
   clear() {
@@ -296,7 +300,7 @@ class Window_SkillDetail extends Window_Base {
    * @return {boolean}
    */
   isCursorMax() {
-    return this.maxLine() + this._cursor > this._lineCount;
+    return this.maxLine() + this._cursor >= this._lineCount;
   }
 
   resetCursor() {
