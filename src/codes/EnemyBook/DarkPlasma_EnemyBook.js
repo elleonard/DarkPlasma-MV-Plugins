@@ -580,6 +580,9 @@ class Window_EnemyBookStatus extends Window_Base {
       const scale = Number(enemy.meta.scaleInBook);
       this._enemySprite.scale.x = scale/100;
       this._enemySprite.scale.y = scale/100;
+    } else {
+      this._enemySprite.scale.x = 1;
+      this._enemySprite.scale.y = 1;
     }
 
     this.resetTextColor();
