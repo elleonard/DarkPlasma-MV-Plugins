@@ -1,0 +1,23 @@
+DarkPlasma_NotToHideTileCharacter:
+  name: DarkPlasma_NotToHideTileCharacter
+  year: 2021
+  license: MIT
+  histories:
+    - date: '2021/10/14'
+      version: '1.0.0'
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: 'タイル画像を指定したイベントが敵遭遇時に消える不具合を修正する'
+  parameters: []
+  commands: []
+  structures:
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      タイル画像を指定したイベントが敵遭遇時に消える不具合を修正します。
