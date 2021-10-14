@@ -1,10 +1,11 @@
-// DarkPlasma_NotToHideTileCharacter 1.0.0
+// DarkPlasma_NotToHideTileCharacter 1.0.1
 // Copyright (c) 2021 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
- * 2021/10/14 1.0.0 公開
+ * 2021/10/14 1.0.1 プライオリティによらず消えないように修正
+ *            1.0.0 公開
  */
 
 /*:ja
@@ -16,7 +17,7 @@
  * @url https://github.com/elleonard/DarkPlasma-MV-Plugins/tree/release
  *
  * @help
- * version: 1.0.0
+ * version: 1.0.1
  * タイル画像を指定したイベントが敵遭遇時に消える不具合を修正します。
  */
 
@@ -24,6 +25,6 @@
   'use strict';
 
   Sprite_Character.prototype.isTile = function () {
-    return this._character.isTile();
+    return this._character.tileId() > 0;
   };
 })();
