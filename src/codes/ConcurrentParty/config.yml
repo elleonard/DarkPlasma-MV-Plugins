@@ -1,0 +1,128 @@
+DarkPlasma_ConcurrentParty:
+  name: DarkPlasma_ConcurrentParty
+  year: 2021
+  license: MIT
+  histories:
+    - date: '2021/10/15'
+      version: '1.3.0'
+      description: 'rollup構成へ移行'
+    - description: '指定パーティの位置を取得するインターフェース追加'
+    - date: '2021/01/03'
+      version: '1.2.1'
+      description: '並び替え時にエラーが発生する不具合を修正'
+    - date: '2021/01/02'
+      version: '1.2.0'
+      description: 'パーティ切り替え禁止スイッチ設定を追加'
+    - description: 'パーティ切り替えプラグインコマンドにフェードタイプ引数を追加'
+    - date: '2021/01/01'
+      version: '1.1.2'
+      description: 'パーティ合流後に、分割パーティの状態が完全に初期化されない不具合を修正'
+    - date: '2020/12/30'
+      version: '1.1.1'
+      description: 'パーティ切り替えボタンがイベント実行中に有効である不具合を修正'
+    - date: '2020/11/25'
+      version: '1.1.0'
+      description: '指定パーティのリーダーを取得するインターフェース追加'
+    - description: '前後に切り替える機能追加'
+    - date: '2020/10/28'
+      version: '1.0.2'
+      description: 'パーティ切替時の場所移動が正常に動かない不具合を修正'
+    - version: '1.0.1'
+      description: '導入前のセーブデータをロードした場合エラーになる不具合を修正'
+    - date: '2020/10/27'
+      version: '1.0.0'
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: '並行パーティシステムを実現する'
+  parameters:
+    - param: changePartyButton
+      text:
+        ja: 次へ切り替えボタン
+      type: select
+      default: pagedown
+      options:
+        - name: pageup
+        - name: pagedown
+        - name: shift
+        - name: control
+        - name: tab
+    - param: changePreviousPartyButton
+      text:
+        ja: 前へ切り替えボタン
+      type: select
+      default: pageup
+      options:
+        - name: pageup
+        - name: pagedown
+        - name: shift
+        - name: control
+        - name: tab
+    - param: disableChangeSwitchId
+      text:
+        ja: パーティ切り替え禁止スイッチ
+      type: switch
+      default: 0
+  commands: []
+  structures:
+  dependencies:
+    base: []
+    orderAfter:
+      - name: DarkPlasma_ConcurrentParty
+        version: 1.3.0
+    orderBefore: []
+  help:
+    ja: |
+      パーティを分割し、操作を切り替えて並行で進むシステムを実現します。
+
+      プラグインコマンド:
+      createParty パーティメンバー名1 2 3 4
+      分割後のパーティを生成します。
+      並行パーティモードで実行した場合、何も起こりません。
+      すでに生成済みのパーティに属しているメンバーを指定した場合、何も起こりません。
+
+      setPartyPosition マップID x座標 y座標 向き
+      直前に生成したパーティの初期位置を設定します。
+      設定しなかったパーティの位置は、切り替え前のパーティと同じになります。
+      向きは 下:2 左:4 右:6 上:8
+
+      moveParty パーティID マップID x座標 y座標 向き
+      並行パーティモード中にパーティの位置を移動します。
+      並行パーティモード外で実行した場合、何も起こりません。
+
+      resetParty
+      生成したパーティをリセットします。
+      並行パーティモードで実行した場合、何も起こりません。
+
+      startConcurrentParty
+      生成した分割後のパーティで並行パーティモードを開始します。
+      並行パーティモードで実行した場合、何も起こりません。
+      分割後のパーティを生成していない場合、何も起こりません。
+
+      changeToNextParty フェードタイプ
+      次のパーティへ操作を切り替えます。
+      最後のパーティだった場合、最初のパーティに操作を切り替えます。
+      並行パーティモード外で実行した場合、何も起こりません。
+      フェードタイプは 黒:0 白:1 その他:2
+      省略時は黒になります。
+      
+      changeToPreviousParty フェードタイプ
+      前のパーティへ操作を切り替えます。
+      最初のパーティだった場合、最後のパーティに操作を切り替えます。
+      並行パーティモード外で実行した場合、何も起こりません。
+      
+      joinAllMember
+      全メンバーを合流し、並行パーティモードを解除します。
+      分割後のパーティはリセットされます。
+      並行パーティモード外で実行した場合、何も起こりません。
+      
+      スクリプト:
+      $gameParty.devidedPartyLeader(partyIndex: number): Game_Actor|null
+       指定したパーティのリーダーを取得する
+       指定パーティが存在しない場合はnullを返す
+      
+      $gameParty.devidedPartyPosition(partyIndex: number): Game_DevidedPartyPosition|null
+        指定したパーティの位置を取得する
+        指定パーティが存在しない場合はnullを返す
