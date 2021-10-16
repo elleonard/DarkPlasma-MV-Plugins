@@ -1,0 +1,34 @@
+DarkPlasma_IsPicturesReady:
+  name: DarkPlasma_IsPicturesReady
+  year: 2021
+  license: MIT
+  histories:
+    - date: '2021/10/16'
+      version: '1.0.0'
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: 'ピクチャの表示準備が完了したかを知る'
+  parameters: []
+  commands: []
+  structures:
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      ピクチャの表示準備が完了しているかどうかを知るための
+      プラグインコマンドを提供します。
+
+      プラグインコマンド:
+      isPicturesReady pictureIds=(ピクチャIDリスト) switchId=(スイッチID)
+
+      例:
+      isPicturesReady pictureIds=1to3 switchId=1
+      スイッチID1に対して、ピクチャ1～3の表示準備が完了しているかどうかを格納します。
+
+      isPicturesReady pictureIds=1,3 switchId=1
+      スイッチID1に対して、ピクチャ1,3の表示準備が完了しているかどうかを格納します。
