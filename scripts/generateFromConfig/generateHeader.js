@@ -430,9 +430,12 @@ function generatePluginMetaText(config, language) {
     ` * @plugindesc ${config.plugindesc[language]}`,
     ` * @author ${config.author ? config.author : 'DarkPlasma'}`,
     ` * @license ${config.license}`,
-    ` *`,
-    ` * @target MV`,
   ];
+  if (config.excludeLicenseManager) {
+    result.push(` * @excludeLicenseManager`);
+  }
+  result.push(` *`);
+  result.push(` * @target MV`);
   if (config.license === 'MIT') {
     return result.concat([` * @url https://github.com/elleonard/DarkPlasma-MV-Plugins/tree/release`]).join('\n');
   }
