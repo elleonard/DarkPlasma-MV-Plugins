@@ -1,9 +1,10 @@
-// DarkPlasma_AutoHighlight 2.0.0
+// DarkPlasma_AutoHighlight 2.0.1
 // Copyright (c) 2018 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2021/10/29 2.0.1 Torigoya_TextRuby.js でルビを振った際にエラーが発生する不具合を修正
  * 2021/10/28 2.0.0 rollup構成へ移行
  * 2020/09/21 1.3.2 指定語句のうち、長いものを優先するよう修正
  *                  スキル名と指定語句の判定衝突を修正
@@ -36,7 +37,7 @@
  * @default ["Window_Message"]
  *
  * @help
- * version: 2.0.0
+ * version: 2.0.1
  * 指定した語句を指定した色でハイライトします。
  * Trb_TextColor.js などの適切なプラグインを使用することで、
  * 色番号にシャープ付きのカラーコードを指定できます。
@@ -246,11 +247,11 @@
   };
 
   if (PluginManager.isLoadedTorigoyaTextRuby()) {
-    const rubyHighlightRegexp = highlightWords.getRegExpForRuby();
-    let TextRuby = window.Torigoya.TextRuby;
+    const TextRuby = window.Torigoya.TextRuby;
 
     const _TextRuby_processDrawRuby = TextRuby.processDrawRuby;
     TextRuby.processDrawRuby = function (mainText, subText, textState) {
+      const rubyHighlightRegexp = highlightWords.getRegExpForRuby();
       if (rubyHighlightRegexp.test(mainText)) {
         TextRuby.setMainTextColor(highlightWords.findColorByWord(mainText));
       }
