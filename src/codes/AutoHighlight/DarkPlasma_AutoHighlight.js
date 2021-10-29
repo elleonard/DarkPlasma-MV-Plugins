@@ -145,11 +145,11 @@ PluginManager.isLoadedTorigoyaTextRuby = function () {
 };
 
 if (PluginManager.isLoadedTorigoyaTextRuby()) {
-  const rubyHighlightRegexp = highlightWords.getRegExpForRuby();
-  let TextRuby = window.Torigoya.TextRuby;
+  const TextRuby = window.Torigoya.TextRuby;
 
   const _TextRuby_processDrawRuby = TextRuby.processDrawRuby;
   TextRuby.processDrawRuby = function (mainText, subText, textState) {
+    const rubyHighlightRegexp = highlightWords.getRegExpForRuby();
     if (rubyHighlightRegexp.test(mainText)) {
       TextRuby.setMainTextColor(highlightWords.findColorByWord(mainText));
     }
