@@ -1,0 +1,123 @@
+DarkPlasma_LicenseManager:
+  name: DarkPlasma_LicenseManager
+  year: 2017
+  license: MIT
+  excludeLicenseManager: false
+  histories:
+    - date: '2021/10/30'
+      version: '2.0.0'
+      description: 'rollup構成へ移行'
+    - date: '2019/08/23'
+      version: '1.0.2'
+      description: '最新のNW.jsに対応'
+    - date: '2018/10/23'
+      version: '1.0.1'
+      description: '表示すべきプラグインがすべて除外されている著者が表示される不具合の修正'
+    - date: '2017/11/23'
+      version: '1.0.0'
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: 'プラグインのライセンスをゆるく管理する'
+  parameters:
+    - param: licenseMenuOnTitle
+      text:
+        ja: 表示メニューをタイトルに
+      desc:
+        ja: ライセンス表示メニューをタイトルに表示します。
+      type: boolean
+      default: true
+    - param: excludePlugins
+      text:
+        ja: 表示除外プラグイン一覧
+      desc:
+        ja: ライセンス表示から除外するプラグインの名前を指定します。（例 DarkPlasma_LicenseManager）
+      type: string[]
+      default: []
+    - param: explicitLicenses
+      text:
+        ja: ライセンスの明示的設定
+      desc:
+        ja: 明示的にライセンス設定をします。自動で読み取れない場合にご利用ください。
+      type: ExplicitLicense[]
+      default: []
+    - param: convertAuthorRules
+      text:
+        ja: 著者名変換規則
+      desc:
+        ja: 多言語対応していたり、同一作者でも設定の表記揺れがある場合にご利用ください。
+      type: ConvertAuthorRule[]
+      default: []
+  commands: []
+  structures:
+    ExplicitLicense:
+      - param: licenseType
+        text:
+          ja: ライセンス種別
+        desc:
+          ja: ライセンス種別を選択します。
+        type: select
+        default: MIT
+        options:
+          - name: MIT
+          - name: CC0
+          - name: public domain
+          - name: NYSL 0.9982
+          - name: WTFPL
+          - name: BSD-2-Clause
+          - name: BSD-3-Clause
+          - name: GPL 3.0
+          - name: No License
+      - param: plugins
+        text:
+          ja: プラグイン一覧
+        desc:
+          ja: このライセンスに設定したいプラグイン名を指定します。
+        type: string[]
+        default: []
+    ConvertAuthorRule:
+      - param: to
+        text:
+          ja: 表示上の名前
+        desc:
+          ja: 画面上に表示する著者名を指定します。
+        type: string
+      - param: from
+        text:
+          ja: 設定上の名前
+        desc:
+          ja: プラグインに設定された著者名を指定します。
+        type: string[]
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      このプラグインはオープンソースライセンスをゆるく運用するためのものです。
+      （厳密に運用するためのものでないことに注意してください）
+      読み込んでいるプラグインの著作権表示、ライセンス、必要に応じて
+      ライセンス全文が記されたウェブサイトへのURLを表示します。
+      ただし、すべてのプラグインについて
+      正しく著作権表示やライセンスを読み取れるわけではありません。
+
+      本来のオープンソースライセンスの考え方に基づくのであれば、著作権表記、
+      ライセンス、ライセンス全文が記されたウェブサイトへのURLを
+      記述するだけでは不十分です。
+      ウェブサイトにおいて、恒常的にライセンスの全文が得られる保証はないからです。
+      もしもオープンソースライセンスを厳密に運用するのであれば、
+      別途ライセンス全文をコピーしたテキストを用意してください。
+
+      独自ソースのプラグインで著作権表示やライセンスを秘匿しておきたい場合、
+      プラグインコメントに先頭にアットマークをつけて以下のように記述すると
+      表示から除外されます
+
+      excludeLicenseManager
+
+      （このプラグインを除外しないためにアットマークを省いています）
+
+      ライセンス表示文を表すJSONはデバッグモード起動時に
+      存在しなければデフォルトセットで生成します。
+      data/License.json に記録されます。
