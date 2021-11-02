@@ -1,0 +1,31 @@
+DarkPlasma_DisableCommonEventItem:
+  name: DarkPlasma_DisableCommonEventItem
+  year: 2021
+  license: MIT
+  excludeLicenseManager: false
+  histories:
+    - date: '2021/11/02'
+      version: '1.0.0'
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: 'コモンイベントアイテム・スキル禁止'
+  parameters:
+    - param: switchId
+      text:
+        ja: 禁止スイッチ
+      desc:
+        ja: このスイッチがONの時、コモンイベントを発生させるアイテム・スキルを使用不可にします。
+      type: switch
+      default: 0
+  commands: []
+  structures:
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      コモンイベントを発生させる効果を含むアイテム・スキルを使用不可にします。
