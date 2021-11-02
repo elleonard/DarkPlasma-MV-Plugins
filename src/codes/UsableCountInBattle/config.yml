@@ -3,6 +3,9 @@ DarkPlasma_UsableCountInBattle:
   year: 2021
   license: MIT
   histories:
+    - date: '2021/11/02'
+      version: '1.0.1'
+      description: '拡張するクラスをコアスクリプトに合わせる'
     - date: '2021/09/27'
       version: '1.0.0'
       description: '公開'

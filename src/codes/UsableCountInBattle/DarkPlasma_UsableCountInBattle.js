@@ -68,9 +68,9 @@ BattleManager.setup = function(troopId, canEscape, canLose) {
 };
 
 /**
- * @param {Game_Battler.prototype} gameBattler
+ * @param {Game_BattlerBase.prototype} gameBattler
  */
-function Game_Battler_UsableCountMixIn(gameBattler) {
+function Game_BattlerBase_UsableCountMixIn(gameBattler) {
   gameBattler.isUsableCountOk = function(item) {
     const key = itemToKey(item);
     return !$gameParty.inBattle() || !key || !usableCountInBattle[key] || usableCountInBattle[key].isUsable(useCount[key] || 0);
@@ -85,7 +85,13 @@ function Game_Battler_UsableCountMixIn(gameBattler) {
   gameBattler.meetsItemConditions = function(item) {
     return _meetsItemConditions.call(this, item) && this.isUsableCountOk(item);
   };
+}
 
+Game_BattlerBase_UsableCountMixIn(Game_BattlerBase.prototype);
+/**
+ * @param {Game_Battler.prototype} gameBattler
+ */
+function Game_Battler_UsableCountMixIn(gameBattler) {
   const _useItem = gameBattler.useItem;
   gameBattler.useItem = function(item) {
     _useItem.call(this, item);
