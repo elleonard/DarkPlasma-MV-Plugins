@@ -1,9 +1,10 @@
-// DarkPlasma_UsableCountInBattle 1.0.0
+// DarkPlasma_UsableCountInBattle 1.0.1
 // Copyright (c) 2021 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2021/11/02 1.0.1 拡張するクラスをコアスクリプトに合わせる
  * 2021/09/27 1.0.0 公開
  */
 
@@ -16,7 +17,7 @@
  * @url https://github.com/elleonard/DarkPlasma-MV-Plugins/tree/release
  *
  * @help
- * version: 1.0.0
+ * version: 1.0.1
  * 戦闘中に一定回数のみ使えるスキル/アイテムを実現します。
  *
  * <usableCountInBattle:1>
@@ -100,9 +101,9 @@
   };
 
   /**
-   * @param {Game_Battler.prototype} gameBattler
+   * @param {Game_BattlerBase.prototype} gameBattler
    */
-  function Game_Battler_UsableCountMixIn(gameBattler) {
+  function Game_BattlerBase_UsableCountMixIn(gameBattler) {
     gameBattler.isUsableCountOk = function (item) {
       const key = itemToKey(item);
       return (
@@ -122,7 +123,13 @@
     gameBattler.meetsItemConditions = function (item) {
       return _meetsItemConditions.call(this, item) && this.isUsableCountOk(item);
     };
+  }
 
+  Game_BattlerBase_UsableCountMixIn(Game_BattlerBase.prototype);
+  /**
+   * @param {Game_Battler.prototype} gameBattler
+   */
+  function Game_Battler_UsableCountMixIn(gameBattler) {
     const _useItem = gameBattler.useItem;
     gameBattler.useItem = function (item) {
       _useItem.call(this, item);
