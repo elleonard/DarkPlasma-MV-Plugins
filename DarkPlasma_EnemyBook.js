@@ -1,9 +1,10 @@
-// DarkPlasma_EnemyBook 3.3.2
+// DarkPlasma_EnemyBook 3.4.0
 // Copyright (c) 2019 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2021/11/14 3.4.0 OrderIdAliasでステートアイコンを並べ替えられるように修正
  * 2021/10/04 3.3.2 拡大率の変更が別モンスターに引き継がれてしまう不具合を修正
  * 2021/09/26 3.3.1 ハイライト条件をカスタマイズするためのインターフェースを公開
  *            3.3.0 DarkPlasma_OrderIdAliasに対応
@@ -175,7 +176,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.3.2
+ * version: 3.4.0
  * このプラグインはYoji Ojima氏によって書かれたRPGツクール公式プラグインを元に
  * DarkPlasmaが改変を加えたものです。
  *
@@ -405,7 +406,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.3.2
+ * version: 3.4.0
  * The original plugin is RMMV official plugin written by Yoji Ojima.
  * Arranged by DarkPlasma.
  * Script:
@@ -1424,6 +1425,7 @@
         .concat(
           $dataStates
             .filter((state) => state && this.stateRate(state.id) > 1 && !this.isExcludedWeakState(state.id))
+            .sort((a, b) => (a.orderId || a.id) - (b.orderId || b.id))
             .map((state) => state.iconIndex)
         )
         .concat(
@@ -1490,6 +1492,7 @@
                 (!settings.devideResistAndNoEffect || stateRate > 0)
               );
             })
+            .sort((a, b) => (a.orderId || a.id) - (b.orderId || b.id))
             .map((state) => state.iconIndex)
         )
         .concat(
@@ -1539,6 +1542,7 @@
         .concat(
           $dataStates
             .filter((state) => state && this.stateRate(state.id) <= 0 && !this.isExcludedResistState(state.id))
+            .sort((a, b) => (a.orderId || a.id) - (b.orderId || b.id))
             .map((state) => state.iconIndex)
         )
         .concat(
