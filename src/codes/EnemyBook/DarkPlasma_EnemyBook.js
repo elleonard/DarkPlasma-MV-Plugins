@@ -826,6 +826,7 @@ class Window_EnemyBookStatus extends Window_Base {
       .map(elementId => settings.elementIcons[elementId])
       .concat($dataStates
         .filter(state => state && this.stateRate(state.id) > 1 && !this.isExcludedWeakState(state.id))
+        .sort((a, b) => (a.orderId || a.id) - (b.orderId || b.id))
         .map(state => state.iconIndex))
       .concat(STATUS_NAMES
         .filter((_, index) => {
@@ -885,6 +886,7 @@ class Window_EnemyBookStatus extends Window_Base {
             !this.isExcludedResistState(state.id) &&
             (!settings.devideResistAndNoEffect || stateRate > 0);
         })
+        .sort((a, b) => (a.orderId || a.id) - (b.orderId || b.id))
         .map(state => state.iconIndex))
       .concat(STATUS_NAMES
         .filter((_, index) => {
@@ -926,6 +928,7 @@ class Window_EnemyBookStatus extends Window_Base {
       .map(elementId => settings.elementIcons[elementId])
       .concat($dataStates
         .filter(state => state && this.stateRate(state.id) <= 0 && !this.isExcludedResistState(state.id))
+        .sort((a, b) => (a.orderId || a.id) - (b.orderId || b.id))
         .map(state => state.iconIndex))
       .concat(STATUS_NAMES
         .filter((_, index) => {
