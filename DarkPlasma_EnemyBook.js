@@ -1,9 +1,10 @@
-// DarkPlasma_EnemyBook 3.4.0
+// DarkPlasma_EnemyBook 3.4.1
 // Copyright (c) 2019 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2021/11/27 3.4.1 戦闘開始時に最上部のモンスターにフォーカスをあわせない不具合を修正
  * 2021/11/14 3.4.0 OrderIdAliasでステートアイコンを並べ替えられるように修正
  * 2021/10/04 3.3.2 拡大率の変更が別モンスターに引き継がれてしまう不具合を修正
  * 2021/09/26 3.3.1 ハイライト条件をカスタマイズするためのインターフェースを公開
@@ -176,7 +177,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.4.0
+ * version: 3.4.1
  * このプラグインはYoji Ojima氏によって書かれたRPGツクール公式プラグインを元に
  * DarkPlasmaが改変を加えたものです。
  *
@@ -406,7 +407,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.4.0
+ * version: 3.4.1
  * The original plugin is RMMV official plugin written by Yoji Ojima.
  * Arranged by DarkPlasma.
  * Script:
@@ -967,7 +968,7 @@
             $gameTroop
               .members()
               .map((gameEnemy) => this._list.indexOf(gameEnemy.enemy()))
-              .filter((index) => index > 0)
+              .filter((index) => index >= 0)
           )
         ).sort((a, b) => a - b);
       }
