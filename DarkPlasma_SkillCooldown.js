@@ -1,9 +1,11 @@
-// DarkPlasma_SkillCooldown 2.0.0
+// DarkPlasma_SkillCooldown 2.0.1
 // Copyright (c) 2020 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2021/11/27 2.0.1 アクターのクールタイムが共有される不具合を修正
+ *                  アクターのクールタイムが戦闘終了で初期化されない不具合を修正
  * 2021/11/14 2.0.0 rollup構成へ移行
  * 2021/11/12 1.2.1 戦闘中にパーティメンバーを変更するとエラーが発生する不具合を修正
  * 2021/03/01 1.2.0 クールタイムに変数を利用する機能を追加
@@ -50,7 +52,7 @@
  * @default true
  *
  * @help
- * version: 2.0.0
+ * version: 2.0.1
  * スキルにクールタイムを指定します。
  * スキルX使用後、スキルYの使用を一定ターン数制限することができます。
  */
@@ -351,7 +353,7 @@
     }
   };
 
-  Game_Actor.skillCooldownId = function () {
+  Game_Actor.prototype.skillCooldownId = function () {
     return this.actorId();
   };
 
