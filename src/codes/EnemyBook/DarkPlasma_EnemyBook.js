@@ -361,7 +361,7 @@ class Window_EnemyBookIndex extends Window_Selectable {
       this._battlerEnemyIndexes = Array.from(new Set(
         $gameTroop.members()
           .map((gameEnemy) => this._list.indexOf(gameEnemy.enemy()))
-          .filter(index => index > 0)
+          .filter(index => index >= 0)
       )).sort((a, b) => a - b);
     }
     if (this.battlerEnemyIsInBook()) {

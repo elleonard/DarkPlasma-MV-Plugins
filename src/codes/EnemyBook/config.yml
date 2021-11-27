@@ -3,74 +3,77 @@ DarkPlasma_EnemyBook:
   year: 2019
   license: MIT
   histories:
-    - date: '2021/11/14'
-      version: '3.4.0'
+    - date: 2021/11/27
+      version: 3.4.1
+      description: '戦闘開始時に最上部のモンスターにフォーカスをあわせない不具合を修正'
+    - date: 2021/11/14
+      version: 3.4.0
       description: 'OrderIdAliasでステートアイコンを並べ替えられるように修正'
-    - date: '2021/10/04'
-      version: '3.3.2'
+    - date: 2021/10/04
+      version: 3.3.2
       description: '拡大率の変更が別モンスターに引き継がれてしまう不具合を修正'
-    - date: '2021/09/26'
-      version: '3.3.1'
+    - date: 2021/09/26
+      version: 3.3.1
       description: 'ハイライト条件をカスタマイズするためのインターフェースを公開'
-    - date: '2021/09/26'
-      version: '3.3.0'
+    - date: 2021/09/26
+      version: 3.3.0
       description: 'DarkPlasma_OrderIdAliasに対応'
-    - date: '2021/09/26'
-      version: '3.2.2'
+    - date: 2021/09/26
+      version: 3.2.2
       description: '名前とレベルがかぶる不具合を修正'
     - description: '図鑑登録前の表示をカスタマイズするためのインターフェース追加'
     - description: '不要コードを削除'
-    - date: '2021/09/04'
-      version: '3.2.1'
+    - date: 2021/09/04
+      version: 3.2.1
       description: 'レイアウト微調整'
     - date: '2021/09/04'
       version: '3.2.0'
       description: 'エネミーごとに図鑑上の画像拡大率を指定する機能を追加'
-    - date: '2021/09/04'
-      version: '3.1.0'
+    - date: 2021/09/04
+      version: 3.1.0
       description: '戦闘中最初に開いた時、出現している敵にカーソルを合わせる'
     - description: '戦闘中、ページ切り替えで出現している敵を行き来する'
     - description: '戦闘中のリストへの色つけ不具合を修正'
-    - date: '2021/08/29'
-      version: '3.0.0'
+    - date: 2021/08/29
+      version: 3.0.0
       description: 'rollup構成に移行'
     - description: '登録不可エネミーがコンプ率計算に含まれる不具合の修正'
     - description: 'ゲームアップデートによるエネミー増減に対応'
     - description: '戦闘中、リスト中の出現モンスターに色をつける機能を追加'
     - description: '横型レイアウトの廃止'
     - description: '図鑑表示名設定機能の追加'
-    - date: '2021/06/06'
-      version: '2.4.2'
+    - date: 2021/06/06
+      version: 2.4.2
       description: 'Window_EnemyBookStatusのインターフェース公開 リファクタ'
     - date: '2020/06/24'
-      version: '2.4.1'
+      version: 2.4.1
       description: 'レイアウト崩れを修正'
-    - version: '2.4.0'
+    - version: 2.4.0
       description: '無効属性/ステート/弱体を耐性属性/ステート/弱体と分けて表示する設定を追加'
     - date: '2020/06/22'
-      version: '2.3.1'
+      version: 2.3.1
       description: '除外ステートや弱体有効度を英語対応'
-    - version: '2.3.0'
+    - version: 2.3.0
       description: '表示から除外するステート設定を追加'
     - description: '同一属性/ステートに複数の有効度が指定された場合に最初の設定以外用いられない不具合を修正'
     - description: '弱体有効度の表示設定を追加'
-    - date: '2020/06/21'
-      version: '2.2.1'
+    - date: 2020/06/21
+      version: 2.2.1
       description: 'シーンクラスを外部公開'
-    - date: '2020/04/30'
-      version: '2.2.0'
+    - date: 2020/04/30
+      version: 2.2.0
       description: '戦闘中にワンボタンで図鑑を開く機能を追加'
-    - version: '2.1.0'
+    - version: 2.1.0
       description: '縦型レイアウトに対応'
-    - version: '2.0.1'
+    - version: 2.0.1
       description: 'リファクタ'
-    - version: '2.0.0'
+    - version: 2.0.0
       description: 'リファクタ（セーブデータ互換性なし）'
-    - date: '2019/09/24'
-      version: '1.1.0'
+    - date: 2019/09/24
+      version: 1.1.0
       description: 'ドロップ率表記オプションを追加, レイアウト崩れの修正'
-    - date: '2019/09/23'
-      version: '1.0.0'
+    - date: 2019/09/23
+      version: 1.0.0
       description: '公開'
 
   locates:
