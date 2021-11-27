@@ -232,7 +232,7 @@ Game_Battler.prototype.useItem = function (item) {
   }
 };
 
-Game_Actor.skillCooldownId = function () {
+Game_Actor.prototype.skillCooldownId = function () {
   return this.actorId();
 };
 
