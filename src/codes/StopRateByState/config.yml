@@ -1,0 +1,45 @@
+DarkPlasma_StopRateByState:
+  name: DarkPlasma_StopRateByState
+  year: 2021
+  license: MIT
+  excludeLicenseManager: false
+  histories:
+    - date: 2021/11/28
+      version: 1.0.0
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: '一定確率で行動できないステート'
+  parameters:
+    - param: defaultStopText
+      text:
+        ja: デフォルトメッセージ
+      desc:
+        ja: 行動できなかった場合のメッセージを設定します。%1が動けなかった対象の名前に変換されます。
+      type: string
+      default: '%1は動けなかった'
+  commands: []
+  structures:
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      一定確率で行動できないステートを実現します。
+      NumbState.jsとの違いは以下の通り
+      - 行動後に行動できなかったメッセージが表示される不具合がない
+      - ステートごとにメッセージを設定可能
+
+      対象のステートについて、行動制約をなしにして
+      ステートのメモ欄に記述例を参考にタグを記述してください。
+
+      記述例: 60％の確率で行動できない麻痺ステート
+      <stopRate:60>
+
+      以下のように記述することで、
+      ステートごとに別々のメッセージを表示できます。
+      設定しなかった場合、プラグインパラメータのメッセージが表示されます。
+      <stopText:%1は身体が痺れて動けない！>
