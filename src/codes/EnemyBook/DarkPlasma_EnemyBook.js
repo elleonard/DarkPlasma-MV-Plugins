@@ -115,7 +115,7 @@ class EnemyBook {
    */
   percentRegisteredDropItem() {
     const registerableDropItemCount = registerableEnemies()
-      .reduce((previous, current) => previous + current.dropItems.length, 0);
+      .reduce((previous, current) => previous + current.dropItems.filter(dropItem => dropItem.kind > 0).length, 0);
     if (registerableDropItemCount === 0) {
       return 0;
     }
