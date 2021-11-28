@@ -1,0 +1,139 @@
+DarkPlasma_NameWindow:
+  name: DarkPlasma_NameWindow
+  year: 2019
+  license: MIT
+  excludeLicenseManager: false
+  histories:
+    - date: 2021/11/28
+      version: 2.0.0
+      description: 'rollup構成へ移行'
+    - description: '不要な設定を削除'
+    - description: 'MessageSkip.js でスキップする際に名前ウィンドウが残ることがある不具合を修正'
+    - date: 2020/09/21
+      version: 1.3.2
+      description: 'メッセージウィンドウの透明設定を引き継ぐよう修正'
+    - date: 2020/05/30
+      version: 1.3.1
+      description: 'DarkPlasma_TextLog.js と併用した時、名前なしテキストに名前をつけてしまうことがある不具合を修正'
+    - date: 2020/05/08
+      version: 1.3.0
+      description: '閉じるアニメーションの設定項目を追加'
+    - date: 2020/04/20
+      version: 1.2.1
+      description: '自動名前ウィンドウ以外でアクター名色付けが機能していない不具合を修正'
+    - date: 2020/04/18
+      version: 1.2.0
+      description: 'MessageWindowHidden.js との競合を修正'
+    - description: 'DarkPlasma_AutoHightlight.js よりも自動名前検出時の色設定を優先するオプションを追加'
+    - date: 2020/04/12
+      version: 1.1.1
+      description: 'convertEscapeCharactersを呼び出すようなプラグインとの競合を修正'
+    - description: 'リファクタ'
+    - date: 2020/01/26
+      version: 1.1.0
+      description: 'パディング幅の設定項目追加'
+    - version: 1.0.1
+      description: 'メッセージウィンドウの位置によって名前ウィンドウの位置がズレる不具合を修正'
+    - date: 2019/11/01
+      version: 1.0.0
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: 'メッセージに名前ウィンドウを表示する'
+  parameters:
+    - param: standardPadding
+      text:
+        ja: 基本パディング幅
+      desc:
+        ja: 名前ウィンドウの基本パディング幅を設定します。
+      type: number
+      default: 18
+    - param: horizontalPadding
+      text:
+        ja: 横パディング幅
+      desc:
+        ja: 名前ウィンドウの横パディング幅を設定します。
+      type: number
+      default: 72
+    - param: defaultColor
+      text:
+        ja: デフォルト色
+      desc:
+        ja: 名前ウィンドウのデフォルト文字色を設定します。
+      type: number
+      default: 6
+    - param: windowOffsetX
+      text:
+        ja: 相対位置X
+      desc:
+        ja: 名前ウィンドウのX軸上の相対位置を設定します。
+      type: number
+      default: -28
+      decimal: 1
+    - param: windowOffsetY
+      text:
+        ja: 相対位置Y
+      desc:
+        ja: 名前ウィンドウのY軸上の相対位置を設定します。
+      type: number
+      default: 0
+    - param: closeDelayFrame
+      text:
+        ja: 閉じるウェイト
+      desc:
+        ja: メッセージウィンドウから遅れて閉じるフレーム数を設定します。
+      type: number
+      default: 4
+    - param: actorColors
+      text:
+        ja: アクター色設定
+      desc:
+        ja: アクターごとに名前の色を設定します。
+      type: ActorColor[]
+      default: []
+    - param: autoDetectName
+      text:
+        ja: 自動名前ウィンドウ
+      desc:
+        ja: ONの場合、「及び（を検出して自動で名前ウィンドウを表示します。
+      type: boolean
+      default: false
+  commands: []
+  structures:
+    ActorColor:
+      - param: actor
+        text:
+          ja: アクター
+        type: actor
+      - param: color
+        text:
+          ja: 名前の色
+        type: string
+        default: 6
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      メッセージテキストに以下のように記述すると名前ウィンドウを表示します。
+
+        \n<***> あるいは \n1<***> : 左寄せ
+        \n2<***> : 中央左
+        \nc<***> あるいは \n3<***> : 中央寄せ
+        \n4<***> : 中央右
+        \nr<***> あるいは \n5<***> : 右寄せ
+
+      また、以下のように入力すると
+      アクター名入りの名前ウィンドウを左寄せで表示します。
+
+        \ndp<アクターID>
+      
+      自動名前ウィンドウの設定がONの場合、以下の形式のメッセージを検出して
+      自動で名前ウィンドウを表示します。
+
+        名前「セリフ」
+
+        名前（セリフ）
