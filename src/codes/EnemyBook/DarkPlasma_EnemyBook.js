@@ -69,7 +69,7 @@ class EnemyBook {
   static initialBook() {
     return new EnemyBook(
       $dataEnemies.map(enemy => {
-        return enemy && enemy.meta.book !== 'no' ? new EnemyBookPage(false, enemy.dropItems.map(_ => false)) : null
+        return enemy && enemy.meta.book !== 'no' ? new EnemyBookPage(false, enemy.dropItems.filter(dropItem => dropItem.kind > 0).map(_ => false)) : null
       })
     );
   }
@@ -86,7 +86,7 @@ class EnemyBook {
           return isRegisterableEnemy(enemy)
             ? new EnemyBookPage(
               false,
-              enemy.dropItems.map((_) => false)
+              enemy.dropItems.filter(dropItem => dropItem.kind > 0).map((_) => false)
             )
             : null;
         })
@@ -191,7 +191,12 @@ class EnemyBook {
   complete() {
     registerableEnemies().forEach(enemy => {
       this.register(enemy.id);
-      enemy.dropItems.forEach((_, index) => this.registerDropItem(enemy.id, index));
+      enemy.dropItems
+        .forEach((dropItem, index) => {
+          if (dropItem.kind > 0) {
+            this.registerDropItem(enemy.id, index)
+          }
+        });
     });
   }
 
