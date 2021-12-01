@@ -1,10 +1,11 @@
-// DarkPlasma_EnemyBook 3.4.3
+// DarkPlasma_EnemyBook 3.4.4
 // Copyright (c) 2019 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
- * 2021/12/01 3.4.3 登録可能モンスターの数が変わると図鑑コンプリート率が正常に計算されない不具合を修正
+ * 2021/12/01 3.4.4 図鑑を完成させるコマンドを使うとドロップアイテム収集率が正常に計算されない不具合を修正
+ *            3.4.3 登録可能モンスターの数が変わると図鑑コンプリート率が正常に計算されない不具合を修正
  * 2021/11/29 3.4.2 ドロップアイテム収集率が正常に計算されない不具合を修正
  * 2021/11/27 3.4.1 戦闘開始時に最上部のモンスターにフォーカスをあわせない不具合を修正
  * 2021/11/14 3.4.0 OrderIdAliasでステートアイコンを並べ替えられるように修正
@@ -179,7 +180,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.4.3
+ * version: 3.4.4
  * このプラグインはYoji Ojima氏によって書かれたRPGツクール公式プラグインを元に
  * DarkPlasmaが改変を加えたものです。
  *
@@ -409,7 +410,7 @@
  * @parent inBattle
  *
  * @help
- * version: 3.4.3
+ * version: 3.4.4
  * The original plugin is RMMV official plugin written by Yoji Ojima.
  * Arranged by DarkPlasma.
  * Script:
@@ -681,7 +682,7 @@
           return enemy && enemy.meta.book !== 'no'
             ? new EnemyBookPage(
                 false,
-                enemy.dropItems.map((_) => false)
+                enemy.dropItems.filter((dropItem) => dropItem.kind > 0).map((_) => false)
               )
             : null;
         })
@@ -700,7 +701,7 @@
             return isRegisterableEnemy(enemy)
               ? new EnemyBookPage(
                   false,
-                  enemy.dropItems.map((_) => false)
+                  enemy.dropItems.filter((dropItem) => dropItem.kind > 0).map((_) => false)
                 )
               : null;
           })
@@ -806,7 +807,11 @@
     complete() {
       registerableEnemies().forEach((enemy) => {
         this.register(enemy.id);
-        enemy.dropItems.forEach((_, index) => this.registerDropItem(enemy.id, index));
+        enemy.dropItems.forEach((dropItem, index) => {
+          if (dropItem.kind > 0) {
+            this.registerDropItem(enemy.id, index);
+          }
+        });
       });
     }
 
