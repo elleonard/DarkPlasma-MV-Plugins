@@ -1,9 +1,10 @@
-// DarkPlasma_AutoHighlight 2.0.1
+// DarkPlasma_AutoHighlight 2.0.2
 // Copyright (c) 2018 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2021/12/06 2.0.2 名前が空のアイテムやスキルを指定した場合にエラーが発生する不具合を修正
  * 2021/10/29 2.0.1 Torigoya_TextRuby.js でルビを振った際にエラーが発生する不具合を修正
  * 2021/10/28 2.0.0 rollup構成へ移行
  * 2020/09/21 1.3.2 指定語句のうち、長いものを優先するよう修正
@@ -37,7 +38,7 @@
  * @default ["Window_Message"]
  *
  * @help
- * version: 2.0.1
+ * version: 2.0.2
  * 指定した語句を指定した色でハイライトします。
  * Trb_TextColor.js などの適切なプラグインを使用することで、
  * 色番号にシャープ付きのカラーコードを指定できます。
@@ -211,13 +212,23 @@
        * データベースのロードが完了しているので、ハイライトテキストを設定する。
        */
       settings.highlightGroups.forEach((highlightGroup) => {
-        highlightGroup.texts.forEach((text) => highlightWords.add(new HighlightWord(text, highlightGroup.color)));
-        highlightGroup.skills.forEach((skillId) =>
-          highlightWords.add(new HighlightWord($dataSkills[skillId].name, highlightGroup.color))
-        );
-        highlightGroup.items.forEach((itemId) =>
-          highlightWords.add(new HighlightWord($dataItems[itemId].name, highlightGroup.color))
-        );
+        highlightGroup.texts.forEach((text) => {
+          if (text) {
+            highlightWords.add(new HighlightWord(text, highlightGroup.color));
+          }
+        });
+        highlightGroup.skills.forEach((skillId) => {
+          const skillName = $dataSkills[skillId].name;
+          if (skillName) {
+            highlightWords.add(new HighlightWord(skillName, highlightGroup.color));
+          }
+        });
+        highlightGroup.items.forEach((itemId) => {
+          const itemName = $dataItems[itemId].name;
+          if (itemName) {
+            highlightWords.add(new HighlightWord(itemName, highlightGroup.color));
+          }
+        });
       });
     };
   }
