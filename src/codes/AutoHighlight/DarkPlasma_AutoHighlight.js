@@ -113,9 +113,26 @@ function Scene_Boot_AutoHighlightMixIn(sceneBoot) {
      * データベースのロードが完了しているので、ハイライトテキストを設定する。
      */
      settings.highlightGroups.forEach(highlightGroup => {
-      highlightGroup.texts.forEach(text => highlightWords.add(new HighlightWord(text, highlightGroup.color)));
-      highlightGroup.skills.forEach(skillId => highlightWords.add(new HighlightWord($dataSkills[skillId].name, highlightGroup.color)));
-      highlightGroup.items.forEach(itemId => highlightWords.add(new HighlightWord($dataItems[itemId].name, highlightGroup.color)));
+      highlightGroup.texts
+        .forEach(text => {
+          if (text){
+            highlightWords.add(new HighlightWord(text, highlightGroup.color))
+          }
+        });
+      highlightGroup.skills
+        .forEach(skillId => {
+          const skillName = $dataSkills[skillId].name;
+          if (skillName) {
+            highlightWords.add(new HighlightWord(skillName, highlightGroup.color))
+          }
+        });
+      highlightGroup.items
+        .forEach(itemId => {
+          const itemName = $dataItems[itemId].name;
+          if (itemName) {
+            highlightWords.add(new HighlightWord(itemName, highlightGroup.color))
+          }
+        });
     });
   };
 }
