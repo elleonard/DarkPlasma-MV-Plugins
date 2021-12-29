@@ -3,6 +3,7 @@ node_modules/
 _build/
 
 src/excludes/
+src/excludeCommon/
 release/
 stage/
 
