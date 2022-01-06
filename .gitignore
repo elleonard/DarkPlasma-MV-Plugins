@@ -4,6 +4,7 @@ _build/
 
 src/excludes/
 src/excludeCommon/
+src/.gitignore
 release/
 stage/
 
