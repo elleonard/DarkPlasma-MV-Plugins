@@ -1,0 +1,156 @@
+DarkPlasma_SimpleQuest:
+  name: DarkPlasma_SimpleQuest
+  year: 2022
+  license: MIT
+  excludeLicenseManager: false
+  histories:
+    - date: 2022/04/02
+      version: 1.0.0
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: 'シンプルなクエストシステム'
+  parameters:
+    - param: quests
+      text:
+        ja: クエスト
+      type: Quest[]
+    - param: orderableQuestCountVariable
+      text:
+        ja: 受注可能なクエスト数変数
+      desc:
+        ja: ここで指定した変数の値の数だけクエストを並行して受注できる。未設定の場合制限なし
+      type: variable
+      default: 0
+    - param: orderingQuestColor
+      text:
+        ja: 進行中クエストの色
+      type: number
+      default: 24
+  commands: []
+  structures:
+    Quest:
+      - param: id
+        text:
+          ja: ID
+        desc:
+          ja: 他と重複しないIDを入力してください
+        type: number
+      - param: title
+        text:
+          ja: タイトル
+        type: string
+      - param: client
+        text:
+          ja: 依頼者名
+        type: string
+      - param: description
+        text:
+          ja: 詳細説明
+        type: string
+      - param: reward
+        text:
+          ja: 報酬
+        type: Reward
+        default:
+          items: []
+          weapons: []
+          armors: []
+          text: ""
+      - param: switchConditions
+        text:
+          ja: 受注条件スイッチ
+        desc:
+          ja: クエスト一覧に表示して受注するための条件となるスイッチ
+        type: SwitchCondition[]
+        default: []
+      - param: variableConditions
+        text:
+          ja: 受注条件変数
+        desc:
+          ja: クエスト一覧に表示して受注するための条件となる変数
+        type: VariableCondition[]
+        default: []
+    Reward:
+      - param: items
+        text:
+          ja: アイテム
+        type: item[]
+        default: []
+      - param: weapons
+        text:
+          ja: 武器
+        type: weapon[]
+        default: []
+      - param: armors
+        text:
+          ja: 防具
+        type: armor[]
+        default: []
+      - param: text
+        text:
+          ja: テキスト
+        desc:
+          ja: 報酬欄に表示する一行テキスト
+        type: string
+      - param: commonEvent
+        text:
+          ja: コモンイベント
+        desc:
+          ja: クエスト完了時に実行するコモンイベント
+        type: common_event
+        default: 0
+    SwitchCondition:
+      - param: switchId
+        text:
+          ja: スイッチ
+        desc:
+          ja: 設定したスイッチがONの場合に条件を満たす
+        type: switch
+    VariableCondition:
+      - param: variableId
+        text:
+          ja: 変数
+        desc:
+          ja: 設定した変数の値が閾値より大きい場合に条件を満たす
+        type: variable
+        default: 0
+      - param: threshold
+        text:
+          ja: 変数の閾値
+        desc:
+          ja: 設定した変数の値がこれより大きい場合に条件を満たす
+        type: number
+        default: 0
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      シンプルなクエストシステムを提供します。
+      プラグインパラメータで定義したクエストを受注し、
+      完了すると報酬を受け取ります。
+
+      完了していないクエストのみ受注可能です。
+      一度受注したクエストを破棄することはできません。
+
+      プラグインコマンド
+      sceneQuest
+       クエストシーンへ遷移します。
+       クエストシーンではクエストの一覧と受注ができます。
+      
+      orderQuest id=:questId
+       指定したIDのクエストを受注可能な場合、受注した状態にします。
+       受注不可能な場合は何もしません。
+       例: orderQuest id=1
+      
+      completeQuest id=:questId
+       指定したIDのクエストを受注していれば、
+       完了した状態にし、報酬を受け取ります。
+       受注していない場合、何もしません。
+       例: completeQuest id=1
+
+      シーンクラス名: Scene_Quest
