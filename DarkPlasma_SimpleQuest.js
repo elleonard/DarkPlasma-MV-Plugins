@@ -1,9 +1,10 @@
-// DarkPlasma_SimpleQuest 1.0.0
+// DarkPlasma_SimpleQuest 1.1.0
 // Copyright (c) 2022 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2022/04/03 1.1.0 詳細説明と報酬テキストの改行・制御文字使用に対応
  * 2022/04/02 1.0.0 公開
  */
 
@@ -31,7 +32,7 @@
  * @default 24
  *
  * @help
- * version: 1.0.0
+ * version: 1.1.0
  * シンプルなクエストシステムを提供します。
  * プラグインパラメータで定義したクエストを受注し、
  * 完了すると報酬を受け取ります。
@@ -56,6 +57,11 @@
  *  例: completeQuest id=1
  *
  * シーンクラス名: Scene_Quest
+ *
+ * 本プラグインは受注しているクエスト及び
+ * 完了済みのクエストのIDをセーブデータに記録します。
+ * リリース後にクエストのIDを変更すると
+ * セーブデータの互換性を破壊することに注意してください。
  */
 /*~struct~Quest:
  * @param id
@@ -72,6 +78,7 @@
  * @type string
  *
  * @param description
+ * @desc 制御文字使用可能。\nを入力することで改行
  * @text 詳細説明
  * @type string
  *
@@ -109,7 +116,7 @@
  * @default []
  *
  * @param text
- * @desc 報酬欄に表示する一行テキスト
+ * @desc 報酬欄末尾に表示するテキスト。制御文字使用可能。\nを入力することで改行
  * @text テキスト
  * @type string
  *
@@ -809,7 +816,10 @@
       this.changeTextColor(this.systemColor());
       this.drawText('詳細', x, y);
       this.resetTextColor();
-      this.drawText(this._quest.description, x, y + this.lineHeight());
+      /**
+       * MVではmultiline_stringが扱えないので、\nを入力することで改行とする
+       */
+      this.drawTextEx(this._quest.description.replace(/\\n/g, '\n'), x, y + this.lineHeight());
     }
 
     drawRewards(x, y) {
@@ -826,7 +836,7 @@
           line++;
         });
       if (this._quest.reward.text) {
-        this.drawText(this._quest.reward.text, x, y + line * this.lineHeight());
+        this.drawTextEx(this._quest.reward.text.replace(/\\n/g, '\n'), x, y + line * this.lineHeight());
       }
     }
 
@@ -864,4 +874,8 @@
       return super.isCancelTriggered() || (super.isOkTriggered() && this.index() === 1);
     }
   }
+
+  /**
+   * 報酬・詳細の改行対応
+   */
 })();
