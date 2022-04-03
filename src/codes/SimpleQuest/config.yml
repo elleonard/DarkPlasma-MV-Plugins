@@ -4,6 +4,9 @@ DarkPlasma_SimpleQuest:
   license: MIT
   excludeLicenseManager: false
   histories:
+    - date: 2022/04/03
+      version: 1.1.0
+      description: '詳細説明と報酬テキストの改行・制御文字使用に対応'
     - date: 2022/04/02
       version: 1.0.0
       description: '公開'
@@ -49,6 +52,8 @@ DarkPlasma_SimpleQuest:
       - param: description
         text:
           ja: 詳細説明
+        desc:
+          ja: 制御文字使用可能。\nを入力することで改行
         type: string
       - param: reward
         text:
@@ -93,7 +98,7 @@ DarkPlasma_SimpleQuest:
         text:
           ja: テキスト
         desc:
-          ja: 報酬欄に表示する一行テキスト
+          ja: 報酬欄末尾に表示するテキスト。制御文字使用可能。\nを入力することで改行
         type: string
       - param: commonEvent
         text:

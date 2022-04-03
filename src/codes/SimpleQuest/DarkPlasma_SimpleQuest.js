@@ -618,7 +618,10 @@ class Window_QuestDetail extends Window_Base {
     this.changeTextColor(this.systemColor());
     this.drawText("詳細", x, y);
     this.resetTextColor();
-    this.drawText(this._quest.description, x, y + this.lineHeight());
+    /**
+     * MVではmultiline_stringが扱えないので、\nを入力することで改行とする
+     */
+    this.drawTextEx(this._quest.description.replace(/\\n/g, "\n"), x, y + this.lineHeight());
   }
 
   drawRewards(x, y) {
@@ -635,7 +638,7 @@ class Window_QuestDetail extends Window_Base {
         line++;
       });
     if (this._quest.reward.text) {
-      this.drawText(this._quest.reward.text, x, y + line * this.lineHeight());
+      this.drawTextEx(this._quest.reward.text.replace(/\\n/g, "\n"), x, y + line * this.lineHeight());
     }
   }
 
@@ -673,3 +676,7 @@ class Window_QuestOrder extends Window_Command {
     return super.isCancelTriggered() || super.isOkTriggered() && this.index() === 1;
   }
 }
+
+/**
+ * 報酬・詳細の改行対応
+ */
