@@ -78,7 +78,7 @@ function Window_AutoLineBreakMixIn(windowClass) {
     return this.contentsWidth();
   };
 
-  Window_Base.prototype.saveCurrentWindowSettings = function () {
+  windowClass.saveCurrentWindowSettings = function () {
     this._saveFontFace = this.contents.fontFace;
     this._saveFontSize = this.contents.fontSize;
     this._savetextColor = this.contents.textColor;
@@ -88,7 +88,7 @@ function Window_AutoLineBreakMixIn(windowClass) {
     this._saveOutlineWidth = this.contents.outlineWidth;
   };
 
-  Window_Base.prototype.restoreCurrentWindowSettings = function () {
+  windowClass.restoreCurrentWindowSettings = function () {
     this.contents.fontFace = this._saveFontFace;
     this.contents.fontSize = this._saveFontSize;
     this.contents.textColor = this._savetextColor;
@@ -98,7 +98,7 @@ function Window_AutoLineBreakMixIn(windowClass) {
     this.contents.outlineWidth = this._saveOutlineWidth;
   };
 
-  Window_Base.prototype.clearCurrentWindowSettings = function () {
+  windowClass.clearCurrentWindowSettings = function () {
     this._saveFontFace = undefined;
     this._saveFontSize = undefined;
     this._savetextColor = undefined;
@@ -116,7 +116,7 @@ function Window_AutoLineBreakMixIn(windowClass) {
    * @param {string} text
    * @return {number}
    */
-  Window_Base.prototype.textWidthExCheck = function (text) {
+  windowClass.textWidthExCheck = function (text) {
     this.saveCurrentWindowSettings();
     this._checkAutoLineBreakMode = true;
     const value = this.drawTextEx(text, 0, this.contents.height * 2);
