@@ -1,9 +1,10 @@
-// DarkPlasma_AutoLineBreak 1.0.0
+// DarkPlasma_AutoLineBreak 1.0.1
 // Copyright (c) 2022 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2022/04/06 1.0.1 リファクタ
  * 2022/04/03 1.0.0 公開
  */
 
@@ -40,7 +41,7 @@
  * @default 4
  *
  * @help
- * version: 1.0.0
+ * version: 1.0.1
  * ウィンドウ幅を超えるような文字列を自動で改行します。
  *
  * 以下の法則でゆるふわ禁則処理します。
@@ -159,7 +160,7 @@
       return this.contentsWidth();
     };
 
-    Window_Base.prototype.saveCurrentWindowSettings = function () {
+    windowClass.saveCurrentWindowSettings = function () {
       this._saveFontFace = this.contents.fontFace;
       this._saveFontSize = this.contents.fontSize;
       this._savetextColor = this.contents.textColor;
@@ -169,7 +170,7 @@
       this._saveOutlineWidth = this.contents.outlineWidth;
     };
 
-    Window_Base.prototype.restoreCurrentWindowSettings = function () {
+    windowClass.restoreCurrentWindowSettings = function () {
       this.contents.fontFace = this._saveFontFace;
       this.contents.fontSize = this._saveFontSize;
       this.contents.textColor = this._savetextColor;
@@ -179,7 +180,7 @@
       this.contents.outlineWidth = this._saveOutlineWidth;
     };
 
-    Window_Base.prototype.clearCurrentWindowSettings = function () {
+    windowClass.clearCurrentWindowSettings = function () {
       this._saveFontFace = undefined;
       this._saveFontSize = undefined;
       this._savetextColor = undefined;
@@ -197,7 +198,7 @@
      * @param {string} text
      * @return {number}
      */
-    Window_Base.prototype.textWidthExCheck = function (text) {
+    windowClass.textWidthExCheck = function (text) {
       this.saveCurrentWindowSettings();
       this._checkAutoLineBreakMode = true;
       const value = this.drawTextEx(text, 0, this.contents.height * 2);
