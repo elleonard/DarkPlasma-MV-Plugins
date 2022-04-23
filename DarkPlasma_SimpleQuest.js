@@ -1,9 +1,10 @@
-// DarkPlasma_SimpleQuest 1.1.0
+// DarkPlasma_SimpleQuest 1.2.0
 // Copyright (c) 2022 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2022/04/23 1.2.0 受注時スイッチ設定を追加
  * 2022/04/03 1.1.0 詳細説明と報酬テキストの改行・制御文字使用に対応
  * 2022/04/02 1.0.0 公開
  */
@@ -32,7 +33,7 @@
  * @default 24
  *
  * @help
- * version: 1.1.0
+ * version: 1.2.0
  * シンプルなクエストシステムを提供します。
  * プラグインパラメータで定義したクエストを受注し、
  * 完了すると報酬を受け取ります。
@@ -86,6 +87,12 @@
  * @text 報酬
  * @type struct<Reward>
  * @default {"items":"[]", "weapons":"[]", "armors":"[]", "text":""}
+ *
+ * @param orderSwitch
+ * @desc クエストを受注した際にONになるスイッチ
+ * @text 受注時スイッチ
+ * @type switch
+ * @default 0
  *
  * @param switchConditions
  * @desc クエスト一覧に表示して受注するための条件となるスイッチ
@@ -179,6 +186,7 @@
               commonEvent: Number(parsed.commonEvent || 0),
             };
           })(parsed.reward || '{"items":[], "weapons":[], "armors":[], "text":""}'),
+          orderSwitch: Number(parsed.orderSwitch || 0),
           switchConditions: JSON.parse(parsed.switchConditions || '[]').map((e) => {
             return ((parameter) => {
               const parsed = JSON.parse(parameter);
@@ -242,14 +250,16 @@
      * @param {string} client
      * @param {string} description
      * @param {Data_QuestReward} reward
+     * @param {boolean} orderSwitch
      * @param {Data_QuestConditions} conditions
      */
-    constructor(id, title, client, description, reward, conditions) {
+    constructor(id, title, client, description, reward, orderSwitch, conditions) {
       this._id = id;
       this._title = title;
       this._client = client;
       this._description = description;
       this._reward = reward;
+      this._orderSwitch = orderSwitch;
       this._conditions = conditions;
     }
 
@@ -271,6 +281,10 @@
 
     get reward() {
       return this._reward;
+    }
+
+    get orderSwitch() {
+      return this._orderSwitch;
     }
 
     isVisible() {
@@ -418,6 +432,13 @@
     complete() {
       this._state = QUEST_STATE.COMPLETED;
     }
+
+    /**
+     * @returns {Data_Quest}
+     */
+    data() {
+      return $dataQuests[this._id];
+    }
   }
 
   class Game_Quests {
@@ -467,7 +488,11 @@
      */
     order(questId) {
       if (!this.isOrdering(questId) && !this.isCompleted(questId)) {
-        this._quests.push(new Game_Quest(questId, QUEST_STATE.ORDERING));
+        const quest = new Game_Quest(questId, QUEST_STATE.ORDERING);
+        this._quests.push(quest);
+        if (quest.data().orderSwitch) {
+          $gameSwitches.setValue(quest.data().orderSwitch, true);
+        }
       }
     }
 
@@ -596,6 +621,7 @@
             quest.reward.text,
             quest.reward.commonEvent
           ),
+          quest.orderSwitch,
           conditions
         );
       });
