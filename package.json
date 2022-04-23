@@ -35,8 +35,10 @@
     }
   },
   "lint-staged": {
+    "./src/**/config.yml": [
+      "node ./scripts/generateFromConfig"
+    ],
     "./src/**/DarkPlasma_*.js": [
-      "node ./scripts/generateFromConfig",
       "pretty-quick --staged",
       "eslint --fix --ext .js"
     ]
