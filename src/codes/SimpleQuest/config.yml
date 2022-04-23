@@ -4,6 +4,9 @@ DarkPlasma_SimpleQuest:
   license: MIT
   excludeLicenseManager: false
   histories:
+    - date: 2022/04/23
+      version: 1.2.0
+      description: '受注時スイッチ設定を追加'
     - date: 2022/04/03
       version: 1.1.0
       description: '詳細説明と報酬テキストの改行・制御文字使用に対応'
@@ -63,7 +66,14 @@ DarkPlasma_SimpleQuest:
           items: []
           weapons: []
           armors: []
-          text: ""
+          text: ''
+      - param: orderSwitch
+        text:
+          ja: 受注時スイッチ
+        desc:
+          ja: クエストを受注した際にONになるスイッチ
+        type: switch
+        default: 0
       - param: switchConditions
         text:
           ja: 受注条件スイッチ
@@ -146,12 +156,12 @@ DarkPlasma_SimpleQuest:
       sceneQuest
        クエストシーンへ遷移します。
        クエストシーンではクエストの一覧と受注ができます。
-      
+
       orderQuest id=:questId
        指定したIDのクエストを受注可能な場合、受注した状態にします。
        受注不可能な場合は何もしません。
        例: orderQuest id=1
-      
+
       completeQuest id=:questId
        指定したIDのクエストを受注していれば、
        完了した状態にし、報酬を受け取ります。

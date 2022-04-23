@@ -1,4 +1,4 @@
-import { settings } from "./_build/DarkPlasma_SimpleQuest_parameters";
+import { settings } from './_build/DarkPlasma_SimpleQuest_parameters';
 
 const QUEST_STATE = {
   NONE: 0,
@@ -34,19 +34,21 @@ DataManager_QuestMixIn(DataManager);
 
 class Data_Quest {
   /**
-   * @param {number} id 
-   * @param {string} title 
-   * @param {string} client 
-   * @param {string} description 
-   * @param {Data_QuestReward} reward 
-   * @param {Data_QuestConditions} conditions 
+   * @param {number} id
+   * @param {string} title
+   * @param {string} client
+   * @param {string} description
+   * @param {Data_QuestReward} reward
+   * @param {boolean} orderSwitch
+   * @param {Data_QuestConditions} conditions
    */
-  constructor(id, title, client, description, reward, conditions) {
+  constructor(id, title, client, description, reward, orderSwitch, conditions) {
     this._id = id;
     this._title = title;
     this._client = client;
     this._description = description;
     this._reward = reward;
+    this._orderSwitch = orderSwitch;
     this._conditions = conditions;
   }
 
@@ -68,6 +70,10 @@ class Data_Quest {
 
   get reward() {
     return this._reward;
+  }
+
+  get orderSwitch() {
+    return this._orderSwitch;
   }
 
   isVisible() {
@@ -122,7 +128,7 @@ class Data_QuestReward {
     this._items
       .concat(this._weapons)
       .concat(this._armors)
-      .forEach(item => $gameParty.gainItem(item, 1));
+      .forEach((item) => $gameParty.gainItem(item, 1));
     if (this._commonEvent) {
       $gameTemp.reserveCommonEvent(this._commonEvent);
     }
@@ -153,8 +159,10 @@ class Data_QuestConditions {
    * @return {boolean}
    */
   isEnabled() {
-    return this._switches.every(switchId => $gameSwitches.value(switchId))
-      && this._variableConditions.every(variableCondition => variableCondition.isEnabled());
+    return (
+      this._switches.every((switchId) => $gameSwitches.value(switchId)) &&
+      this._variableConditions.every((variableCondition) => variableCondition.isEnabled())
+    );
   }
 }
 
@@ -185,11 +193,10 @@ class Data_QuestVariableCondition {
  */
 let $dataQuests = [];
 
-
 /**
  * セーブデータに追加されるクエストの状態
  */
- class Game_Quest {
+class Game_Quest {
   /**
    * @param {number} id
    * @param {number} state
@@ -214,6 +221,13 @@ let $dataQuests = [];
   complete() {
     this._state = QUEST_STATE.COMPLETED;
   }
+
+  /**
+   * @returns {Data_Quest}
+   */
+  data() {
+    return $dataQuests[this._id];
+  }
 }
 
 class Game_Quests {
@@ -233,11 +247,11 @@ class Game_Quests {
   }
 
   orderingQuests() {
-    return this._quests.filter(quest => quest.isOrdering());
+    return this._quests.filter((quest) => quest.isOrdering());
   }
 
   completedQuests() {
-    return this._quests.filter(quest => quest.isCompleted());
+    return this._quests.filter((quest) => quest.isCompleted());
   }
 
   /**
@@ -245,7 +259,7 @@ class Game_Quests {
    * @return {boolean}
    */
   isOrdering(questId) {
-    return this._quests.some(quest => quest.id === questId && quest.isOrdering());
+    return this._quests.some((quest) => quest.id === questId && quest.isOrdering());
   }
 
   /**
@@ -253,7 +267,7 @@ class Game_Quests {
    * @return {boolean}
    */
   isCompleted(questId) {
-    return this._quests.some(quest => quest.id === questId && quest.isCompleted());
+    return this._quests.some((quest) => quest.id === questId && quest.isCompleted());
   }
 
   /**
@@ -263,7 +277,11 @@ class Game_Quests {
    */
   order(questId) {
     if (!this.isOrdering(questId) && !this.isCompleted(questId)) {
-      this._quests.push(new Game_Quest(questId, QUEST_STATE.ORDERING));
+      const quest = new Game_Quest(questId, QUEST_STATE.ORDERING);
+      this._quests.push(quest);
+      if (quest.data().orderSwitch) {
+        $gameSwitches.setValue(quest.data().orderSwitch, true);
+      }
     }
   }
 
@@ -274,7 +292,7 @@ class Game_Quests {
    */
   complete(questId) {
     if (this.isOrdering(questId)) {
-      const quest = this._quests.find(quest => quest.id === questId);
+      const quest = this._quests.find((quest) => quest.id === questId);
       quest.complete();
       $dataQuests[questId].reward.gain();
     }
@@ -290,7 +308,7 @@ window.Game_Quests = Game_Quests;
 let $gameQuests = null;
 
 /**
- * @param {Game_Party.prototype} gameParty 
+ * @param {Game_Party.prototype} gameParty
  */
 function Game_Party_QuestMixIn(gameParty) {
   /**
@@ -343,13 +361,13 @@ function Game_Interpreter_QuestMixIn(gameInterpreter) {
   const _pluginCommand = gameInterpreter.pluginCommand;
   gameInterpreter.pluginCommand = function (command, args) {
     _pluginCommand.call(this, command, args);
-    if (command === "sceneQuest") {
+    if (command === 'sceneQuest') {
       SceneManager.push(Scene_Quest);
-    } else if (command === "orderQuest") {
-      const id = Number(args.find(arg => arg.startsWith("id=")).split("=")[1]);
+    } else if (command === 'orderQuest') {
+      const id = Number(args.find((arg) => arg.startsWith('id=')).split('=')[1]);
       $gameParty.orderQuest(id);
-    } else if (command === "completeQuest") {
-      const id = Number(args.find(arg => arg.startsWith("id=")).split("=")[1]);
+    } else if (command === 'completeQuest') {
+      const id = Number(args.find((arg) => arg.startsWith('id=')).split('=')[1]);
       $gameParty.completeQuest(id);
     }
   };
@@ -365,21 +383,18 @@ function Scene_Boot_QuestMixIn(sceneClass) {
   sceneClass.start = function () {
     _start.call(this);
     this.loadQuests();
-  }
+  };
 
   sceneClass.loadQuests = function () {
     settings.quests.forEach((quest) => {
       const conditions = new Data_QuestConditions();
-      quest.switchConditions.forEach(switchCondition => {
+      quest.switchConditions.forEach((switchCondition) => {
         conditions.addSwitch(switchCondition.switchId);
       });
-      quest.variableConditions.forEach(variableCondition => {
+      quest.variableConditions.forEach((variableCondition) => {
         conditions.addVariableCondition(
-          new Data_QuestVariableCondition(
-            variableCondition.variableId,
-            variableCondition.threshold
-          )
-        )
+          new Data_QuestVariableCondition(variableCondition.variableId, variableCondition.threshold)
+        );
       });
       $dataQuests[quest.id] = new Data_Quest(
         quest.id,
@@ -387,12 +402,13 @@ function Scene_Boot_QuestMixIn(sceneClass) {
         quest.client,
         quest.description,
         new Data_QuestReward(
-          quest.reward.items.map(itemId => $dataItems[itemId]),
-          quest.reward.weapons.map(weaponId => $dataWeapons[weaponId]),
-          quest.reward.armors.map(armorId => $dataArmors[armorId]),
+          quest.reward.items.map((itemId) => $dataItems[itemId]),
+          quest.reward.weapons.map((weaponId) => $dataWeapons[weaponId]),
+          quest.reward.armors.map((armorId) => $dataArmors[armorId]),
           quest.reward.text,
           quest.reward.commonEvent
         ),
+        quest.orderSwitch,
         conditions
       );
     });
@@ -472,12 +488,7 @@ class Scene_Quest extends Scene_Base {
   orderWindowRect() {
     const width = 200;
     const height = Window_Base.prototype.lineHeight() * 2;
-    return new Rectangle(
-      (Graphics.boxWidth - width)/2,
-      (Graphics.boxHeight - height)/2,
-      width,
-      height
-    );
+    return new Rectangle((Graphics.boxWidth - width) / 2, (Graphics.boxHeight - height) / 2, width, height);
   }
 
   onListOk() {
@@ -560,9 +571,9 @@ class Window_QuestList extends Window_Selectable {
   }
 
   makeItemList() {
-    this._data = $dataQuests.filter(quest => quest && quest.isVisible());
+    this._data = $dataQuests.filter((quest) => quest && quest.isVisible());
   }
-  
+
   drawItem(index) {
     const quest = this._data[index];
     const rect = this.itemRect(index);
@@ -596,49 +607,49 @@ class Window_QuestDetail extends Window_Base {
   refresh() {
     this.contents.clear();
     if (this._quest) {
-      this.drawTitle((this.width - this.textWidth(this._quest.title))/2, 0);
+      this.drawTitle((this.width - this.textWidth(this._quest.title)) / 2, 0);
       this.drawClient(0, this.lineHeight() * 1.5);
-      this.drawDescription(0, this.lineHeight() * 3)
+      this.drawDescription(0, this.lineHeight() * 3);
       this.drawRewards(0, this.lineHeight() * 9);
     }
   }
-  
+
   drawTitle(x, y) {
     this.drawText(this._quest.title, x, y);
   }
 
   drawClient(x, y) {
     this.changeTextColor(this.systemColor());
-    this.drawText("依頼者", x, y)
+    this.drawText('依頼者', x, y);
     this.resetTextColor();
     this.drawText(this._quest.client, x, y, this.width - this.textWidth(this._quest.client), 'right');
   }
 
   drawDescription(x, y) {
     this.changeTextColor(this.systemColor());
-    this.drawText("詳細", x, y);
+    this.drawText('詳細', x, y);
     this.resetTextColor();
     /**
      * MVではmultiline_stringが扱えないので、\nを入力することで改行とする
      */
-    this.drawTextEx(this._quest.description.replace(/\\n/g, "\n"), x, y + this.lineHeight());
+    this.drawTextEx(this._quest.description.replace(/\\n/g, '\n'), x, y + this.lineHeight());
   }
 
   drawRewards(x, y) {
     let line = 1;
     this.changeTextColor(this.systemColor());
-    this.drawText("報酬", x, y);
+    this.drawText('報酬', x, y);
     this.resetTextColor();
     this._quest.reward.items
       .concat(this._quest.reward.weapons)
       .concat(this._quest.reward.armors)
-      .forEach(item => {
-        this.drawIcon(item.iconIndex, x, y + line * this.lineHeight())
+      .forEach((item) => {
+        this.drawIcon(item.iconIndex, x, y + line * this.lineHeight());
         this.drawText(item.name, x + Window_Base._iconWidth + 4, y + line * this.lineHeight());
         line++;
       });
     if (this._quest.reward.text) {
-      this.drawTextEx(this._quest.reward.text.replace(/\\n/g, "\n"), x, y + line * this.lineHeight());
+      this.drawTextEx(this._quest.reward.text.replace(/\\n/g, '\n'), x, y + line * this.lineHeight());
     }
   }
 
@@ -660,8 +671,8 @@ window.Window_QuestDetail = Window_QuestDetail;
  */
 class Window_QuestOrder extends Window_Command {
   makeCommandList() {
-    this.addCommand("受注", 'ok', true);
-    this.addCommand("やめる", 'cancel', true);
+    this.addCommand('受注', 'ok', true);
+    this.addCommand('やめる', 'cancel', true);
   }
 
   itemTextAlign() {
@@ -673,7 +684,7 @@ class Window_QuestOrder extends Window_Command {
   }
 
   isCancelTriggered() {
-    return super.isCancelTriggered() || super.isOkTriggered() && this.index() === 1;
+    return super.isCancelTriggered() || (super.isOkTriggered() && this.index() === 1);
   }
 }
 
