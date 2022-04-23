@@ -1,0 +1,35 @@
+DarkPlasma_SaveEquipSet:
+  name: DarkPlasma_SaveEquipSet
+  year: 2022
+  license: MIT
+  excludeLicenseManager: false
+  histories:
+    - date: 2022/04/23
+      version: 1.0.0
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: 'パーティメンバーの装備セットを記録する'
+  parameters: []
+  commands: []
+  structures:
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      パーティメンバーの装備セットを記録し、復元するプラグインコマンドを提供します。
+
+      以下に該当する場合、復元時にその装備は無視され、復元されません。
+      - 記録したセットの中に手放した装備がある
+      - 記録したセットの中に装備不可な装備がある
+
+      プラグインコマンド
+      saveEquipSet
+      現在のパーティメンバーの装備セットを記録します。
+
+      loadEquipSet
+      記録した装備セットを現在のパーティメンバーに復元します。
