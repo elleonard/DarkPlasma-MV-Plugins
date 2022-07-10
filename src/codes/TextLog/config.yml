@@ -4,6 +4,9 @@ DarkPlasma_TextLog:
   license: MIT
   excludeLicenseManager: false
   histories:
+    - date: 2022/07/10
+      version: 2.1.0
+      description: '\XXX[YYY]のYYYをログから消す設定を追加'
     - date: 2021/11/26
       version: 2.0.0
       description: 'rollup構成へ移行'
@@ -281,6 +284,13 @@ DarkPlasma_TextLog:
         ja: ONの場合、ログウィンドウ枠を表示します。
       type: boolean
       default: true
+    - param: escapeCharacterCodes
+      text:
+        ja: パラメータを除外したい制御文字
+      desc:
+        ja: \XXX[YYY]の形式でYYYをログから消したい場合、ここにXXXを追加します。
+      type: string[]
+      default: []
   commands: []
   structures:
   dependencies:
@@ -330,7 +340,6 @@ DarkPlasma_TextLog:
       外部向けインターフェース
        $gameSystem.insertTextLog(text): ログに文字列 text を追加します。
 
-      拡張プラグインを書くことで、テキストログウィンドウの
-      エスケープ文字の挙動を定義できます。
+      拡張プラグインを書くことで、テキストログウィンドウにおける
+      エスケープ文字の複雑な挙動を定義できます。
       詳細は DarkPlasma_TextLogExtensionExample.js を参照してください。
-

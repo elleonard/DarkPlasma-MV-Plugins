@@ -1,5 +1,4 @@
-import { settings } from "./_build/DarkPlasma_TextLog_parameters";
-
+import { settings } from './_build/DarkPlasma_TextLog_parameters';
 
 /**
  * プラグインがロードされているかどうか
@@ -7,7 +6,7 @@ import { settings } from "./_build/DarkPlasma_TextLog_parameters";
  * @return {boolean}
  */
 PluginManager.isLoadedPlugin = function (name) {
-  return $plugins.some(plugin => plugin.name === name && plugin.status);
+  return $plugins.some((plugin) => plugin.name === name && plugin.status);
 };
 
 const _BattleManager_updateBattleEnd = BattleManager.updateBattleEnd;
@@ -136,7 +135,7 @@ class Scene_TextLog extends Scene_Base {
    */
   backgroundImage() {
     if (settings.backgroundImage) {
-      return ImageManager.loadBitmap("img/", settings.backgroundImage, 0, true);
+      return ImageManager.loadBitmap('img/', settings.backgroundImage, 0, true);
     }
     return SceneManager.backgroundBitmap();
   }
@@ -154,7 +153,6 @@ class Scene_TextLog extends Scene_Base {
   }
 }
 
-
 // ログ表示用ウィンドウ
 class Window_TextLog extends Window_Base {
   constructor() {
@@ -169,7 +167,9 @@ class Window_TextLog extends Window_Base {
      */
     this._viewTexts = [];
     if (pastEventLog.length > 0) {
-      this._viewTexts = pastEventLog.map(pastLog => pastLog.messages).reverse()
+      this._viewTexts = pastEventLog
+        .map((pastLog) => pastLog.messages)
+        .reverse()
         .reduce((accumlator, currentValue) => currentValue.concat(accumlator));
     }
     if (currentEventLog.messageLength > 0) {
@@ -296,8 +296,12 @@ class Window_TextLog extends Window_Base {
    * @return {boolean}
    */
   isCancelTriggered() {
-    return Input.isRepeated('cancel') || Input.isTriggered('ok') ||
-      settings.openLogKeys.some(openLogKey => Input.isTriggered(openLogKey)) || TouchInput.isCancelled();
+    return (
+      Input.isRepeated('cancel') ||
+      Input.isTriggered('ok') ||
+      settings.openLogKeys.some((openLogKey) => Input.isTriggered(openLogKey)) ||
+      TouchInput.isCancelled()
+    );
   }
 
   update() {
@@ -342,7 +346,6 @@ class Window_TextLog extends Window_Base {
     }
   }
 
-
   /**
    * デフォルトのスクロール位置を計算する
    * @return {number}
@@ -355,7 +358,7 @@ class Window_TextLog extends Window_Base {
       viewText.setHeight(this.calcMessageHeight(viewText.text));
       height += viewText.height;
       if (height > Graphics.boxHeight - this.lineHeight()) {
-        return (i > 0) ? size - i : size - 1;
+        return i > 0 ? size - i : size - 1;
       }
     }
     return 0;
@@ -377,7 +380,7 @@ class Window_TextLog extends Window_Base {
     this._calcMode = true;
     let height = 0;
     const lines = text.split('\n');
-    lines.forEach(line => {
+    lines.forEach((line) => {
       this._lineNumber = 1;
       this.drawTextEx(line, 0, 0);
       height += (this._textHeight + settings.lineSpacing) * this._lineNumber;
@@ -399,7 +402,7 @@ class Window_TextLog extends Window_Base {
        * 計算モード時には描画しない
        */
       let drawFunction = this.contents.drawText;
-      this.contents.drawText = function () { };
+      this.contents.drawText = function () {};
       const value = super.drawTextEx(text, x, y);
       this.contents.drawText = drawFunction;
       return value;
@@ -432,10 +435,37 @@ class Window_TextLog extends Window_Base {
       this._lineNumber++;
     }
   }
+
+  /**
+   * \XXX[YYY]の処理
+   * textStateはすでに[までindexを進めてある
+   * @param {string} code XXX
+   * @param {MV.TextState} textState
+   */
+  processEscapeCharacter(code, textState) {
+    super.processEscapeCharacter(code, textState);
+    if (settings.escapeCharacterCodes.includes(code)) {
+      this.obtainEscapeParamTexts(textState);
+    }
+  }
+
+  /**
+   * [YYY]のYYYを取り出し、カンマ区切りで配列化して返す
+   * @param {MV.TextState} textState
+   * @return {string[]}
+   */
+  obtainEscapeParamTexts(textState) {
+    const arr = /^\[(.+?)\]/.exec(textState.text.slice(textState.index));
+    if (arr) {
+      textState.index += arr[0].length;
+      return arr[1].split(',');
+    } else {
+      return [];
+    }
+  }
 }
 
 window[Window_TextLog.name] = Window_TextLog;
-
 
 /**
  * テキストログを追加する
@@ -443,7 +473,7 @@ window[Window_TextLog.name] = Window_TextLog;
  */
 function addTextLog(text) {
   currentEventLog.addMessageLog(text);
-};
+}
 
 /**
  * 現在のイベントのログを過去のイベントのログに移動する
@@ -458,14 +488,14 @@ function moveToPrevLog() {
   }
   pastEventLog.push(currentEventLog);
   initializeCurrentEventLog();
-};
+}
 
 /**
  * 現在のイベントのログを初期化する
  */
 function initializeCurrentEventLog() {
   currentEventLog = new EventTextLog();
-};
+}
 
 /**
  * 過去のイベントのログを初期化する
@@ -482,12 +512,11 @@ function initializePastEventLog() {
  * @return {boolean}
  */
 function isTextLogEnabled() {
-  return (settings.showLogWindowWithoutText ||
-    (currentEventLog.messageLength > 0 ||
-      pastEventLog.length > 0)) &&
-    (settings.disableLogWindowSwitch === 0 ||
-      !$gameSwitches.value(settings.disableLogWindowSwitch));
-};
+  return (
+    (settings.showLogWindowWithoutText || currentEventLog.messageLength > 0 || pastEventLog.length > 0) &&
+    (settings.disableLogWindowSwitch === 0 || !$gameSwitches.value(settings.disableLogWindowSwitch))
+  );
+}
 
 /**
  * Scene_Mapのメッセージウィンドウを退避しておくクラス
@@ -593,15 +622,15 @@ if (PluginManager.isLoadedPlugin('NobleMushroom')) {
     this._pauseWindow.setHandler('cancel', this.offPause.bind(this));
   };
   /**
-    * NobleMushroom.js のほうが上に読み込まれている場合
-    */
+   * NobleMushroom.js のほうが上に読み込まれている場合
+   */
   if (Scene_Map.prototype.createPauseWindow) {
     const _Scene_Map_createPauseWindow = Scene_Map.prototype.createPauseWindow;
     Scene_Map.prototype.createPauseWindow = function () {
       /**
-        * ログシーンからスムーズに戻るために、処理を上書きして
-        * Windowインスタンスを新しく作らないようにする
-        */
+       * ログシーンからスムーズに戻るために、処理を上書きして
+       * Windowインスタンスを新しく作らないようにする
+       */
       if (settings.smoothBackFromLog && evacuatedMessageWindow) {
         this._pauseWindow = evacuatedMessageWindow.pauseWindow;
         this.refreshPauseWindowHandlers();
@@ -647,11 +676,11 @@ Scene_Map.prototype.updateCallTextLog = function () {
  *  (A || B) && C && D && E
  */
 Scene_Map.prototype.isTextLogEnabled = function () {
-  return ($gameSystem.isMenuEnabled() ||
-    $gameMap.isEventRunning() &&
-    !this._messageWindow.isClosed()) &&
+  return (
+    ($gameSystem.isMenuEnabled() || ($gameMap.isEventRunning() && !this._messageWindow.isClosed())) &&
     isTextLogEnabled() &&
-    !this.isFileListWindowActive();
+    !this.isFileListWindowActive()
+  );
 };
 
 /**
@@ -663,15 +692,11 @@ Scene_Map.prototype.isFileListWindowActive = function () {
 };
 
 Scene_Map.prototype.isTextLogCalled = function () {
-  return settings.openLogKeys.some(openLogKey => Input.isTriggered(openLogKey));
+  return settings.openLogKeys.some((openLogKey) => Input.isTriggered(openLogKey));
 };
 
 Scene_Map.prototype.callTextLog = function () {
-  evacuatedMessageWindow = new EvacuatedMessageWindows(
-    this._messageWindow,
-    this._scrollTextWindow,
-    this._pauseWindow
-  );
+  evacuatedMessageWindow = new EvacuatedMessageWindows(this._messageWindow, this._scrollTextWindow, this._pauseWindow);
   SoundManager.playCursor();
   SceneManager.push(Scene_TextLog);
   $gameTemp.clearDestination();
@@ -682,12 +707,13 @@ Scene_Map.prototype.callTextLog = function () {
  */
 const _Window_ScrollText_terminateMessage = Window_ScrollText.prototype.terminateMessage;
 Window_ScrollText.prototype.terminateMessage = function () {
-  if (settings.includeScrollText &&
-    (settings.disableLoggingSwitch === 0 ||
-      !$gameSwitches.value(settings.disableLoggingSwitch)) &&
-    $gameMessage.hasText()) {
+  if (
+    settings.includeScrollText &&
+    (settings.disableLoggingSwitch === 0 || !$gameSwitches.value(settings.disableLoggingSwitch)) &&
+    $gameMessage.hasText()
+  ) {
     let message = {
-      text: ""
+      text: '',
     };
     message.text += this.convertEscapeCharacters($gameMessage.allText());
     addTextLog(message.text);
@@ -699,11 +725,12 @@ Window_ScrollText.prototype.terminateMessage = function () {
 // メッセージ表示時にログに追加する
 const _Window_Message_terminateMessage = Window_Message.prototype.terminateMessage;
 Window_Message.prototype.terminateMessage = function () {
-  if ((settings.disableLoggingSwitch === 0 ||
-    !$gameSwitches.value(settings.disableLoggingSwitch)) &&
-    $gameMessage.hasText()) {
+  if (
+    (settings.disableLoggingSwitch === 0 || !$gameSwitches.value(settings.disableLoggingSwitch)) &&
+    $gameMessage.hasText()
+  ) {
     let message = {
-      text: ""
+      text: '',
     };
     // YEP_MessageCore.js or DarkPlasma_NameWindow.js のネーム表示ウィンドウに対応
     if (this.hasNameWindow() && this._nameWindow.isOpen() && settings.includeName) {
@@ -721,9 +748,9 @@ Window_Message.prototype.terminateMessage = function () {
 
 // YEP_MessageCore.js や DarkPlasma_NameWindow のネーム表示ウィンドウを使用しているかどうか
 Window_Message.prototype.hasNameWindow = function () {
-  return this._nameWindow &&
-    (typeof Window_NameBox !== 'undefined' ||
-      PluginManager.isLoadedPlugin('DarkPlasma_NameWindow'));
+  return (
+    this._nameWindow && (typeof Window_NameBox !== 'undefined' || PluginManager.isLoadedPlugin('DarkPlasma_NameWindow'))
+  );
 };
 
 Window_Message.prototype.nameColorInLog = function (name) {
@@ -750,15 +777,18 @@ Window_ChoiceList.prototype.windowWidth = function () {
  */
 Window_ChoiceList.prototype.addToLog = function () {
   const chosenIndex = $gameMessage.chosenIndex();
-  if (settings.includeChoice &&
-    (settings.disableLoggingSwitch === 0 ||
-      !$gameSwitches.value(settings.disableLoggingSwitch)) &&
-    $gameMessage.hasText()) {
-    let text = "";
+  if (
+    settings.includeChoice &&
+    (settings.disableLoggingSwitch === 0 || !$gameSwitches.value(settings.disableLoggingSwitch)) &&
+    $gameMessage.hasText()
+  ) {
+    let text = '';
     // MPP_ChoiceEx.js は choiceCancelType を-1ではなく選択肢配列のサイズにする。
     // 競合回避のため、 choiceCancelType を -1 に限定しない判定を行う。
-    if (chosenIndex === $gameMessage.choiceCancelType() &&
-      (chosenIndex < 0 || $gameMessage.choices().length <= chosenIndex)) {
+    if (
+      chosenIndex === $gameMessage.choiceCancelType() &&
+      (chosenIndex < 0 || $gameMessage.choices().length <= chosenIndex)
+    ) {
       if (!settings.includeChoiceCancel) {
         return;
       }
@@ -767,7 +797,7 @@ Window_ChoiceList.prototype.addToLog = function () {
       text = $gameMessage.choices()[chosenIndex];
     }
     let message = {
-      text: settings.choiceFormat.replace(/{choice}/gi, `\x1bC[${settings.choiceColor}]${text}\x1bC[0]`)
+      text: settings.choiceFormat.replace(/{choice}/gi, `\x1bC[${settings.choiceColor}]${text}\x1bC[0]`),
     };
     addTextLog(message.text);
   }
@@ -865,7 +895,7 @@ Game_Interpreter.prototype.isParallelEvent = function () {
 const _Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
 Game_Interpreter.prototype.pluginCommand = function (command, args) {
   _Game_Interpreter_pluginCommand.call(this, command, args);
-  switch ((command || '')) {
+  switch (command || '') {
     case 'showTextLog':
       if (isTextLogEnabled()) {
         SceneManager.push(Scene_TextLog);
@@ -878,7 +908,7 @@ Game_Interpreter.prototype.pluginCommand = function (command, args) {
       addTextLog(args[0]);
       break;
   }
-}
+};
 
 // Scene_Menu拡張
 Scene_Menu.prototype.commandTextLog = function () {
