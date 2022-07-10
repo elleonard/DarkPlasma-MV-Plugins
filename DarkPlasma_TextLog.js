@@ -1,9 +1,10 @@
-// DarkPlasma_TextLog 2.0.0
+// DarkPlasma_TextLog 2.1.0
 // Copyright (c) 2017 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2022/07/10 2.1.0 \XXX[YYY]のYYYをログから消す設定を追加
  * 2021/11/26 2.0.0 rollup構成へ移行
  *                  戦闘終了時に自動で区切り線を入れる設定を追加
  *                  ログ開閉キーを複数設定できるように変更
@@ -201,8 +202,14 @@
  * @type boolean
  * @default true
  *
+ * @param escapeCharacterCodes
+ * @desc \XXX[YYY]の形式でYYYをログから消したい場合、ここにXXXを追加します。
+ * @text パラメータを除外したい制御文字
+ * @type string[]
+ * @default []
+ *
  * @help
- * version: 2.0.0
+ * version: 2.1.0
  * イベントのテキストログを表示します。
  *
  * イベント会話中またはマップ上で pageup キー（L2ボタン）でログを表示します。
@@ -244,8 +251,8 @@
  * 外部向けインターフェース
  *  $gameSystem.insertTextLog(text): ログに文字列 text を追加します。
  *
- * 拡張プラグインを書くことで、テキストログウィンドウの
- * エスケープ文字の挙動を定義できます。
+ * 拡張プラグインを書くことで、テキストログウィンドウにおける
+ * エスケープ文字の複雑な挙動を定義できます。
  * 詳細は DarkPlasma_TextLogExtensionExample.js を参照してください。
  */
 
@@ -282,6 +289,9 @@
     smoothBackFromLog: String(pluginParameters.smoothBackFromLog || true) === 'true',
     backgroundImage: String(pluginParameters.backgroundImage || ''),
     showLogWindowFrame: String(pluginParameters.showLogWindowFrame || true) === 'true',
+    escapeCharacterCodes: JSON.parse(pluginParameters.escapeCharacterCodes || '[]').map((e) => {
+      return String(e || '');
+    }),
   };
 
   /**
@@ -716,6 +726,34 @@
         this._lineNumber++;
       }
     }
+
+    /**
+     * \XXX[YYY]の処理
+     * textStateはすでに[までindexを進めてある
+     * @param {string} code XXX
+     * @param {MV.TextState} textState
+     */
+    processEscapeCharacter(code, textState) {
+      super.processEscapeCharacter(code, textState);
+      if (settings.escapeCharacterCodes.includes(code)) {
+        this.obtainEscapeParamTexts(textState);
+      }
+    }
+
+    /**
+     * [YYY]のYYYを取り出し、カンマ区切りで配列化して返す
+     * @param {MV.TextState} textState
+     * @return {string[]}
+     */
+    obtainEscapeParamTexts(textState) {
+      const arr = /^\[(.+?)\]/.exec(textState.text.slice(textState.index));
+      if (arr) {
+        textState.index += arr[0].length;
+        return arr[1].split(',');
+      } else {
+        return [];
+      }
+    }
   }
 
   window[Window_TextLog.name] = Window_TextLog;
@@ -727,6 +765,7 @@
   function addTextLog(text) {
     currentEventLog.addMessageLog(text);
   }
+
   /**
    * 現在のイベントのログを過去のイベントのログに移動する
    */
@@ -741,12 +780,14 @@
     pastEventLog.push(currentEventLog);
     initializeCurrentEventLog();
   }
+
   /**
    * 現在のイベントのログを初期化する
    */
   function initializeCurrentEventLog() {
     currentEventLog = new EventTextLog();
   }
+
   /**
    * 過去のイベントのログを初期化する
    */
@@ -767,6 +808,7 @@
       (settings.disableLogWindowSwitch === 0 || !$gameSwitches.value(settings.disableLogWindowSwitch))
     );
   }
+
   /**
    * Scene_Mapのメッセージウィンドウを退避しておくクラス
    */
