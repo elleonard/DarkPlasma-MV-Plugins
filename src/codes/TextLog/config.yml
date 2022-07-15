@@ -4,6 +4,9 @@ DarkPlasma_TextLog:
   license: MIT
   excludeLicenseManager: false
   histories:
+    - date: 2022/07/15
+      version: 2.2.0
+      description: 'メニュー禁止でもログを開けるように変更'
     - date: 2022/07/10
       version: 2.1.0
       description: '\XXX[YYY]のYYYをログから消す設定を追加'

@@ -668,7 +668,7 @@ Scene_Map.prototype.updateCallTextLog = function () {
 
 /**
  * どういうタイミングでバックログを開いても良いか
- *  A マップを移動中（メニューを開ける間）
+ *  A マップを移動中（マップイベント実行中でない）
  *  B イベント中かつ、メッセージウィンドウが開いている
  *  C 表示すべきログが１行以上ある
  *  D ログ表示禁止スイッチがOFF
@@ -677,7 +677,7 @@ Scene_Map.prototype.updateCallTextLog = function () {
  */
 Scene_Map.prototype.isTextLogEnabled = function () {
   return (
-    ($gameSystem.isMenuEnabled() || ($gameMap.isEventRunning() && !this._messageWindow.isClosed())) &&
+    (!$gameMap.isEventRunning() || ($gameMap.isEventRunning() && !this._messageWindow.isClosed())) &&
     isTextLogEnabled() &&
     !this.isFileListWindowActive()
   );
