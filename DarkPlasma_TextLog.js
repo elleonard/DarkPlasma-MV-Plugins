@@ -1,9 +1,10 @@
-// DarkPlasma_TextLog 2.1.0
+// DarkPlasma_TextLog 2.2.0
 // Copyright (c) 2017 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2022/07/15 2.2.0 メニュー禁止でもログを開けるように変更
  * 2022/07/10 2.1.0 \XXX[YYY]のYYYをログから消す設定を追加
  * 2021/11/26 2.0.0 rollup構成へ移行
  *                  戦闘終了時に自動で区切り線を入れる設定を追加
@@ -209,7 +210,7 @@
  * @default []
  *
  * @help
- * version: 2.1.0
+ * version: 2.2.0
  * イベントのテキストログを表示します。
  *
  * イベント会話中またはマップ上で pageup キー（L2ボタン）でログを表示します。
@@ -959,7 +960,7 @@
 
   /**
    * どういうタイミングでバックログを開いても良いか
-   *  A マップを移動中（メニューを開ける間）
+   *  A マップを移動中（マップイベント実行中でない）
    *  B イベント中かつ、メッセージウィンドウが開いている
    *  C 表示すべきログが１行以上ある
    *  D ログ表示禁止スイッチがOFF
@@ -968,7 +969,7 @@
    */
   Scene_Map.prototype.isTextLogEnabled = function () {
     return (
-      ($gameSystem.isMenuEnabled() || ($gameMap.isEventRunning() && !this._messageWindow.isClosed())) &&
+      (!$gameMap.isEventRunning() || ($gameMap.isEventRunning() && !this._messageWindow.isClosed())) &&
       isTextLogEnabled() &&
       !this.isFileListWindowActive()
     );
