@@ -1,0 +1,168 @@
+DarkPlasma_CancelButton:
+  name: DarkPlasma_CancelButton
+  year: 2022
+  license: MIT
+  excludeLicenseManager: false
+  histories:
+    - date: 2022/07/18
+      version: 3.0.0
+      description: 'rollup移行'
+    - date: 2021/07/27
+      version: 2.0.0
+      description: 'シーンから戻るボタンではなく、キャンセルボタンに変更'
+    - date: 2021/07/22
+      version: 1.4.2
+      description: 'マウスオーバーしたまま DarkPlasma_CancelToBackButton.js で戻るボタンを押しても押下時の画像が表示されない不具合を修正'
+    - date: 2021/07/21
+      version: 1.4.1
+      description: 'DarkPlasma_CancelToBackButton.js 1.0.1 に対応'
+    - version: 1.4.0
+      description: 'DarkPlasma_CancelToBackButton.js に対応'
+    - version: 1.3.0
+      description: '戻るボタン押下時に再生するSE設定を追加'
+    - date: 2021/07/20
+      version: 1.2.0
+      description: 'SceneCustomMenu.js によって生成されたシーンクラスに対応'
+    - date: 2021/07/10
+      version: 1.1.0
+      description: '戻るボタン押下後の待機状態でキー入力を無効にするよう修正'
+    - description: 'GraphicalDesignMode.js のデザインモード時にボタンを無効化する設定を追加'
+    - version: 1.0.0
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: '任意のシーンにキャンセルボタンを配置する'
+  parameters:
+    - param: buttonImage
+      text:
+        ja: ボタン画像
+      type: ButtonImage
+    - param: defaultX
+      text:
+        ja: デフォルトX座標
+      type: number
+      default: 0
+    - param: defaultY
+      text:
+        ja: デフォルトY座標
+      type: number
+      default: 0
+    - param: scale
+      text:
+        ja: 拡大率（％）
+      type: number
+      default: 100
+    - param: backWait
+      text:
+        ja: 戻るウェイト
+      desc:
+        ja: キャンセルボタンを押してから前のシーンに戻るまでのウェイトフレーム数
+      type: number
+      default: 10
+    - param: sceneList
+      text:
+        ja: シーン
+      type: BackButtonScene[]
+      default:
+        - name: Scene_MenuBase
+          x: 0
+          y: 0
+          useDefaultPosition: true
+    - param: enableWithDesignMode
+      text:
+        ja: デザインモード時有効
+      desc:
+        ja: GraphicalDesignModeのデザインモード時にもボタンを有効にするか
+      type: boolean
+      default: false
+  commands: []
+  structures:
+    ButtonImage:
+      - param: default
+        text:
+          ja: 通常時
+        desc:
+          ja: 通常時のキャンセルボタン画像
+        type: file
+        dir: img
+      - param: hovered
+        text:
+          ja: マウスオーバー時
+        desc:
+          ja: マウスオーバー時に表示する画像。省略時には通常時の画像が表示される
+        type: file
+        dir: img
+      - param: pressed
+        text:
+          ja: 押下時
+        desc:
+          ja: 押下時に表示する画像。省略時には通常時の画像が表示される
+        type: file
+        dir: img
+    BackButtonScene:
+      - param: name
+        text:
+          ja: シーンクラス名
+        type: string
+      - param: useDefaultPosition
+        text:
+          ja: デフォルト座標を使う
+        type: boolean
+        default: true
+      - param: x
+        text:
+          ja: X座標
+        type: number
+        default: 0
+      - param: y
+        text:
+          ja: Y座標
+        type: number
+        default: 0
+    ButtonSe:
+      - param: file
+        text:
+          ja: ファイル
+        type: file
+        default: audio/se/
+      - param: volume
+        text:
+          ja: 音量
+        type: number
+        default: 90
+        max: 100
+      - param: pitch
+        text:
+          ja: ピッチ
+        type: number
+        default: 100
+        min: 50
+        max: 150
+      - param: pan
+        text:
+          ja: 位相
+        type: number
+        default: 0
+        min: -100
+        max: 100
+  dependencies:
+    base: []
+    orderAfter:
+      - name: SceneCustomMenu
+    orderBefore: []
+  help:
+    ja: |
+      キー入力可能ウィンドウを持つ任意のシーン（※）について、
+      キャンセルキーと同等の効果を持つボタン（以下、キャンセルボタン）を配置します。
+
+      本プラグインはキャンセルボタンを表示するためのものであり、
+      ウィンドウのレイアウトを変更するものではありません。
+      ウィンドウのレイアウトを変更したい場合、
+      GraphicalDesignMode.js 等の利用をご検討ください。
+      https://github.com/triacontane/RPGMakerMV/blob/master/GraphicalDesignMode.js
+
+      ※以下の前提を満たしている必要があります。
+      - シーンクラスがグローバルに定義されていること
+      - ウィンドウが Window_Selectable を継承していること
