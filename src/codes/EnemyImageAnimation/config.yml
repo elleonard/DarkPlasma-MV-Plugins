@@ -1,0 +1,45 @@
+DarkPlasma_EnemyImageAnimation:
+  name: DarkPlasma_EnemyImageAnimation
+  year: 2022
+  license: MIT
+  excludeLicenseManager: false
+  histories:
+    - date: 2022/07/27
+      version: 1.0.0
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: '敵キャラ画像をコマ送りアニメーションする'
+  parameters:
+    - param: defaultSpeed
+      text:
+        ja: デフォルトの速さ
+      desc:
+        ja: 指定フレームに一度コマ送りします。数字を小さくするほどコマ送りが早くなります。
+      type: number
+      default: 5
+  commands: []
+  structures:
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      敵キャラの画像をコマ送りアニメーションします。
+
+      本プラグインはオオホタルサイコさんの
+      EnemyAnimation.js と互換性があります。
+      https://github.com/oHotaruPsycho/EnemyAnimation/blob/master/EnemyAnimation.js
+
+      画像をコマ送りアニメーションしたい敵キャラのメモ欄に
+      以下のように記述してください。
+
+      <baseName:基本ファイル名>
+      <animation:コマ数>
+      <animationSpeed:コマ送り速さ>
+
+      基本ファイル名の末尾に1～コマ数の半角数字を追加した名前の
+      .pngファイルを img/enemies フォルダに用意してください。
