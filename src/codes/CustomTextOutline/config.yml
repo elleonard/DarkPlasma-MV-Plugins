@@ -1,0 +1,61 @@
+DarkPlasma_CustomTextOutline:
+  name: DarkPlasma_CustomTextOutline
+  year: 2022
+  license: MIT
+  excludeLicenseManager: false
+  histories:
+    - date: 2022/08/07
+      version: 1.0.0
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: 'テキストのアウトラインをカスタマイズする'
+  parameters:
+    - param: width
+      text:
+        ja: 幅
+      type: number
+      default: 4
+    - param: color
+      text:
+        ja: 色
+      type: Color
+      default:
+        red: 0
+        blue: 0
+        green: 0
+        alpha: 0.5
+  commands: []
+  structures:
+    Color:
+      - param: red
+        text:
+          ja: 赤
+        type: number
+        default: 0
+      - param: blue
+        text:
+          ja: 青
+        type: number
+        default: 0
+      - param: green
+        text:
+          ja: 緑
+        type: number
+        default: 0
+      - param: alpha
+        text:
+          ja: アルファ
+        type: number
+        default: 0.5
+        decimal: 1
+        max: 1
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      テキストのアウトラインをカスタマイズします。
