@@ -1,10 +1,11 @@
-// DarkPlasma_CustomTextOutline 1.0.0
+// DarkPlasma_CustomTextOutline 1.0.1
 // Copyright (c) 2022 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
- * 2022/08/07 1.0.0 公開
+ * 2022/08/07 1.0.1 アルファ値の入力に小数点以下を許可
+ *            1.0.0 公開
  */
 
 /*:ja
@@ -26,7 +27,7 @@
  * @default {"red":"0", "blue":"0", "green":"0", "alpha":"0.5"}
  *
  * @help
- * version: 1.0.0
+ * version: 1.0.1
  * テキストのアウトラインをカスタマイズします。
  */
 /*~struct~Color:
@@ -48,6 +49,7 @@
  * @param alpha
  * @text アルファ
  * @type number
+ * @decimals 1
  * @default 0.5
  * @max 1
  */
