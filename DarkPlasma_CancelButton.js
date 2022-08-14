@@ -1,10 +1,11 @@
-// DarkPlasma_CancelButton 3.0.1
+// DarkPlasma_CancelButton 3.0.2
 // Copyright (c) 2022 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
- * 2022/08/14 3.0.1 マップシーンに表示できない不具合を修正
+ * 2022/08/14 3.0.2 子クラスで親クラスから引き継いだ設定を上書きできるよう修正
+ *            3.0.1 マップシーンに表示できない不具合を修正
  * 2022/07/18 3.0.0 rollup移行
  * 2021/07/27 2.0.0 シーンから戻るボタンではなく、キャンセルボタンに変更
  * 2021/07/22 1.4.2 マウスオーバーしたまま DarkPlasma_CancelToBackButton.js で戻るボタンを押しても押下時の画像が表示されない不具合を修正
@@ -64,7 +65,7 @@
  * @default false
  *
  * @help
- * version: 3.0.1
+ * version: 3.0.2
  * キー入力可能ウィンドウを持つ任意のシーン（※）について、
  * キャンセルキーと同等の効果を持つボタン（以下、キャンセルボタン）を配置します。
  *
@@ -289,6 +290,7 @@
   function Scene_CancelButtonMixIn(sceneClass) {
     sceneClass.createCancelButton = function (buttonX, buttonY) {
       if (this._cancelButton) {
+        this._cancelButton.setPosition(buttonX, buttonY);
         return;
       }
       this._cancelButton = new Sprite_CancelButton();
