@@ -1,9 +1,10 @@
-// DarkPlasma_CancelButton 3.0.0
+// DarkPlasma_CancelButton 3.0.1
 // Copyright (c) 2022 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2022/08/14 3.0.1 マップシーンに表示できない不具合を修正
  * 2022/07/18 3.0.0 rollup移行
  * 2021/07/27 2.0.0 シーンから戻るボタンではなく、キャンセルボタンに変更
  * 2021/07/22 1.4.2 マウスオーバーしたまま DarkPlasma_CancelToBackButton.js で戻るボタンを押しても押下時の画像が表示されない不具合を修正
@@ -63,7 +64,7 @@
  * @default false
  *
  * @help
- * version: 3.0.0
+ * version: 3.0.1
  * キー入力可能ウィンドウを持つ任意のシーン（※）について、
  * キャンセルキーと同等の効果を持つボタン（以下、キャンセルボタン）を配置します。
  *
@@ -223,19 +224,33 @@
 
   TouchInput_CancelButtonMixIn(TouchInput);
 
+  /**
+   * @param {Scene_Base.prototype} sceneClass
+   * @param {number} buttonX
+   * @param {number} buttonY
+   */
+  function Scene_CreateCancelButtonMixIn(sceneClass, buttonX, buttonY) {
+    if (sceneClass.createDisplayObjects) {
+      const _createDisplayObjects = sceneClass.createDisplayObjects;
+      sceneClass.createDisplayObjects = function () {
+        _createDisplayObjects.call(this);
+        this.createCancelButton(buttonX, buttonY);
+      };
+    } else {
+      const _create = sceneClass.create;
+      sceneClass.create = function () {
+        _create.call(this);
+        this.createCancelButton(buttonX, buttonY);
+      };
+    }
+  }
+
   settings.sceneList
     .filter((scene) => !!window[scene.name])
     .forEach((scene) => {
-      const _createMethod = window[scene.name].prototype.create;
-      window[scene.name].prototype.create = function () {
-        _createMethod.call(this);
-        this.createCancelButton();
-        if (scene.useDefaultPosition) {
-          this._cancelButton.setPosition(settings.defaultX, settings.defaultY);
-        } else {
-          this._cancelButton.setPosition(scene.x, scene.y);
-        }
-      };
+      const buttonX = scene.useDefaultPosition ? settings.defaultX : scene.x;
+      const buttonY = scene.useDefaultPosition ? settings.defaultY : scene.y;
+      Scene_CreateCancelButtonMixIn(window[scene.name].prototype, buttonX, buttonY);
     });
 
   /**
@@ -272,7 +287,7 @@
    * @param {Scene_Base.prototype} sceneClass
    */
   function Scene_CancelButtonMixIn(sceneClass) {
-    sceneClass.createCancelButton = function () {
+    sceneClass.createCancelButton = function (buttonX, buttonY) {
       if (this._cancelButton) {
         return;
       }
@@ -281,6 +296,7 @@
       this._backWait = 0;
       cancelButton = this._cancelButton;
       this.addChild(this._cancelButton);
+      this._cancelButton.setPosition(buttonX, buttonY);
     };
 
     sceneClass.triggerBackButton = function () {
