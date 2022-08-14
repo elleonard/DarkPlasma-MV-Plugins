@@ -131,6 +131,7 @@ let cancelButton = null;
 function Scene_CancelButtonMixIn(sceneClass) {
   sceneClass.createCancelButton = function (buttonX, buttonY) {
     if (this._cancelButton) {
+      this._cancelButton.setPosition(buttonX, buttonY);
       return;
     }
     this._cancelButton = new Sprite_CancelButton();
