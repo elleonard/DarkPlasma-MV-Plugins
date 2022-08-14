@@ -66,19 +66,33 @@ function TouchInput_CancelButtonMixIn(touchInput) {
 
 TouchInput_CancelButtonMixIn(TouchInput);
 
+/**
+ * @param {Scene_Base.prototype} sceneClass
+ * @param {number} buttonX
+ * @param {number} buttonY
+ */
+function Scene_CreateCancelButtonMixIn(sceneClass, buttonX, buttonY) {
+  if (sceneClass.createDisplayObjects) {
+    const _createDisplayObjects = sceneClass.createDisplayObjects;
+    sceneClass.createDisplayObjects = function () {
+      _createDisplayObjects.call(this);
+      this.createCancelButton(buttonX, buttonY);
+    };
+  } else {
+    const _create = sceneClass.create;
+    sceneClass.create = function () {
+      _create.call(this);
+      this.createCancelButton(buttonX, buttonY);
+    };
+  }
+}
+
 settings.sceneList
   .filter((scene) => !!window[scene.name])
   .forEach((scene) => {
-    const _createMethod = window[scene.name].prototype.create;
-    window[scene.name].prototype.create = function () {
-      _createMethod.call(this);
-      this.createCancelButton();
-      if (scene.useDefaultPosition) {
-        this._cancelButton.setPosition(settings.defaultX, settings.defaultY);
-      } else {
-        this._cancelButton.setPosition(scene.x, scene.y);
-      }
-    };
+    const buttonX = scene.useDefaultPosition ? settings.defaultX : scene.x;
+    const buttonY = scene.useDefaultPosition ? settings.defaultY : scene.y;
+    Scene_CreateCancelButtonMixIn(window[scene.name].prototype, buttonX, buttonY);
   });
 
 /**
@@ -115,7 +129,7 @@ let cancelButton = null;
  * @param {Scene_Base.prototype} sceneClass
  */
 function Scene_CancelButtonMixIn(sceneClass) {
-  sceneClass.createCancelButton = function () {
+  sceneClass.createCancelButton = function (buttonX, buttonY) {
     if (this._cancelButton) {
       return;
     }
@@ -124,6 +138,7 @@ function Scene_CancelButtonMixIn(sceneClass) {
     this._backWait = 0;
     cancelButton = this._cancelButton;
     this.addChild(this._cancelButton);
+    this._cancelButton.setPosition(buttonX, buttonY);
   };
 
   sceneClass.triggerBackButton = function () {
