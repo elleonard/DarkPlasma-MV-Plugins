@@ -4,6 +4,9 @@ DarkPlasma_NameWindow:
   license: MIT
   excludeLicenseManager: false
   histories:
+    - date: 2022/08/15
+      version: 2.1.0
+      description: 'ウィンドウ背景設定を追加'
     - date: 2021/11/28
       version: 2.0.0
       description: 'rollup構成へ移行'
@@ -100,6 +103,22 @@ DarkPlasma_NameWindow:
         ja: ONの場合、「及び（を検出して自動で名前ウィンドウを表示します。
       type: boolean
       default: false
+    - param: backgroundType
+      text:
+        ja: 背景
+      desc:
+        ja: 名前ウィンドウの背景を設定します。
+      type: select
+      options:
+        - name: メッセージウィンドウと同じ
+          value: 3
+        - name: ウィンドウ
+          value: 0
+        - name: 暗くする
+          value: 1
+        - name: 透明
+          value: 2
+      default: 3
   commands: []
   structures:
     ActorColor:
@@ -130,7 +149,7 @@ DarkPlasma_NameWindow:
       アクター名入りの名前ウィンドウを左寄せで表示します。
 
         \ndp<アクターID>
-      
+
       自動名前ウィンドウの設定がONの場合、以下の形式のメッセージを検出して
       自動で名前ウィンドウを表示します。
 
