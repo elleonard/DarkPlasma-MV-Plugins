@@ -1,4 +1,4 @@
-import { settings } from "./_build/DarkPlasma_NameWindow_parameters";
+import { settings } from './_build/DarkPlasma_NameWindow_parameters';
 
 /** 名前ウィンドウの位置 */
 const NAME_WINDOW_POSITION = {
@@ -6,7 +6,7 @@ const NAME_WINDOW_POSITION = {
   LEFT: 2,
   CENTER: 3,
   RIGHT: 4,
-  RIGHT_EDGE: 5
+  RIGHT_EDGE: 5,
 };
 
 /**
@@ -28,7 +28,9 @@ function actorName(actorId) {
 function colorByName(name) {
   const actor = $gameActors.byName(name);
   if (actor) {
-    const colorSetting = settings.actorColors.find(actorColor => Number(actorColor.actor) === Number(actor.actorId()));
+    const colorSetting = settings.actorColors.find(
+      (actorColor) => Number(actorColor.actor) === Number(actor.actorId())
+    );
     return colorSetting ? colorSetting.color : settings.defaultColor;
   }
   return settings.defaultColor;
@@ -54,51 +56,52 @@ class NameWindowTextInfo {
     const regExpAndPositions = [
       {
         regExp: /\x1bN\<(.*?)\>/gi,
-        position: NAME_WINDOW_POSITION.LEFT_EDGE
+        position: NAME_WINDOW_POSITION.LEFT_EDGE,
       },
       {
         regExp: /\x1bN1\<(.*?)\>/gi,
-        position: NAME_WINDOW_POSITION.LEFT_EDGE
+        position: NAME_WINDOW_POSITION.LEFT_EDGE,
       },
       {
         regExp: /\x1bN2\<(.*?)\>/gi,
-        position: NAME_WINDOW_POSITION.LEFT
+        position: NAME_WINDOW_POSITION.LEFT,
       },
       {
         regExp: /\x1bN3\<(.*?)\>/gi,
-        position: NAME_WINDOW_POSITION.CENTER
+        position: NAME_WINDOW_POSITION.CENTER,
       },
       {
         regExp: /\x1bNC\<(.*?)\>/gi,
-        position: NAME_WINDOW_POSITION.CENTER
+        position: NAME_WINDOW_POSITION.CENTER,
       },
       {
         regExp: /\x1bN4\<(.*?)\>/gi,
-        position: NAME_WINDOW_POSITION.RIGHT
+        position: NAME_WINDOW_POSITION.RIGHT,
       },
       {
         regExp: /\x1bN5\<(.*?)\>/gi,
-        position: NAME_WINDOW_POSITION.RIGHT_EDGE
+        position: NAME_WINDOW_POSITION.RIGHT_EDGE,
       },
       {
         regExp: /\x1bNR\<(.*?)\>/gi,
-        position: NAME_WINDOW_POSITION.RIGHT_EDGE
+        position: NAME_WINDOW_POSITION.RIGHT_EDGE,
       },
       {
         regExp: /\x1bNDP\<(.*?)\>/gi,
         position: NAME_WINDOW_POSITION.LEFT_EDGE,
-        isActorId: true
-      }
+        isActorId: true,
+      },
     ];
-    const hit = regExpAndPositions.map(regExpAndPosition => {
-      return {
-        regExp: new RegExp(regExpAndPosition.regExp),
-        position: regExpAndPosition.position,
-        idOrName: regExpAndPosition.regExp.exec(text),
-        isActorId: regExpAndPosition.isActorId
-      }
-    })
-      .find(hit => hit.idOrName && hit.idOrName[1]);
+    const hit = regExpAndPositions
+      .map((regExpAndPosition) => {
+        return {
+          regExp: new RegExp(regExpAndPosition.regExp),
+          position: regExpAndPosition.position,
+          idOrName: regExpAndPosition.regExp.exec(text),
+          isActorId: regExpAndPosition.isActorId,
+        };
+      })
+      .find((hit) => hit.idOrName && hit.idOrName[1]);
     if (hit) {
       const name = hit.isActorId ? actorName(hit.idOrName[1]) : hit.idOrName[1];
       return new NameWindowTextInfo(name, hit.position, hit.regExp);
@@ -106,22 +109,18 @@ class NameWindowTextInfo {
 
     if (settings.autoDetectName) {
       // 名前＋開きカッコを見つけ次第、名前ウィンドウを設定する
-      const speakerReg = new RegExp("^(.+)(「|（)", "gi");
+      const speakerReg = new RegExp('^(.+)(「|（)', 'gi');
       const speaker = speakerReg.exec(text);
       if (speaker !== null) {
-        let target = speaker[1].replace("\x1b\}", "");
+        let target = speaker[1].replace('\x1b}', '');
         const eraseTarget = target;
         /**
          * 色は強制的に固定する
          */
-        target = target.replace(/\x1bC\[(#?[0-9]*)\]/gi, "");
+        target = target.replace(/\x1bC\[(#?[0-9]*)\]/gi, '');
 
         if (target.length > 0) {
-          return new NameWindowTextInfo(
-            target,
-            NAME_WINDOW_POSITION.LEFT_EDGE,
-            eraseTarget
-          );
+          return new NameWindowTextInfo(target, NAME_WINDOW_POSITION.LEFT_EDGE, eraseTarget);
         }
       }
     }
@@ -145,12 +144,14 @@ class NameWindowTextInfo {
    * @return {string}
    */
   coloredName() {
-    const speakerNames = this.name.split("＆");
-    const speakerNameString = speakerNames.map(speakerName => {
-      // 設定値の色があればそれを設定する
-      const color = colorByName(speakerName);
-      return speakerName.replace(new RegExp(`^${speakerName}$`, "gi"), `\\C[${color}]${speakerName}`);
-    }, this).join('\\C[0]＆');
+    const speakerNames = this.name.split('＆');
+    const speakerNameString = speakerNames
+      .map((speakerName) => {
+        // 設定値の色があればそれを設定する
+        const color = colorByName(speakerName);
+        return speakerName.replace(new RegExp(`^${speakerName}$`, 'gi'), `\\C[${color}]${speakerName}`);
+      }, this)
+      .join('\\C[0]＆');
     return speakerNameString;
   }
 }
@@ -169,7 +170,7 @@ if (!Game_Message.prototype.skipFlg) {
 }
 
 Game_Actors.prototype.byName = function (name) {
-  const actor = $dataActors.find(actor => actor && actor.name === name);
+  const actor = $dataActors.find((actor) => actor && actor.name === name);
   if (actor) {
     if (!this._data[actor.id]) {
       this._data[actor.id] = new Game_Actor(actor.id);
@@ -179,25 +180,28 @@ Game_Actors.prototype.byName = function (name) {
   return null;
 };
 
-
 /**
  * 名前ウィンドウ表示中に戦闘に入った場合、名前ウィンドウを消す
  */
- const _SceneMap_snapForBattleBackground = Scene_Map.prototype.snapForBattleBackground;
- Scene_Map.prototype.snapForBattleBackground = function () {
-   if (this.isNameWindowVisible()) {
-     this._messageWindow.hideNameWindow();
-   }
-   _SceneMap_snapForBattleBackground.call(this);
- };
- 
- Scene_Map.prototype.hasNameWindow = function () {
-   return this._messageWindow && this._messageWindow.hasNameWindow();
- };
- 
- Scene_Map.prototype.isNameWindowVisible = function () {
-   return this.hasNameWindow() && this._messageWindow.isNameWindowVisible();
- }; 
+const _SceneMap_snapForBattleBackground = Scene_Map.prototype.snapForBattleBackground;
+Scene_Map.prototype.snapForBattleBackground = function () {
+  if (this.isNameWindowVisible()) {
+    this._messageWindow.hideNameWindow();
+  }
+  _SceneMap_snapForBattleBackground.call(this);
+};
+
+Scene_Map.prototype.hasNameWindow = function () {
+  return this._messageWindow && this._messageWindow.hasNameWindow();
+};
+
+Scene_Map.prototype.isNameWindowVisible = function () {
+  return this.hasNameWindow() && this._messageWindow.isNameWindowVisible();
+};
+
+const BACKGROUND_TYPE = {
+  EXTENDS: 3,
+};
 
 class Window_SpeakerName extends Window_Base {
   /**
@@ -295,7 +299,11 @@ class Window_SpeakerName extends Window_Base {
   }
 
   updateBackground() {
-    this._background = $gameMessage.background();
+    if (settings.backgroundType === BACKGROUND_TYPE.EXTENDS) {
+      this._background = $gameMessage.background();
+    } else {
+      this._background = settings.backgroundType;
+    }
     this.setBackgroundType(this._background);
   }
 
@@ -329,7 +337,7 @@ class Window_SpeakerName extends Window_Base {
         break;
       case NAME_WINDOW_POSITION.LEFT:
         this.x = this._parentWindow.x;
-        this.x += this._parentWindow.width * 3 / 10;
+        this.x += (this._parentWindow.width * 3) / 10;
         this.x -= this.width / 2;
         break;
       case NAME_WINDOW_POSITION.CENTER:
@@ -339,7 +347,7 @@ class Window_SpeakerName extends Window_Base {
         break;
       case NAME_WINDOW_POSITION.RIGHT:
         this.x = this._parentWindow.x;
-        this.x += this._parentWindow.width * 7 / 10;
+        this.x += (this._parentWindow.width * 7) / 10;
         this.x -= this.width / 2;
         break;
       case NAME_WINDOW_POSITION.RIGHT_EDGE:
@@ -352,7 +360,7 @@ class Window_SpeakerName extends Window_Base {
   }
 
   adjustPositionY() {
-    const parentWindowY = $gameMessage.positionType() * (Graphics.boxHeight - this._parentWindow.windowHeight()) / 2;
+    const parentWindowY = ($gameMessage.positionType() * (Graphics.boxHeight - this._parentWindow.windowHeight())) / 2;
     if ($gameMessage.positionType() === 0) {
       this.y = parentWindowY + this._parentWindow.height;
       this.y -= settings.windowOffsetY;
@@ -371,8 +379,7 @@ class Window_SpeakerName extends Window_Base {
    * @return {boolean} 表示し続ける必要があるかどうか
    */
   doesContinue() {
-    return this._parentWindow.doesContinue() &&
-      this._parentWindow.findNameWindowTextInfo($gameMessage.nextText());
+    return this._parentWindow.doesContinue() && this._parentWindow.findNameWindowTextInfo($gameMessage.nextText());
   }
 
   isNameWindow() {
@@ -401,10 +408,7 @@ Window_Message.prototype.startMessage = function () {
   _Window_Message_startMessage.call(this);
   this._isAlreadyShownNameWindow = false;
   if (this._nameWindowTextInfo) {
-    this.showNameWindow(
-      this._nameWindowTextInfo.coloredName(),
-      this._nameWindowTextInfo.position
-    );
+    this.showNameWindow(this._nameWindowTextInfo.coloredName(), this._nameWindowTextInfo.position);
   }
 };
 
@@ -437,10 +441,7 @@ const _Window_Message_showSubWindow = Window_Message.prototype.showSubWindow;
 Window_Message.prototype.showSubWindow = function (subWindow) {
   if (subWindow.isNameWindow()) {
     if (this._nameWindowTextInfo) {
-      this.showNameWindow(
-        this._nameWindowTextInfo.coloredName(),
-        this._nameWindowTextInfo.position
-      );
+      this.showNameWindow(this._nameWindowTextInfo.coloredName(), this._nameWindowTextInfo.position);
     }
   } else {
     _Window_Message_showSubWindow.call(this, subWindow);
@@ -470,11 +471,11 @@ Window_Message.prototype.convertNameWindow = function (text) {
 
 Window_Message.prototype.hideNameWindow = function () {
   this._nameWindow.hide();
-}
+};
 
 Window_Message.prototype.hasNameWindow = function () {
   return !!this._nameWindow;
-}
+};
 
 Window_Message.prototype.isNameWindowVisible = function () {
   return this._nameWindow && this._nameWindow.visible;
