@@ -1,9 +1,10 @@
-// DarkPlasma_NameWindow 2.0.0
+// DarkPlasma_NameWindow 2.1.0
 // Copyright (c) 2019 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2022/08/15 2.1.0 ウィンドウ背景設定を追加
  * 2021/11/28 2.0.0 rollup構成へ移行
  *                  不要な設定を削除
  *                  MessageSkip.js でスキップする際に名前ウィンドウが残ることがある不具合を修正
@@ -76,8 +77,22 @@
  * @type boolean
  * @default false
  *
+ * @param backgroundType
+ * @desc 名前ウィンドウの背景を設定します。
+ * @text 背景
+ * @type select
+ * @option メッセージウィンドウと同じ
+ * @value 3
+ * @option ウィンドウ
+ * @value 0
+ * @option 暗くする
+ * @value 1
+ * @option 透明
+ * @value 2
+ * @default 3
+ *
  * @help
- * version: 2.0.0
+ * version: 2.1.0
  * メッセージテキストに以下のように記述すると名前ウィンドウを表示します。
  *
  *   \n<***> あるいは \n1<***> : 左寄せ
@@ -134,6 +149,7 @@
       })(e || '{}');
     }),
     autoDetectName: String(pluginParameters.autoDetectName || false) === 'true',
+    backgroundType: Number(pluginParameters.backgroundType || 3),
   };
 
   /** 名前ウィンドウの位置 */
@@ -335,6 +351,10 @@
     return this.hasNameWindow() && this._messageWindow.isNameWindowVisible();
   };
 
+  const BACKGROUND_TYPE = {
+    EXTENDS: 3,
+  };
+
   class Window_SpeakerName extends Window_Base {
     /**
      * @param {Window_Message} parentWindow メッセージウィンドウ
@@ -431,7 +451,11 @@
     }
 
     updateBackground() {
-      this._background = $gameMessage.background();
+      if (settings.backgroundType === BACKGROUND_TYPE.EXTENDS) {
+        this._background = $gameMessage.background();
+      } else {
+        this._background = settings.backgroundType;
+      }
       this.setBackgroundType(this._background);
     }
 
