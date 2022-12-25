@@ -1,4 +1,3 @@
-await $`git fetch origin master`;
 await $`git fetch origin release`;
 
 /**
