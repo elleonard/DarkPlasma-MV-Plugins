@@ -1,3 +1,4 @@
+await $`git fetch origin master`;
 await $`git fetch origin release`;
 
 /**
@@ -14,11 +15,6 @@ const diffFiles = await $`git --no-pager diff ${lastBuildCommit.stdout.trim().sp
  * ひとまず、インクリメンタルビルドはcodesのみ対象とする
  */
 const codePath = path.resolve(__dirname, '..', '..', 'src', 'codes').replaceAll('\\', '/');
-const configTargets = await glob([`${codePath}/`]);
-const configBuildTargets = [...new Set(configTargets
-  .filter(path => /src\/codes\/.+\/config\.yml$/.test(path))
-  .map(path => /src\/codes\/(.+)\/config\.yml$/.exec(path)[1]))];
-
 const buildTargets = [...new Set(diffFiles.stdout.split('\n')
   .filter(path => path.startsWith("src/codes"))
   .map(path => /^src\/codes\/(.+)\/.*/.exec(path)[1]))];
