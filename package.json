@@ -12,7 +12,7 @@
     "format": "run-s clean lintAll prettierAll",
     "prettierAll": "prettier --write ./src/**/DarkPlasma_*.js",
     "build": "zx ./scripts/buildDispatcher/build.mjs",
-    "buildIncremental": "runs buildAll:config buildIncremental:main",
+    "buildIncremental": "run-s buildAll:config buildIncremental:main",
     "buildIncremental:main": "zx ./scripts/buildDispatcher/buildIncremental.mjs",
     "buildAll:config": "node ./scripts/generateFromConfig",
     "build:config": "zx ./scripts/buildDispatcher/build.mjs --configOnly",
