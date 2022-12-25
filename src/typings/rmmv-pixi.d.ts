@@ -566,7 +566,6 @@ interface GraphicsStatic {
      * @param {String} type The type of the renderer.
      *                 'canvas', 'webgl', or 'auto'.
      */
-    initialize(): void;
     initialize(width: number, height: number, type: string): void;
 
     /**
@@ -2060,7 +2059,7 @@ declare class Sprite extends PIXI.Sprite {
      * @constructor
      * @param {Bitmap} bitmap The image for the sprite
      */
-    constructor(bitmap?: Bitmap);
+    constructor(...any: any[]);
 
     /**
      * Updates the sprite for each frame.
@@ -3869,7 +3868,7 @@ declare class Weather extends PIXI.Container {
     protected _rebornSprite(sprite: Sprite): void;
 }
 
-declare abstract class _Window extends PIXI.Container {
+declare abstract class Window extends PIXI.Container {
     /**
      * The origin point of the window for scrolling.
      *
@@ -4393,7 +4392,7 @@ declare class WindowLayer extends PIXI.Container {
      * @param {Window} window
      * @private
      */
-     protected _maskWindow(window: _Window): void;
+     protected _maskWindow(window: Window): void;
 }
 
 declare class CacheEntry {
@@ -6589,7 +6588,7 @@ declare class DataManager {
   static setupNewGame(): void;
   static setupBattleTest(): void;
   static setupEventTest(): void;
-  static loadGlobalInfo(): void;
+  static loadGlobalInfo(): SaveFileInfo[];
   static saveGlobalInfo(info: object): void;
   /**
    * Returns a boolean value given a savefileId.
@@ -15031,7 +15030,7 @@ declare class Scene_File extends Scene_MenuBase {
      * 
      * @memberof Scene_File
      */
-    savefileId(): void;
+    savefileId(): number;
     createHelpWindow(): void;
     createListWindow(): void;
     /**
@@ -15728,6 +15727,8 @@ declare class Sprite_Button extends Sprite {
     protected _coldFrame: Rectangle;
     protected _hotFrame: Rectangle;
     protected _clickHandler: () => void;
+
+    initialize(...any: any[]): void;
 
     /**
      * Update method, which checks if the sprite is being touched and updates
@@ -17281,7 +17282,7 @@ declare class Spriteset_Battle extends Spriteset_Base {
  * @class Window_Base
  * @extends {Window}
  */
-declare class Window_Base extends _Window {
+declare class Window_Base extends Window {
   /**
    * The standard icon width;
    * default is 32.

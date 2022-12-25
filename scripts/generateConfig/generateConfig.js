@@ -3,6 +3,7 @@ const path = require('path');
 const ejs = require('ejs');
 
 const templatePath = path.resolve(__dirname, '..', '..', 'src', 'templates', 'config.ejs');
+const tsconfigTemplatePath = path.resolve(__dirname, '..', '..', 'tsconfig_template.json');
 
 async function generateConfig(destDir) {
   fs.open(path.resolve(destDir, 'config.yml'), 'wx', (err, fd) => {
@@ -36,7 +37,17 @@ async function generateConfig(destDir) {
         }
       }
     );
-    fs.ensureFile(path.resolve(destDir, `DarkPlasma_${path.basename(destDir)}.js`));
+    const declarationFile = path.resolve(destDir, `${path.basename(destDir)}.d.ts`);
+    fs.ensureFile(declarationFile, (err) => {
+      if (err) console.error(`generate declaration failed.`);
+      fs.appendFile(declarationFile, `/// <reference path="../../typings/rmmv.d.ts" />`);
+    });
+    const tsFile = path.resolve(destDir, `DarkPlasma_${path.basename(destDir)}.ts`);
+    fs.ensureFile(tsFile, (err) => {
+      if (err) console.error(`generate ts failed.`);
+      fs.appendFile(tsFile, `/// <reference path="./${path.basename(destDir)}.d.ts" />`);
+    });
+    fs.copyFileSync(tsconfigTemplatePath, `${destDir}/tsconfig.json`);
   });
 }
 

@@ -11,3 +11,6 @@ stage/
 scripts/copyToProject/config.yml
 rmmz/*.js
 yarn-error.log
+
+src/**/tsconfig.json
+DarkPlasma_*.js
