@@ -7414,6 +7414,8 @@ declare class Game_Temp {
     protected _destinationX: number;
     protected _destinationY: number;
 
+    initialize(): void;
+
     /**
      * Determines if the game is in Play Test mode.
      * 
