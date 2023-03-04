@@ -10,6 +10,7 @@
     "lint": "eslint --fix --ext .js",
     "lintAll": "eslint --fix --ext .js ./src/codes/ ./src/common/ ./src/excludes/",
     "format": "run-s clean lintAll prettierAll",
+    "prettier": "prettier --write",
     "prettierAll": "prettier --write ./src/**/DarkPlasma_*.js",
     "build": "zx ./scripts/buildDispatcher/build.mjs",
     "buildIncremental": "run-s buildAll:config buildIncremental:main",

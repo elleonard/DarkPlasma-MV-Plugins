@@ -6556,7 +6556,7 @@ declare class DataManager {
    * @returns {boolean} 
    * @memberof DataManager
    */
-  static isSkill(item: object): boolean;
+  static isSkill(item: object): item is RPG.Skill;
   /**
    * Returns a boolean value given an item.
    * Item must be a database item to be true.
@@ -10939,6 +10939,7 @@ declare class Game_Party extends Game_Unit {
      * @memberof Game_Party
      */
     deadMembers(): Array<Game_Actor>;
+    allMembers(): Array<Game_Actor>;
     /**
      * Returns the movable members in the party.
      * 

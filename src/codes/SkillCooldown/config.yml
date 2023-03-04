@@ -4,6 +4,11 @@ DarkPlasma_SkillCooldown:
   license: MIT
   excludeLicenseManager: false
   histories:
+    - date: 2023/03/05
+      version: 2.1.0
+      description: 'メモ欄による設定をサポート'
+    - description: 'typescript移行'
+    - description: 'デフォルト言語を設定'
     - date: 2021/11/27
       version: 2.0.1
       description: 'アクターのクールタイムが共有される不具合を修正'
@@ -107,4 +112,10 @@ DarkPlasma_SkillCooldown:
   help:
     ja: |
       スキルにクールタイムを指定します。
-      スキルX使用後、スキルYの使用を一定ターン数制限することができます。
+      バトラーがスキルXを使用した後、
+      そのバトラーのスキルYの使用を一定ターン数制限することができます。
+
+      バトラーがスキルXを使用した後、
+      そのバトラーのスキルX自体の使用をxターン数制限する場合、
+      スキルのメモ欄でも設定可能です。
+      <cooldownTurn:x>
