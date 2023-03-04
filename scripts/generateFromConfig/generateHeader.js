@@ -426,7 +426,7 @@ function generateHistories(histories) {
  */
 function generatePluginMetaText(config, language) {
   const result = [
-    `/*:${language}`,
+    `/*:${language === 'ja' ? "" : language}`,
     ` * @plugindesc ${config.plugindesc[language]}`,
     ` * @author ${config.author ? config.author : 'DarkPlasma'}`,
     ` * @license ${config.license}`,
