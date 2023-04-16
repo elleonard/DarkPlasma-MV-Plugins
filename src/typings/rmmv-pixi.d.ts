@@ -5512,6 +5512,10 @@ declare var Decrypter: DecrypterStatic;declare namespace RPG {
         }
     }
 
+    export interface Enemy extends MetaData {
+        traits: Array<Trait>;
+    }
+
     /**
      * The data class for state.
      */
@@ -5649,21 +5653,6 @@ declare var Decrypter: DecrypterStatic;declare namespace RPG {
          * The value set according to the type of the trait.
          */
         value: number;
-
-        /**
-         * The map tree expansion flag, which is used internally.
-         */
-        expanded: boolean;
-
-        /**
-         * The x-axis scroll position, which is used internally.
-         */
-        scrollX: number;
-
-        /**
-         * The y-axis scroll position, which is used internally.
-         */
-        scrollY: number;
     }
 
     /**
@@ -6544,7 +6533,7 @@ declare class DataManager {
   static makeEmptyMap(): void;
   static isMapLoaded(): boolean;
   static onLoad(object: any);
-  static extractMetaData(data: object): void;
+  static extractMetadata(data: object): void;
   static checkError(): void;
   static isBattleTest(): boolean;
   static isEventTest(): boolean;
