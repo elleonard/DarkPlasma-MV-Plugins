@@ -206,7 +206,7 @@ class PluginParameter extends TypedParameter {
       result.push(` * @type ${this.typeText(language)}`);
       if (this._parameter.type === 'select' && this._parameter.options) {
         this._parameter.options.forEach((option) => {
-          result.push(` * @option ${option.name}`);
+          result.push(` * @option ${option.name[language] || option.name}`);
           if (option.value || Number.isFinite(option.value)) {
             result.push(` * @value ${option.value}`);
           }
@@ -303,6 +303,7 @@ function generateHeader(config) {
   const historyLine = generateHistories(config.histories);
 
   const description = config.locates
+    .sort((a, b) => a === "ja" ? 1 : b === "ja" ? -1 : 0)
     .map((language, index) => {
       const dependenciesText = config.dependencies
         ? ['base', 'orderAfter', 'orderBefore']
@@ -312,7 +313,7 @@ function generateHeader(config) {
                 if (config.dependencies[key].length === 0) {
                   return '';
                 }
-                return config.dependencies[key].map((plugin) => `* @${key} ${plugin.name}`).join('\n');
+                return config.dependencies[key].map((plugin) => ` * @${key} ${plugin.name}`).join('\n');
               }
               return ` * @${key} ${config.dependencies[key]}`;
             }).filter(line => line !== '')
