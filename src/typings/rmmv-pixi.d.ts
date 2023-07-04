@@ -7501,6 +7501,8 @@ declare class Game_System {
     protected _savedBgm: RPG.AudioFile;
     protected _walkingBgm: RPG.AudioFile;
 
+    initialize(): void;
+
     isJapanese(): boolean;
     isChinese(): boolean;
     isKorean(): boolean;
