@@ -1,0 +1,276 @@
+DarkPlasma_ShopStock:
+  name: DarkPlasma_ShopStock
+  year: 2023
+  license: MIT
+  excludeLicenseManager: false
+  histories:
+    - date: 2023/07/05
+      version: 3.0.0
+      description: 'パラメータ名を変更'
+    - description: '個別の自動補充設定を廃止'
+    - description: '自動補充数設定を廃止'
+    - description: '補充用プラグインコマンドを追加'
+    - date: 2020/05/19
+      version: 2.2.2
+      description: 'DarkPlasma_ShopBuyByCategory.js と併用するとエラーになる不具合を修正'
+    - version: 2.2.1
+      description: '売り切れ商品が購入できる不具合を修正'
+    - description: 'ニューゲーム開始時に前回の在庫数を引き継ぐ不具合を修正'
+    - date: 2020/05/05
+      version: 2.2.0
+      description: '売り切れ商品を末尾に表示するか選択する設定を追加'
+    - description: '商品の順番が環境によって元と変化してしまう不具合を修正'
+    - date: 2020/04/23
+      version: 2.1.0
+      description: '同一リスト内で同一アイテムIDに対して異なる在庫数を設定可能'
+    - description: 'アイテム売却時に在庫に追加する設定項目を追加'
+    - date: 2020/04/21
+      version: 2.0.3
+      description: 'デフォルト在庫リストIDが有効でなかった不具合を修正'
+    - description: 'add english help'
+    - date: 2020/04/13
+      version: 2.0.1
+      description: 'セーブデータをロードした時にエラーになる不具合を修正'
+    - date: 2020/04/11
+      version: 2.0.0
+      description: '大規模リファクタ/機能追加。1.0.0からのセーブデータ互換性なし'
+    - description: '戦闘回数や経過時間による在庫補充機能追加'
+    - date: 2019/09/23
+      version: 1.0.0
+      description: '公開'
+
+  locates:
+    - ja
+    - en
+  plugindesc:
+    ja: '在庫ありショップ'
+    en: 'Shop with stock'
+  parameters:
+    - param: stockIdVariable
+      text:
+        ja: 在庫リストID変数
+        en: Variable for stock ID
+      desc:
+        ja: ここで指定された変数と一致する在庫リストIDを使用します。
+        en: use stock with ID setting by this variable.
+      type: variable
+      default: 0
+    - param: stockNumberLabel
+      text:
+        ja: 在庫数表記
+        en: stock count label
+      desc:
+        ja: 在庫数の表記を設定します。
+        en: label for stock count
+      type: string
+      default:
+        ja: 在庫数
+        en: stock
+    - param: soldOutLabel
+      text:
+        ja: 売り切れ表記
+        en: sold out label
+      desc:
+        ja: 売り切れの表記を設定します。
+        en: label for sold out
+      type: string
+      default:
+        ja: 売り切れ
+        en: sold out
+    - param: shopStock
+      text:
+        ja: ショップ在庫
+        en: shop stock setting
+      desc:
+        ja: ショップの初期在庫を設定します。
+        en: shop stock setting
+      type: ShopStock[]
+      default: []
+    - param: addStockWhenSellItem
+      text:
+        ja: 売却時在庫追加
+        en: add stock when sell
+      desc:
+        ja: ONの場合、売却時にそのアイテムの在庫を追加します。ただし初期在庫を超えません。
+        en: add stock when sell the item without over default stock count.
+      type: boolean
+      default: false
+    - param: soldOutItemAtBottom
+      text:
+        ja: 売り切れを後ろに
+        en: sold out item at bottom
+      desc:
+        ja: ONの場合、売り切れ商品をショップの一番下に表示します。
+        en: Display sold item at bottom of shop
+      type: boolean
+      default: true
+  commands: []
+  structures:
+    ShopStock:
+      - param: id
+        text:
+          ja: 在庫リストID
+          en: stock list ID
+        type: number
+        default: 1
+      - param: stockItemList
+        text:
+          ja: 在庫アイテムリスト
+          en: stock item list
+        type: StockItem[]
+        default: []
+      - param: stockWeaponList
+        text:
+          ja: 在庫武器リスト
+          en: stock weapon list
+        type: StockWeapon[]
+        default: []
+      - param: stockArmorList
+        text:
+          ja: 在庫防具リスト
+          en: stock armor list
+        type: StockArmor[]
+        default: []
+      - param: autoSupplyType
+        text:
+          ja: 自動在庫補充条件
+          en: auto supply condition
+        desc:
+          ja: 在庫を自動で補充する条件を設定します。
+          en: condition for auto supplying
+        type: select
+        options:
+          - value: 0
+            name:
+              ja: 補充なし
+              en: no supplying
+          - value: 1
+            name:
+              ja: 戦闘回数
+              en: battle count
+          - value: 2
+            name:
+              ja: 時間経過
+              en: play time
+        default: 0
+      - param: autoSupplyFrequency
+        text:
+          ja: 自動補充間隔
+          en: auto supply frequency
+        desc:
+          ja: 自動補充の頻度を設定します。自動補充タイミング設定に従い、指定数の戦闘回数や秒数が経過した際に補充します。
+          en: auto supply frequency (battle count or play time(sec))
+        type: number
+        default: 5
+    StockItem:
+      - param: id
+        text:
+          ja: アイテム
+          en: Item
+        type: item
+        default: 0
+      - param: count
+        text:
+          ja: 初期在庫数
+          en: default stock count
+        type: number
+        default: 1
+    StockWeapon:
+      - param: id
+        text:
+          ja: 武器
+          en: Weapon
+        type: weapon
+        default: 0
+      - param: count
+        text:
+          ja: 初期在庫数
+          en: default stock count
+        type: number
+        default: 1
+    StockArmor:
+      - param: id
+        text:
+          ja: 防具
+          en: Armor
+        type: armor
+        default: 0
+      - param: count
+        text:
+          ja: 初期在庫数
+          en: default stock count
+        type: number
+        default: 1
+  dependencies:
+    base: []
+    orderAfter:
+      - name: DarkPlasma_AnotherPriceInSameShop
+    orderBefore: []
+  help:
+    ja: |
+      このプラグインはショップに初期在庫を設定できます。
+      在庫リストID:1のリストをデフォルトの在庫リストとして扱います。
+      在庫リストで指定されなかったアイテムの在庫は無限です。
+
+      在庫はセーブデータに記録されます。
+
+      在庫の自動補充について:
+      自動補充の条件（一定回数戦闘する、一定時間経過する）を満たした場合、
+      次にショップを開いたタイミングで在庫を初期在庫数まで補充します。
+
+      プラグインコマンド forceSupply によって、
+      現在の在庫リストを強制的に補充できます。
+      プラグインコマンドには以下の引数の設定が可能です。
+      kind=(item|weapon|armor)
+      id=(アイテムID)
+      index=(同一アイテム内のインデックス)
+
+      例:
+      forceSupply
+      現在の在庫リストにある、在庫ありのアイテムすべての在庫を
+      初期値まで回復します。
+
+      forceSupply kind=weapon id=1
+      現在の在庫リストにある、ID=1の武器のうち
+      先頭の武器の在庫を初期値まで回復します。
+
+      forceSupply kind=item id=2 index=1
+      現在の在庫リストにある、ID=2のアイテムのうち
+      2番目のアイテムの在庫を初期値まで回復します。
+      （ID=2の在庫が複数登録されている場合のみ有効です）
+
+      同じ在庫リストの中で、同一アイテムに対して異なる在庫数を設定できます。
+      例えば、片方のポーションは在庫30あるが、もう片方は10しかない、等。
+      在庫リストの中で設定した順番が上記の通りである場合、
+      ショップ内の順番も同様です。
+      （上に設定したポーションの在庫が30、
+      　下に設定したポーションの在庫が10になります）
+      売却時の在庫追加は同一アイテムのうち、
+      一番上のアイテムにしか効かないのでご注意ください。
+
+      同一ショップ内の同一アイテムに別価格を設定したい場合、
+      DarkPlasma_AnotherPriceInSameShop.js との併用をご検討ください。
+    en: |
+      You can set shop item stock.
+      Default stock ID is 1.
+      If you don't set stock count of item,
+      the item stock is infinite.
+
+      With this plugin, RMMV savedata includes stock data.
+
+      When open shop scene after satisfying condition for auto supply,
+      supplied stock upto default stock count.
+
+      You can supply stock count by using plugin command "forceSupply".
+
+      You can set different stock count between same item id in same stock setting.
+      e.g.) One potion is 30 stocked, another is 10.
+      If you set stock count in this order and set multi same items to shop goods,
+      shop display them in the same order.
+      (Stock count of potion displayed upper is 30, lower is 10.)
+      Please note that if you set "add stock when sell" is true,
+      and sell item that is multi displayed in shop,
+      the only top item of the same id is supplied.
+
+      If you set different price between same item id in the same shop,
+      please consider that you use this plugin with DarkPlasma_AnotherPriceInSameShop.js.
