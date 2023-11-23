@@ -1,9 +1,12 @@
-// DarkPlasma_TextLog 2.2.0
+// DarkPlasma_TextLog 3.0.0
 // Copyright (c) 2017 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2023/11/23 3.0.0 typescript移行
+ *                  YEP_MessageCore対応をオミット
+ *                  スワイプの挙動を逆方向に変更
  * 2022/07/15 2.2.0 メニュー禁止でもログを開けるように変更
  * 2022/07/10 2.1.0 \XXX[YYY]のYYYをログから消す設定を追加
  * 2021/11/26 2.0.0 rollup構成へ移行
@@ -69,7 +72,7 @@
  * 2017/07/05 1.0.0 公開
  */
 
-/*:ja
+/*:
  * @plugindesc テキストログを保持・表示する
  * @author DarkPlasma
  * @license MIT
@@ -210,7 +213,7 @@
  * @default []
  *
  * @help
- * version: 2.2.0
+ * version: 3.0.0
  * イベントのテキストログを表示します。
  *
  * イベント会話中またはマップ上で pageup キー（L2ボタン）でログを表示します。
@@ -297,13 +300,10 @@
 
   /**
    * プラグインがロードされているかどうか
-   * @param {string} name プラグインの名前
-   * @return {boolean}
    */
   PluginManager.isLoadedPlugin = function (name) {
     return $plugins.some((plugin) => plugin.name === name && plugin.status);
   };
-
   const _BattleManager_updateBattleEnd = BattleManager.updateBattleEnd;
   BattleManager.updateBattleEnd = function () {
     if (!this.isBattleTest() && settings.autoSplitWhenBattleEnd) {
@@ -311,85 +311,58 @@
     }
     _BattleManager_updateBattleEnd.call(this);
   };
-
   class EventTextLog {
     constructor() {
       this.initialize();
     }
-
     initialize() {
       this._messages = [];
     }
-
-    /**
-     * @return {LogMessage[]}
-     */
     get messages() {
       return this._messages;
     }
-
-    /**
-     * @return {number}
-     */
     get messageLength() {
       return this._messages.length;
     }
-
     /**
      * ログを追加する
-     * @param {string} text テキスト
      */
     addMessageLog(text) {
       this._messages.push(new LogMessage(text));
     }
   }
-
   /**
    * ログメッセージ
    */
   class LogMessage {
-    /**
-     * @param {string} text テキスト
-     */
     constructor(text) {
       this._text = text;
       this._height = 0;
       this._offsetY = 0;
     }
-
-    /**
-     * @return {string}
-     */
     get text() {
       return this._text;
     }
-
     /**
      * ログウィンドウに表示する際の高さを記録する
      * （再計算の処理が重いため、一度だけ計算する）
-     * @param {number} height 表示高さ
      */
     setHeight(height) {
       this._height = height;
     }
-
     get height() {
       return this._height;
     }
-
     /**
      * 表示開始Y座標を調整したいとき用
-     * @param {number} offsetY Yオフセット
      */
     setOffsetY(offsetY) {
       this._offsetY = offsetY;
     }
-
     get offsetY() {
       return this._offsetY;
     }
   }
-
   /**
    * @type {EventTextLog}
    */
@@ -398,35 +371,29 @@
    * @type {EventTextLog[]}
    */
   let pastEventLog = [];
-
   // ログ表示用シーン
   class Scene_TextLog extends Scene_Base {
     constructor() {
       super();
-      this.initialize.apply(this, arguments);
+      this.initialize();
     }
-
     create() {
       super.create();
       this.createBackground();
       this.createWindowLayer();
       this.createTextLogWindow();
     }
-
     start() {
       super.start();
       this._textLogWindow.refresh();
     }
-
     createBackground() {
       this._backgroundSprite = new Sprite();
       this._backgroundSprite.bitmap = this.backgroundImage();
       this.addChild(this._backgroundSprite);
     }
-
     /**
      * シーンの背景画像をロードして返す
-     * @return {Bitmap}
      */
     backgroundImage() {
       if (settings.backgroundImage) {
@@ -434,7 +401,6 @@
       }
       return SceneManager.backgroundBitmap();
     }
-
     createTextLogWindow() {
       this._textLogWindow = new Window_TextLog();
       this._textLogWindow.setHandler('cancel', this.popScene.bind(this));
@@ -447,14 +413,12 @@
       this.addWindow(this._textLogWindow);
     }
   }
-
   // ログ表示用ウィンドウ
   class Window_TextLog extends Window_Base {
     constructor() {
-      super();
-      this.initialize.apply(this, arguments);
+      super(0, 0, 0, 0);
+      this.initialize();
     }
-
     initialize() {
       super.initialize(0, 0, Graphics.boxWidth, Graphics.boxHeight);
       /**
@@ -474,69 +438,47 @@
       this._handlers = {};
       this._maxViewCount = settings.maxVisibleMessages;
     }
-
-    /**
-     * @return {number}
-     */
     standardFontSize() {
       return settings.standardFontSize ? settings.standardFontSize : super.standardFontSize();
     }
-
-    /**
-     * @return {number}
-     */
-    cursor() {
+    cursorPosition() {
       return this._cursor;
     }
-
     /**
      * ハンドラを登録する
-     * @param {string} symbol シンボル
-     * @param {Function} method メソッド
      */
     setHandler(symbol, method) {
       this._handlers[symbol] = method;
     }
-
     /**
      * 指定したシンボルでハンドラが登録されているか
-     * @param {string} symbol シンボル
      */
     isHandled(symbol) {
       return !!this._handlers[symbol];
     }
-
     /**
-     * 指定したシンボルのハンドラを呼び出す
-     * @param {string} symbol シンボル
+     * 指定したシンボルのハンドラを呼び出す\
      */
     callHandler(symbol) {
       if (this.isHandled(symbol)) {
         this._handlers[symbol]();
       }
     }
-
-    /**
-     * @return {boolean}
-     */
     isCursorMovable() {
       return true;
     }
-
     cursorDown() {
       if (!this.isCursorMax()) {
         this._cursor++;
       }
     }
-
     /**
      * これ以上下にスクロールできない状態かどうかを計算する
-     * @return {boolean}
      */
     isCursorMax() {
       const size = this._viewTexts.length;
       let height = 0;
-      for (let i = this.cursor(); i < size; i++) {
+      for (let i = this.cursorPosition(); i < size; i++) {
         const text = this._viewTexts[i].text;
         const textHeight = this._viewTexts[i].height;
         height += textHeight === 0 ? this.calcMessageHeight(text) : textHeight;
@@ -546,47 +488,35 @@
       }
       return true;
     }
-
     cursorUp() {
-      if (this.cursor() > 0) {
+      if (this.cursorPosition() > 0) {
         this._cursor--;
       }
     }
-
     processCursorMove() {
       if (this.isCursorMovable()) {
-        const lastCursor = this.cursor();
-        if (Input.isRepeated('down') || TouchInput.wheelY > 0 || TouchInput.isDownMoved()) {
+        const lastCursor = this.cursorPosition();
+        if (Input.isRepeated('down') || TouchInput.wheelY > 0 || TouchInput.isUpMoved()) {
           this.cursorDown();
         }
-        if (Input.isRepeated('up') || TouchInput.wheelY < 0 || TouchInput.isUpMoved()) {
+        if (Input.isRepeated('up') || TouchInput.wheelY < 0 || TouchInput.isDownMoved()) {
           this.cursorUp();
         }
-        this._needRefresh = lastCursor !== this.cursor();
+        this._needRefresh = lastCursor !== this.cursorPosition();
       }
     }
-
     processCancel() {
       this.callHandler('cancel');
       SoundManager.playCancel();
     }
-
     processHandling() {
       if (this.isCancelEnabled() && this.isCancelTriggered()) {
         this.processCancel();
       }
     }
-
-    /**
-     * @return {boolean}
-     */
     isCancelEnabled() {
       return this.isHandled('cancel');
     }
-
-    /**
-     * @return {boolean}
-     */
     isCancelTriggered() {
       return (
         Input.isRepeated('cancel') ||
@@ -595,7 +525,6 @@
         TouchInput.isCancelled()
       );
     }
-
     update() {
       super.update();
       this.updateArrows();
@@ -608,20 +537,17 @@
         this.refresh();
       }
     }
-
     updateArrows() {
-      this.upArrowVisible = this.cursor() > 0;
+      this.upArrowVisible = this.cursorPosition() > 0;
       this.downArrowVisible = !this.isCursorMax();
     }
-
     refresh() {
       this.contents.clear();
       this.drawTextLog();
     }
-
     drawTextLog() {
       let height = 0;
-      for (let i = this.cursor(); i < this.cursor() + this._maxViewCount; i++) {
+      for (let i = this.cursorPosition(); i < this.cursorPosition() + this._maxViewCount; i++) {
         if (i < this._viewTexts.length) {
           const text = this._viewTexts[i].text;
           const textHeight = this._viewTexts[i].height;
@@ -637,7 +563,6 @@
         }
       }
     }
-
     /**
      * デフォルトのスクロール位置を計算する
      * @return {number}
@@ -655,18 +580,11 @@
       }
       return 0;
     }
-
-    /**
-     * @return {number}
-     */
     lineHeight() {
       return this.contents.fontSize + settings.lineSpacing;
     }
-
     /**
      * メッセージの表示高さを計算する
-     * @param {string} text テキスト
-     * @return {number}
      */
     calcMessageHeight(text) {
       this._calcMode = true;
@@ -680,7 +598,6 @@
       this._calcMode = false;
       return height + settings.messageSpacing;
     }
-
     /**
      * テキストを描画し、その幅を返す
      * @param {string} text テキスト
@@ -702,7 +619,6 @@
         return super.drawTextEx(text, x, y);
       }
     }
-
     /**
      * テキストの高さを計算する
      * @param {MV.textState} textState テキストの状態
@@ -716,7 +632,6 @@
       this._textHeight = super.calcTextHeight(textState, all);
       return this._textHeight;
     }
-
     /**
      * 改行する
      * @param {MV.textState} textState テキストの状態
@@ -727,7 +642,6 @@
         this._lineNumber++;
       }
     }
-
     /**
      * \XXX[YYY]の処理
      * textStateはすでに[までindexを進めてある
@@ -740,11 +654,8 @@
         this.obtainEscapeParamTexts(textState);
       }
     }
-
     /**
      * [YYY]のYYYを取り出し、カンマ区切りで配列化して返す
-     * @param {MV.TextState} textState
-     * @return {string[]}
      */
     obtainEscapeParamTexts(textState) {
       const arr = /^\[(.+?)\]/.exec(textState.text.slice(textState.index));
@@ -756,17 +667,12 @@
       }
     }
   }
-
-  window[Window_TextLog.name] = Window_TextLog;
-
   /**
    * テキストログを追加する
-   * @param {string} text ログに追加する文字列
    */
   function addTextLog(text) {
     currentEventLog.addMessageLog(text);
   }
-
   /**
    * 現在のイベントのログを過去のイベントのログに移動する
    */
@@ -781,21 +687,18 @@
     pastEventLog.push(currentEventLog);
     initializeCurrentEventLog();
   }
-
   /**
    * 現在のイベントのログを初期化する
    */
   function initializeCurrentEventLog() {
     currentEventLog = new EventTextLog();
   }
-
   /**
    * 過去のイベントのログを初期化する
    */
   function initializePastEventLog() {
     pastEventLog = [];
   }
-
   /**テキストログを表示できるかどうか
    * A ログが１行以上ある
    * B 空のログウィンドウを表示するフラグがtrue
@@ -809,7 +712,6 @@
       (settings.disableLogWindowSwitch === 0 || !$gameSwitches.value(settings.disableLogWindowSwitch))
     );
   }
-
   /**
    * Scene_Mapのメッセージウィンドウを退避しておくクラス
    */
@@ -824,180 +726,156 @@
       this._scrollTextWindow = scrollTextWindow;
       this._pauseWindow = pauseWindow;
     }
-
-    /**
-     * @return {Window_Message}
-     */
     get messageWindow() {
       return this._messageWindow;
     }
-
-    /**
-     * @return {Window_ScrollText}
-     */
     get scrollTextWindow() {
       return this._scrollTextWindow;
     }
-
-    /**
-     * @return {Window_PauseMenu}
-     */
     get pauseWindow() {
       return this._pauseWindow;
     }
   }
-
   /**
    * @type {EvacuatedMessageWindows}
    */
   let evacuatedMessageWindow = null;
-
-  // Scene_Mapの拡張
-  const _Scene_Map_start = Scene_Map.prototype.start;
-  Scene_Map.prototype.start = function () {
-    _Scene_Map_start.call(this);
-
-    // 呼び出し中フラグの初期化
-    this.textLogCalling = false;
-  };
-
-  const _Scene_Map_update = Scene_Map.prototype.update;
-  Scene_Map.prototype.update = function () {
-    // isSceneChangeOK時はイベント中も含まれるため、特殊な条件で許可する
-    if (this.isActive() && !SceneManager.isSceneChanging()) {
-      this.updateCallTextLog();
+  function Scene_Map_TextLogMixIn(sceneMap) {
+    const _start = sceneMap.start;
+    sceneMap.start = function () {
+      _start.call(this);
+      // 呼び出し中フラグの初期化
+      this.textLogCalling = false;
+    };
+    const _update = sceneMap.update;
+    sceneMap.update = function () {
+      // isSceneChangeOK時はイベント中も含まれるため、特殊な条件で許可する
+      if (this.isActive() && !SceneManager.isSceneChanging()) {
+        this.updateCallTextLog();
+      }
+      _update.call(this);
+    };
+    const _createMessageWindow = sceneMap.createMessageWindow;
+    sceneMap.createMessageWindow = function () {
+      /**
+       * ログシーンからスムーズに戻るために、処理を上書きして
+       * Windowインスタンスを新しく作らないようにする
+       */
+      if (settings.smoothBackFromLog && evacuatedMessageWindow) {
+        this._messageWindow = evacuatedMessageWindow.messageWindow;
+        this.addWindow(this._messageWindow);
+        this._messageWindow.subWindows().forEach(function (window) {
+          this.addWindow(window);
+        }, this);
+      } else {
+        _createMessageWindow.call(this);
+      }
+    };
+    const _createScrollTextWindow = sceneMap.createScrollTextWindow;
+    sceneMap.createScrollTextWindow = function () {
+      /**
+       * ログシーンからスムーズに戻るために、処理を上書きして
+       * Windowインスタンスを新しく作らないようにする
+       */
+      if (settings.smoothBackFromLog && evacuatedMessageWindow) {
+        this._scrollTextWindow = evacuatedMessageWindow.scrollTextWindow;
+        this.addWindow(this._scrollTextWindow);
+      } else {
+        _createScrollTextWindow.call(this);
+      }
+    };
+    if (PluginManager.isLoadedPlugin('NobleMushroom')) {
+      /**
+       * ハンドラを更新する
+       */
+      sceneMap.refreshPauseWindowHandlers = function () {
+        this._pauseWindow.setHandler(Scene_Map.symbolSave, this.callSave.bind(this));
+        this._pauseWindow.setHandler(Scene_Map.symbolLoad, this.callLoad.bind(this));
+        this._pauseWindow.setHandler('quickSave', this.callQuickSave.bind(this));
+        this._pauseWindow.setHandler('quickLoad', this.callQuickLoad.bind(this));
+        this._pauseWindow.setHandler('toTitle', this.callToTitle.bind(this));
+        this._pauseWindow.setHandler('cancel', this.offPause.bind(this));
+      };
+      /**
+       * NobleMushroom.js のほうが上に読み込まれている場合
+       */
+      if (sceneMap.createPauseWindow) {
+        const _createPauseWindow = sceneMap.createPauseWindow;
+        sceneMap.createPauseWindow = function () {
+          /**
+           * ログシーンからスムーズに戻るために、処理を上書きして
+           * Windowインスタンスを新しく作らないようにする
+           */
+          if (settings.smoothBackFromLog && evacuatedMessageWindow) {
+            this._pauseWindow = evacuatedMessageWindow.pauseWindow;
+            this.refreshPauseWindowHandlers();
+            this.addWindow(this._pauseWindow);
+          } else {
+            _createPauseWindow.call(this);
+          }
+        };
+      } else {
+        const _onMapLoaded = sceneMap.onMapLoaded;
+        sceneMap.onMapLoaded = function () {
+          _onMapLoaded.call(this);
+          if (settings.smoothBackFromLog && evacuatedMessageWindow) {
+            this._windowLayer.removeChild(this._pauseWindow);
+            this._pauseWindow = evacuatedMessageWindow.pauseWindow;
+            this.refreshPauseWindowHandlers();
+            this.addWindow(this._pauseWindow);
+          }
+        };
+      }
     }
-    _Scene_Map_update.call(this);
-  };
-
-  const _Scene_Map_createMessageWindow = Scene_Map.prototype.createMessageWindow;
-  Scene_Map.prototype.createMessageWindow = function () {
-    /**
-     * ログシーンからスムーズに戻るために、処理を上書きして
-     * Windowインスタンスを新しく作らないようにする
-     */
-    if (settings.smoothBackFromLog && evacuatedMessageWindow) {
-      this._messageWindow = evacuatedMessageWindow.messageWindow;
-      this.addWindow(this._messageWindow);
-      this._messageWindow.subWindows().forEach(function (window) {
-        this.addWindow(window);
-      }, this);
-    } else {
-      _Scene_Map_createMessageWindow.call(this);
-    }
-  };
-
-  const _Scene_Map_createScrollTextWindow = Scene_Map.prototype.createScrollTextWindow;
-  Scene_Map.prototype.createScrollTextWindow = function () {
-    /**
-     * ログシーンからスムーズに戻るために、処理を上書きして
-     * Windowインスタンスを新しく作らないようにする
-     */
-    if (settings.smoothBackFromLog && evacuatedMessageWindow) {
-      this._scrollTextWindow = evacuatedMessageWindow.scrollTextWindow;
-      this.addWindow(this._scrollTextWindow);
-    } else {
-      _Scene_Map_createScrollTextWindow.call(this);
-    }
-  };
-
-  if (PluginManager.isLoadedPlugin('NobleMushroom')) {
-    /**
-     * ハンドラを更新する
-     */
-    Scene_Map.prototype.refreshPauseWindowHandlers = function () {
-      this._pauseWindow.setHandler(Scene_Map.symbolSave, this.callSave.bind(this));
-      this._pauseWindow.setHandler(Scene_Map.symbolLoad, this.callLoad.bind(this));
-      this._pauseWindow.setHandler('quickSave', this.callQuickSave.bind(this));
-      this._pauseWindow.setHandler('quickLoad', this.callQuickLoad.bind(this));
-      this._pauseWindow.setHandler('toTitle', this.callToTitle.bind(this));
-      this._pauseWindow.setHandler('cancel', this.offPause.bind(this));
+    sceneMap.updateCallTextLog = function () {
+      if (this.isTextLogEnabled()) {
+        if (this.isTextLogCalled()) {
+          this.textLogCalling = true;
+        }
+        if (this.textLogCalling && !$gamePlayer.isMoving()) {
+          this.callTextLog();
+        }
+      } else {
+        this.textLogCalling = false;
+      }
     };
     /**
-     * NobleMushroom.js のほうが上に読み込まれている場合
+     * どういうタイミングでバックログを開いても良いか
+     *  A マップを移動中（マップイベント実行中でない）
+     *  B イベント中かつ、メッセージウィンドウが開いている
+     *  C 表示すべきログが１行以上ある
+     *  D ログ表示禁止スイッチがOFF
+     *  E NobleMushroom.js でセーブ・ロード画面を開いていない
+     *  (A || B) && C && D && E
      */
-    if (Scene_Map.prototype.createPauseWindow) {
-      const _Scene_Map_createPauseWindow = Scene_Map.prototype.createPauseWindow;
-      Scene_Map.prototype.createPauseWindow = function () {
-        /**
-         * ログシーンからスムーズに戻るために、処理を上書きして
-         * Windowインスタンスを新しく作らないようにする
-         */
-        if (settings.smoothBackFromLog && evacuatedMessageWindow) {
-          this._pauseWindow = evacuatedMessageWindow.pauseWindow;
-          this.refreshPauseWindowHandlers();
-          this.addWindow(this._pauseWindow);
-        } else {
-          _Scene_Map_createPauseWindow.call(this);
-        }
-      };
-    } else {
-      const _Scene_Map_onMapLoaded = Scene_Map.prototype.onMapLoaded;
-      Scene_Map.prototype.onMapLoaded = function () {
-        _Scene_Map_onMapLoaded.call(this);
-        if (settings.smoothBackFromLog && evacuatedMessageWindow) {
-          this._windowLayer.removeChild(this._pauseWindow);
-          this._pauseWindow = evacuatedMessageWindow.pauseWindow;
-          this.refreshPauseWindowHandlers();
-          this.addWindow(this._pauseWindow);
-        }
-      };
-    }
+    sceneMap.isTextLogEnabled = function () {
+      return (
+        (!$gameMap.isEventRunning() || ($gameMap.isEventRunning() && !this._messageWindow.isClosed())) &&
+        isTextLogEnabled() &&
+        !this.isFileListWindowActive()
+      );
+    };
+    /**
+     * NobleMushroom.js でセーブ・ロード画面を開いているかどうか
+     */
+    sceneMap.isFileListWindowActive = function () {
+      return this._fileListWindow && this._fileListWindow.isOpenAndActive();
+    };
+    sceneMap.isTextLogCalled = function () {
+      return settings.openLogKeys.some((openLogKey) => Input.isTriggered(openLogKey));
+    };
+    sceneMap.callTextLog = function () {
+      evacuatedMessageWindow = new EvacuatedMessageWindows(
+        this._messageWindow,
+        this._scrollTextWindow,
+        this._pauseWindow
+      );
+      SoundManager.playCursor();
+      SceneManager.push(Scene_TextLog);
+      $gameTemp.clearDestination();
+    };
   }
-
-  Scene_Map.prototype.updateCallTextLog = function () {
-    if (this.isTextLogEnabled()) {
-      if (this.isTextLogCalled()) {
-        this.textLogCalling = true;
-      }
-      if (this.textLogCalling && !$gamePlayer.isMoving()) {
-        this.callTextLog();
-      }
-    } else {
-      this.textLogCalling = false;
-    }
-  };
-
-  /**
-   * どういうタイミングでバックログを開いても良いか
-   *  A マップを移動中（マップイベント実行中でない）
-   *  B イベント中かつ、メッセージウィンドウが開いている
-   *  C 表示すべきログが１行以上ある
-   *  D ログ表示禁止スイッチがOFF
-   *  E NobleMushroom.js でセーブ・ロード画面を開いていない
-   *  (A || B) && C && D && E
-   */
-  Scene_Map.prototype.isTextLogEnabled = function () {
-    return (
-      (!$gameMap.isEventRunning() || ($gameMap.isEventRunning() && !this._messageWindow.isClosed())) &&
-      isTextLogEnabled() &&
-      !this.isFileListWindowActive()
-    );
-  };
-
-  /**
-   * NobleMushroom.js でセーブ・ロード画面を開いているかどうか
-   * @return {boolean}
-   */
-  Scene_Map.prototype.isFileListWindowActive = function () {
-    return this._fileListWindow && this._fileListWindow.isOpenAndActive();
-  };
-
-  Scene_Map.prototype.isTextLogCalled = function () {
-    return settings.openLogKeys.some((openLogKey) => Input.isTriggered(openLogKey));
-  };
-
-  Scene_Map.prototype.callTextLog = function () {
-    evacuatedMessageWindow = new EvacuatedMessageWindows(
-      this._messageWindow,
-      this._scrollTextWindow,
-      this._pauseWindow
-    );
-    SoundManager.playCursor();
-    SceneManager.push(Scene_TextLog);
-    $gameTemp.clearDestination();
-  };
-
+  Scene_Map_TextLogMixIn(Scene_Map.prototype);
   /**
    * Window_ScrollText
    */
@@ -1016,110 +894,100 @@
     }
     _Window_ScrollText_terminateMessage.call(this);
   };
-
-  // Window_Messageの拡張
-  // メッセージ表示時にログに追加する
-  const _Window_Message_terminateMessage = Window_Message.prototype.terminateMessage;
-  Window_Message.prototype.terminateMessage = function () {
-    if (
-      (settings.disableLoggingSwitch === 0 || !$gameSwitches.value(settings.disableLoggingSwitch)) &&
-      $gameMessage.hasText()
-    ) {
-      let message = {
-        text: '',
-      };
-      // YEP_MessageCore.js or DarkPlasma_NameWindow.js のネーム表示ウィンドウに対応
-      if (this.hasNameWindow() && this._nameWindow.isOpen() && settings.includeName) {
-        const nameColor = this.nameColorInLog(this._nameWindow._text);
-        message.text += `\x1bC[${nameColor}]${this._nameWindow._text}\n\x1bC[0]`;
-      }
-      message.text += this.convertEscapeCharacters($gameMessage.allText());
-      addTextLog(message.text);
-      if ($gameMessage.isChoice()) {
-        this._choiceWindow.addToLog();
-      }
-    }
-    _Window_Message_terminateMessage.call(this);
-  };
-
-  // YEP_MessageCore.js や DarkPlasma_NameWindow のネーム表示ウィンドウを使用しているかどうか
-  Window_Message.prototype.hasNameWindow = function () {
-    return (
-      this._nameWindow &&
-      (typeof Window_NameBox !== 'undefined' || PluginManager.isLoadedPlugin('DarkPlasma_NameWindow'))
-    );
-  };
-
-  Window_Message.prototype.nameColorInLog = function (name) {
-    if (PluginManager.isLoadedPlugin('DarkPlasma_NameWindow')) {
-      return this.colorByName(name);
-    }
-    if (Yanfly && Yanfly.Param && Yanfly.Param.MSGNameBoxColor) {
-      return Yanfly.Param.MSGNameBoxColor;
-    }
-    return 0;
-  };
-
-  const _Window_ChoiceList_windowWidth = Window_ChoiceList.prototype.windowWidth;
-  Window_ChoiceList.prototype.windowWidth = function () {
-    // 再開時に選択肢が開いているとエラーになる不具合対策
-    if (!this._windowContentsSprite) {
-      return 96;
-    }
-    return _Window_ChoiceList_windowWidth.call(this);
-  };
-
-  /**
-   * 選択した内容をログに記録する
-   */
-  Window_ChoiceList.prototype.addToLog = function () {
-    const chosenIndex = $gameMessage.chosenIndex();
-    if (
-      settings.includeChoice &&
-      (settings.disableLoggingSwitch === 0 || !$gameSwitches.value(settings.disableLoggingSwitch)) &&
-      $gameMessage.hasText()
-    ) {
-      let text = '';
-      // MPP_ChoiceEx.js は choiceCancelType を-1ではなく選択肢配列のサイズにする。
-      // 競合回避のため、 choiceCancelType を -1 に限定しない判定を行う。
+  function Window_Message_TextLogMixIn(windowClass) {
+    // Window_Messageの拡張
+    // メッセージ表示時にログに追加する
+    const _terminateMessage = windowClass.terminateMessage;
+    windowClass.terminateMessage = function () {
       if (
-        chosenIndex === $gameMessage.choiceCancelType() &&
-        (chosenIndex < 0 || $gameMessage.choices().length <= chosenIndex)
+        (settings.disableLoggingSwitch === 0 || !$gameSwitches.value(settings.disableLoggingSwitch)) &&
+        $gameMessage.hasText()
       ) {
-        if (!settings.includeChoiceCancel) {
-          return;
+        let message = {
+          text: '',
+        };
+        // YEP_MessageCore.js or DarkPlasma_NameWindow.js のネーム表示ウィンドウに対応
+        if (this.hasNameWindow() && this._nameWindow.isOpen() && settings.includeName) {
+          const nameColor = this.nameColorInLog(this._nameWindow.text());
+          message.text += `\x1bC[${nameColor}]${this._nameWindow.text()}\n\x1bC[0]`;
         }
-        text = settings.choiceCancelText;
-      } else {
-        text = $gameMessage.choices()[chosenIndex];
+        message.text += this.convertEscapeCharacters($gameMessage.allText());
+        addTextLog(message.text);
+        if ($gameMessage.isChoice()) {
+          this._choiceWindow.addToLog();
+        }
       }
-      let message = {
-        text: settings.choiceFormat.replace(/{choice}/gi, `\x1bC[${settings.choiceColor}]${text}\x1bC[0]`),
-      };
-      addTextLog(message.text);
-    }
-  };
-
+      _terminateMessage.call(this);
+    };
+    // DarkPlasma_NameWindow のネーム表示ウィンドウを使用しているかどうか
+    windowClass.hasNameWindow = function () {
+      return !!this._nameWindow && PluginManager.isLoadedPlugin('DarkPlasma_NameWindow');
+    };
+    windowClass.nameColorInLog = function (name) {
+      if (PluginManager.isLoadedPlugin('DarkPlasma_NameWindow')) {
+        return this.colorByName(name);
+      }
+      return 0;
+    };
+  }
+  Window_Message_TextLogMixIn(Window_Message.prototype);
+  function Window_ChoiceList_TextLogMixIn(windowClass) {
+    const _windowWidth = windowClass.windowWidth;
+    windowClass.windowWidth = function () {
+      // 再開時に選択肢が開いているとエラーになる不具合対策
+      if (!this._windowContentsSprite) {
+        return 96;
+      }
+      return _windowWidth.call(this);
+    };
+    /**
+     * 選択した内容をログに記録する
+     */
+    windowClass.addToLog = function () {
+      const chosenIndex = $gameMessage.chosenIndex();
+      if (
+        settings.includeChoice &&
+        (settings.disableLoggingSwitch === 0 || !$gameSwitches.value(settings.disableLoggingSwitch)) &&
+        $gameMessage.hasText()
+      ) {
+        let text = '';
+        // MPP_ChoiceEx.js は choiceCancelType を-1ではなく選択肢配列のサイズにする。
+        // 競合回避のため、 choiceCancelType を -1 に限定しない判定を行う。
+        if (
+          chosenIndex === $gameMessage.choiceCancelType() &&
+          (chosenIndex < 0 || $gameMessage.choices().length <= chosenIndex)
+        ) {
+          if (!settings.includeChoiceCancel) {
+            return;
+          }
+          text = settings.choiceCancelText;
+        } else {
+          text = $gameMessage.choices()[chosenIndex];
+        }
+        let message = {
+          text: settings.choiceFormat.replace(/{choice}/gi, `\x1bC[${settings.choiceColor}]${text}\x1bC[0]`),
+        };
+        addTextLog(message.text);
+      }
+    };
+  }
+  Window_ChoiceList_TextLogMixIn(Window_ChoiceList.prototype);
   const _Game_Message_clear = Game_Message.prototype.clear;
   Game_Message.prototype.clear = function () {
     _Game_Message_clear.call(this);
     this._chosenIndex = null;
   };
-
   const _Game_Message_onChoice = Game_Message.prototype.onChoice;
   Game_Message.prototype.onChoice = function (index) {
     _Game_Message_onChoice.call(this, index);
     this._chosenIndex = index;
   };
-
   /**
    * 選択肢で選んだ番号を返す
-   * @return {number|null}
    */
   Game_Message.prototype.chosenIndex = function () {
     return this._chosenIndex;
   };
-
   const _Game_Player_reserveTransfer = Game_Player.prototype.reserveTransfer;
   Game_Player.prototype.reserveTransfer = function (mapId, x, y, d, fadeType) {
     _Game_Player_reserveTransfer.call(this, mapId, x, y, d, fadeType);
@@ -1129,7 +997,6 @@
      */
     evacuatedMessageWindow = null;
   };
-
   const _Game_System_initialize = Game_System.prototype.initialize;
   Game_System.prototype.initialize = function () {
     _Game_System_initialize.call(this);
@@ -1137,7 +1004,6 @@
     initializePastEventLog();
     evacuatedMessageWindow = null;
   };
-
   const _Game_System_onAfterLoad = Game_System.prototype.onAfterLoad;
   Game_System.prototype.onAfterLoad = function () {
     _Game_System_onAfterLoad.call(this);
@@ -1145,78 +1011,72 @@
     initializePastEventLog();
     evacuatedMessageWindow = null;
   };
-
   /**
    * ログにテキストを記録する
-   * @param {string} text ログに記録したいテキスト
    */
   Game_System.prototype.insertTextLog = function (text) {
     addTextLog(text);
   };
-
-  /**
-   * イベント終了時にそのイベントのログを直前のイベントのログとして保持する
-   */
-  const _Game_Interpreter_terminate = Game_Interpreter.prototype.terminate;
-  Game_Interpreter.prototype.terminate = function () {
-    // 以下の場合はリセットしない
-    //  - バトルイベント終了時
-    //  - コモンイベント終了時
-    //  - 並列イベント終了時
-    if (!this.isCommonOrBattleEvent() && !this.isParallelEvent()) {
-      moveToPrevLog();
-      /**
-       * イベント終了時に退避しておいたメッセージウィンドウも破棄する
-       */
-      evacuatedMessageWindow = null;
-    }
-    _Game_Interpreter_terminate.call(this);
-  };
-
-  // コモンイベントは以下の条件を満たす
-  //  A イベント中にcommand117で実行されるコモンイベント（depth > 0）
-  //  B IDなし（eventId === 0）
-  // A || B
-  // ただし、バトルイベントもeventIdが0のため、厳密にその二者を区別はできない
-  Game_Interpreter.prototype.isCommonOrBattleEvent = function () {
-    return this._depth > 0 || this._eventId === 0;
-  };
-
-  // 並列実行イベントかどうか
-  // コモンイベントは判定不能のため、isCommonOrBattleEventに任せる
-  Game_Interpreter.prototype.isParallelEvent = function () {
-    const event = $gameMap.event(this._eventId);
-    return event && this.isOnCurrentMap() && event.isTriggerIn([4]);
-  };
-
-  const _Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
-  Game_Interpreter.prototype.pluginCommand = function (command, args) {
-    _Game_Interpreter_pluginCommand.call(this, command, args);
-    switch (command || '') {
-      case 'showTextLog':
-        if (isTextLogEnabled()) {
-          SceneManager.push(Scene_TextLog);
-        }
-        break;
-      case 'insertLogSplitter':
-        addTextLog(settings.logSplitter);
-        break;
-      case 'insertTextLog':
-        addTextLog(args[0]);
-        break;
-    }
-  };
-
+  function Game_Interpreter_TextLogMixIn(gameInterpreter) {
+    /**
+     * イベント終了時にそのイベントのログを直前のイベントのログとして保持する
+     */
+    const _terminate = gameInterpreter.terminate;
+    gameInterpreter.terminate = function () {
+      // 以下の場合はリセットしない
+      //  - バトルイベント終了時
+      //  - コモンイベント終了時
+      //  - 並列イベント終了時
+      if (!this.isCommonOrBattleEvent() && !this.isParallelEvent()) {
+        moveToPrevLog();
+        /**
+         * イベント終了時に退避しておいたメッセージウィンドウも破棄する
+         */
+        evacuatedMessageWindow = null;
+      }
+      _terminate.call(this);
+    };
+    // コモンイベントは以下の条件を満たす
+    //  A イベント中にcommand117で実行されるコモンイベント（depth > 0）
+    //  B IDなし（eventId === 0）
+    // A || B
+    // ただし、バトルイベントもeventIdが0のため、厳密にその二者を区別はできない
+    gameInterpreter.isCommonOrBattleEvent = function () {
+      return this._depth > 0 || this._eventId === 0;
+    };
+    // 並列実行イベントかどうか
+    // コモンイベントは判定不能のため、isCommonOrBattleEventに任せる
+    gameInterpreter.isParallelEvent = function () {
+      const event = $gameMap.event(this._eventId);
+      return event && this.isOnCurrentMap() && event.isTriggerIn([4]);
+    };
+    const _Game_Interpreter_pluginCommand = gameInterpreter.pluginCommand;
+    gameInterpreter.pluginCommand = function (command, args) {
+      _Game_Interpreter_pluginCommand.call(this, command, args);
+      switch (command || '') {
+        case 'showTextLog':
+          if (isTextLogEnabled()) {
+            SceneManager.push(Scene_TextLog);
+          }
+          break;
+        case 'insertLogSplitter':
+          addTextLog(settings.logSplitter);
+          break;
+        case 'insertTextLog':
+          addTextLog(args[0]);
+          break;
+      }
+    };
+  }
+  Game_Interpreter_TextLogMixIn(Game_Interpreter.prototype);
   // Scene_Menu拡張
   Scene_Menu.prototype.commandTextLog = function () {
     SceneManager.push(Scene_TextLog);
   };
-
   // Window_MenuCommand拡張
   Window_MenuCommand.prototype.isTextLogEnabled = function () {
     return isTextLogEnabled();
   };
-
   // TouchInput拡張 マウスドラッグ/スワイプ対応
   const _TouchInput_clear = TouchInput.clear;
   TouchInput.clear = function () {
@@ -1224,7 +1084,6 @@
     this._deltaX = 0;
     this._deltaY = 0;
   };
-
   const _TouchInput_update = TouchInput.update;
   TouchInput.update = function () {
     _TouchInput_update.call(this);
@@ -1233,7 +1092,6 @@
       this._deltaY = 0;
     }
   };
-
   const _TouchInput_onMove = TouchInput._onMove;
   TouchInput._onMove = function (x, y) {
     if (this._x !== 0) {
@@ -1244,15 +1102,14 @@
     }
     _TouchInput_onMove.call(this, x, y);
   };
-
   // 上下にドラッグ、スワイプしているかどうか
   // 推し続けた時間の剰余を取ってタイミングを調整しているが
   // 環境による差異については未検証
   TouchInput.isUpMoved = function () {
     return this._deltaY < 0 && this._pressedTime % 10 === 0;
   };
-
   TouchInput.isDownMoved = function () {
     return this._deltaY > 0 && this._pressedTime % 10 === 0;
   };
+  window.Window_TextLog = Window_TextLog;
 })();

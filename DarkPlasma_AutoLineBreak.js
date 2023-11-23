@@ -8,7 +8,7 @@
  * 2022/04/03 1.0.0 公開
  */
 
-/*:ja
+/*:
  * @plugindesc ウィンドウ幅を超える日本語文章を自動で折り返す
  * @author DarkPlasma
  * @license MIT
