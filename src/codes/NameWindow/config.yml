@@ -4,6 +4,9 @@ DarkPlasma_NameWindow:
   license: MIT
   excludeLicenseManager: false
   histories:
+    - date: 2023/11/23
+      version: 2.1.1
+      description: 'typescript移行'
     - date: 2022/08/15
       version: 2.1.0
       description: 'ウィンドウ背景設定を追加'
