@@ -4,6 +4,11 @@ DarkPlasma_TextLog:
   license: MIT
   excludeLicenseManager: false
   histories:
+    - date: 2023/11/23
+      version: 3.0.0
+      description: 'typescript移行'
+    - description: 'YEP_MessageCore対応をオミット'
+    - description: 'スワイプの挙動を逆方向に変更'
     - date: 2022/07/15
       version: 2.2.0
       description: 'メニュー禁止でもログを開けるように変更'
