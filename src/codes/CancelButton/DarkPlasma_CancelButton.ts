@@ -1,9 +1,11 @@
+/// <reference path="./CancelButton.d.ts" />
+
 import { settings } from './_build/DarkPlasma_CancelButton_parameters';
 
 /**
  * @param {typeof Input} input
  */
-function Input_CancelButtonMixIn(input) {
+function Input_CancelButtonMixIn(input: typeof Input) {
   const _clear = input.clear;
   input.clear = function () {
     _clear.call(this);
@@ -24,7 +26,7 @@ function Input_CancelButtonMixIn(input) {
    * ボタン押下をキー入力に変換する
    * @param {string} buttonName ボタン名
    */
-  input.virtualClick = function (buttonName) {
+  input.virtualClick = function (buttonName: string) {
     this._virtualButton = buttonName;
   };
 }
@@ -34,12 +36,12 @@ Input_CancelButtonMixIn(Input);
 /**
  * @param {typeof TouchInput} touchInput
  */
-function TouchInput_CancelButtonMixIn(touchInput) {
+function TouchInput_CancelButtonMixIn(touchInput: typeof TouchInput) {
   /**
    * Hover検出のため、マウス移動のたびに TouchInput.x, yを更新する
    * @param {MouseEvent} event
    */
-  touchInput._onMouseMove = function (event) {
+  touchInput._onMouseMove = function (event: MouseEvent) {
     this._onMove(Graphics.pageToCanvasX(event.pageX), Graphics.pageToCanvasY(event.pageY));
   };
 
@@ -57,7 +59,6 @@ function TouchInput_CancelButtonMixIn(touchInput) {
 
   /**
    * キャンセル長押し判定。とりあえず右クリックのみ対応
-   * @return {boolean}
    */
   touchInput.isCancelPressed = function () {
     return this._rightButtonPressed || this.isCancelled();
@@ -71,8 +72,8 @@ TouchInput_CancelButtonMixIn(TouchInput);
  * @param {number} buttonX
  * @param {number} buttonY
  */
-function Scene_CreateCancelButtonMixIn(sceneClass, buttonX, buttonY) {
-  if (sceneClass.createDisplayObjects) {
+function Scene_CreateCancelButtonMixIn(sceneClass: Scene_Base|Scene_Map|Scene_Battle, buttonX: number, buttonY: number) {
+  if ("createDisplayObjects" in sceneClass) {
     const _createDisplayObjects = sceneClass.createDisplayObjects;
     sceneClass.createDisplayObjects = function () {
       _createDisplayObjects.call(this);
@@ -88,11 +89,12 @@ function Scene_CreateCancelButtonMixIn(sceneClass, buttonX, buttonY) {
 }
 
 settings.sceneList
-  .filter((scene) => !!window[scene.name])
+  .filter((scene) => scene.name in window)
   .forEach((scene) => {
+    const sceneName = scene.name as keyof typeof window;
     const buttonX = scene.useDefaultPosition ? settings.defaultX : scene.x;
     const buttonY = scene.useDefaultPosition ? settings.defaultY : scene.y;
-    Scene_CreateCancelButtonMixIn(window[scene.name].prototype, buttonX, buttonY);
+    Scene_CreateCancelButtonMixIn(window[sceneName].prototype, buttonX, buttonY);
   });
 
 /**
@@ -108,7 +110,7 @@ if (SceneManager.createCustomMenuClass) {
       sceneClass.prototype.create = function () {
         _createMethod.call(this);
         if (sceneSetting.useDefaultPosition) {
-          this._cancelButton.setPosition(sceneSetting.defaultX, sceneSetting.defaultY);
+          this._cancelButton.setPosition(settings.defaultX, settings.defaultY);
         } else {
           this._cancelButton.setPosition(sceneSetting.x, sceneSetting.y);
         }
@@ -123,12 +125,12 @@ if (SceneManager.createCustomMenuClass) {
  * シーン中の全ての Window_Selectable から参照可能にする
  * @type {Sprite_CancelButton|null}
  */
-let cancelButton = null;
+let cancelButton: Sprite_CancelButton|null = null;
 
 /**
  * @param {Scene_Base.prototype} sceneClass
  */
-function Scene_CancelButtonMixIn(sceneClass) {
+function Scene_CancelButtonMixIn(sceneClass: Scene_Base) {
   sceneClass.createCancelButton = function (buttonX, buttonY) {
     if (this._cancelButton) {
       this._cancelButton.setPosition(buttonX, buttonY);
@@ -163,11 +165,15 @@ function Scene_CancelButtonMixIn(sceneClass) {
   };
 
   const _popSccene = sceneClass.popScene;
-  sceneClass.popScene = function () {
+  sceneClass.popScene = function (this: Scene_Base) {
     if (this._cancelButton && this._cancelButton.isTriggered() && !this._mustBePopScene) {
       this._mustBePopScene = true;
       this._backWait = settings.backWait;
-      this._windowLayer.children.forEach((window) => window.deactivate());
+      this._windowLayer.children.forEach((window) => {
+        if ("deactivate" in window) {
+          (window as Window_Base).deactivate();
+        }
+      });
       cancelButton = null;
       return;
     }
@@ -178,6 +184,11 @@ function Scene_CancelButtonMixIn(sceneClass) {
 Scene_CancelButtonMixIn(Scene_Base.prototype);
 
 class Sprite_CancelButton extends Sprite_Button {
+  _defaultBitmap: Bitmap;
+  _hoveredBitmap: Bitmap;
+  _pressedBitmap: Bitmap;
+  _isTriggered: boolean;
+
   initialize() {
     super.initialize();
     this._defaultBitmap = ImageManager.loadBitmap('img/', settings.buttonImage.default);
@@ -188,7 +199,7 @@ class Sprite_CancelButton extends Sprite_Button {
     this._isTriggered = false;
   }
 
-  setPosition(x, y) {
+  setPosition(x: number, y: number) {
     this.x = x;
     this.y = y;
   }
@@ -233,7 +244,7 @@ class Sprite_CancelButton extends Sprite_Button {
 /**
  * @param {Window_Selectable.prototype} windowClass
  */
-function Window_Selectable_CancelButtonMixIn(windowClass) {
+function Window_Selectable_CancelButtonMixIn(windowClass: Window_Selectable) {
   const _processCancel = windowClass.processCancel;
   windowClass.processCancel = function () {
     if (cancelButton) {

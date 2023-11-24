@@ -4,6 +4,11 @@ DarkPlasma_CancelButton:
   license: MIT
   excludeLicenseManager: false
   histories:
+    - date: 2023/11/24
+      version: 3.0.3
+      description: 'DarkPlasma_TextLog との依存関係を明記'
+    - description: 'typescript移行'
+    - description: 'SceneCustomMenu.jsで追加したシーンでデフォルト座標が使えない不具合の修正'
     - date: 2022/08/14
       version: 3.0.2
       description: '子クラスで親クラスから引き継いだ設定を上書きできるよう修正'
@@ -156,6 +161,7 @@ DarkPlasma_CancelButton:
     base: []
     orderAfter:
       - name: SceneCustomMenu
+      - name: DarkPlasma_TextLog
     orderBefore: []
   help:
     ja: |
@@ -170,4 +176,4 @@ DarkPlasma_CancelButton:
 
       ※以下の前提を満たしている必要があります。
       - シーンクラスがグローバルに定義されていること
-      - ウィンドウが Window_Selectable を継承していること
+      - ウィンドウがキャンセルハンドラを実装していること

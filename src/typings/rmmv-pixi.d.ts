@@ -7025,7 +7025,7 @@ interface ImageManagerStatic {
      * @returns {Bitmap} 
      * @memberof ImageManagerStatic
      */
-    loadBitmap(folder: string, filename: string, hue: number, smooth: boolean): Bitmap;
+    loadBitmap(folder: string, filename: string, hue?: number, smooth?: boolean): Bitmap;
     /**
      * Loads an empty Bitmap object and returns it.
      * 
