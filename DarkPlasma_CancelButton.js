@@ -1,9 +1,12 @@
-// DarkPlasma_CancelButton 3.0.2
+// DarkPlasma_CancelButton 3.0.3
 // Copyright (c) 2022 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2023/11/24 3.0.3 DarkPlasma_TextLog との依存関係を明記
+ *                  typescript移行
+ *                  SceneCustomMenu.jsで追加したシーンでデフォルト座標が使えない不具合の修正
  * 2022/08/14 3.0.2 子クラスで親クラスから引き継いだ設定を上書きできるよう修正
  *            3.0.1 マップシーンに表示できない不具合を修正
  * 2022/07/18 3.0.0 rollup移行
@@ -18,7 +21,7 @@
  *            1.0.0 公開
  */
 
-/*:ja
+/*:
  * @plugindesc 任意のシーンにキャンセルボタンを配置する
  * @author DarkPlasma
  * @license MIT
@@ -27,6 +30,7 @@
  * @url https://github.com/elleonard/DarkPlasma-MV-Plugins/tree/release
  *
  * @orderAfter SceneCustomMenu
+ * @orderAfter DarkPlasma_TextLog
  *
  * @param buttonImage
  * @text ボタン画像
@@ -65,7 +69,7 @@
  * @default false
  *
  * @help
- * version: 3.0.2
+ * version: 3.0.3
  * キー入力可能ウィンドウを持つ任意のシーン（※）について、
  * キャンセルキーと同等の効果を持つボタン（以下、キャンセルボタン）を配置します。
  *
@@ -77,10 +81,11 @@
  *
  * ※以下の前提を満たしている必要があります。
  * - シーンクラスがグローバルに定義されていること
- * - ウィンドウが Window_Selectable を継承していること
+ * - ウィンドウがキャンセルハンドラを実装していること
  *
  * 本プラグインを下記プラグインと共に利用する場合、それよりも下に追加してください。
  * SceneCustomMenu
+ * DarkPlasma_TextLog
  */
 /*~struct~ButtonImage:
  * @param default
@@ -168,7 +173,6 @@
       _clear.call(this);
       this._virtualButton = null;
     };
-
     const _update = input.update;
     input.update = function () {
       _update.call(this);
@@ -178,7 +182,6 @@
         this._virtualButton = null;
       }
     };
-
     /**
      * ボタン押下をキー入力に変換する
      * @param {string} buttonName ボタン名
@@ -187,9 +190,7 @@
       this._virtualButton = buttonName;
     };
   }
-
   Input_CancelButtonMixIn(Input);
-
   /**
    * @param {typeof TouchInput} touchInput
    */
@@ -201,37 +202,31 @@
     touchInput._onMouseMove = function (event) {
       this._onMove(Graphics.pageToCanvasX(event.pageX), Graphics.pageToCanvasY(event.pageY));
     };
-
     const __onMouseUp = touchInput._onMouseUp;
     touchInput._onMouseUp = function (event) {
       __onMouseUp.call(this, event);
       this._rightButtonPressed = false;
     };
-
     const __onRightButtonDown = touchInput._onRightButtonDown;
     touchInput._onRightButtonDown = function (event) {
       __onRightButtonDown.call(this, event);
       this._rightButtonPressed = true;
     };
-
     /**
      * キャンセル長押し判定。とりあえず右クリックのみ対応
-     * @return {boolean}
      */
     touchInput.isCancelPressed = function () {
       return this._rightButtonPressed || this.isCancelled();
     };
   }
-
   TouchInput_CancelButtonMixIn(TouchInput);
-
   /**
    * @param {Scene_Base.prototype} sceneClass
    * @param {number} buttonX
    * @param {number} buttonY
    */
   function Scene_CreateCancelButtonMixIn(sceneClass, buttonX, buttonY) {
-    if (sceneClass.createDisplayObjects) {
+    if ('createDisplayObjects' in sceneClass) {
       const _createDisplayObjects = sceneClass.createDisplayObjects;
       sceneClass.createDisplayObjects = function () {
         _createDisplayObjects.call(this);
@@ -245,15 +240,14 @@
       };
     }
   }
-
   settings.sceneList
-    .filter((scene) => !!window[scene.name])
+    .filter((scene) => scene.name in window)
     .forEach((scene) => {
+      const sceneName = scene.name;
       const buttonX = scene.useDefaultPosition ? settings.defaultX : scene.x;
       const buttonY = scene.useDefaultPosition ? settings.defaultY : scene.y;
-      Scene_CreateCancelButtonMixIn(window[scene.name].prototype, buttonX, buttonY);
+      Scene_CreateCancelButtonMixIn(window[sceneName].prototype, buttonX, buttonY);
     });
-
   /**
    * SceneCustomMenu.js 対応
    */
@@ -267,7 +261,7 @@
         sceneClass.prototype.create = function () {
           _createMethod.call(this);
           if (sceneSetting.useDefaultPosition) {
-            this._cancelButton.setPosition(sceneSetting.defaultX, sceneSetting.defaultY);
+            this._cancelButton.setPosition(settings.defaultX, settings.defaultY);
           } else {
             this._cancelButton.setPosition(sceneSetting.x, sceneSetting.y);
           }
@@ -276,14 +270,12 @@
       return sceneClass;
     };
   }
-
   /**
    * キャンセルボタン
    * シーン中の全ての Window_Selectable から参照可能にする
    * @type {Sprite_CancelButton|null}
    */
   let cancelButton = null;
-
   /**
    * @param {Scene_Base.prototype} sceneClass
    */
@@ -300,7 +292,6 @@
       this.addChild(this._cancelButton);
       this._cancelButton.setPosition(buttonX, buttonY);
     };
-
     sceneClass.triggerBackButton = function () {
       if (!settings.enableWithDesignMode && Utils.isDesignMode && Utils.isDesignMode()) {
         return;
@@ -308,7 +299,6 @@
       this._cancelButton.trigger();
       Input.virtualClick('cancel');
     };
-
     const _update = sceneClass.update;
     sceneClass.update = function () {
       _update.call(this);
@@ -320,22 +310,23 @@
         }
       }
     };
-
     const _popSccene = sceneClass.popScene;
     sceneClass.popScene = function () {
       if (this._cancelButton && this._cancelButton.isTriggered() && !this._mustBePopScene) {
         this._mustBePopScene = true;
         this._backWait = settings.backWait;
-        this._windowLayer.children.forEach((window) => window.deactivate());
+        this._windowLayer.children.forEach((window) => {
+          if ('deactivate' in window) {
+            window.deactivate();
+          }
+        });
         cancelButton = null;
         return;
       }
       _popSccene.call(this);
     };
   }
-
   Scene_CancelButtonMixIn(Scene_Base.prototype);
-
   class Sprite_CancelButton extends Sprite_Button {
     initialize() {
       super.initialize();
@@ -352,12 +343,10 @@
       this.scale.y = settings.scale / 100;
       this._isTriggered = false;
     }
-
     setPosition(x, y) {
       this.x = x;
       this.y = y;
     }
-
     update() {
       super.update();
       if (this.isPressed()) {
@@ -368,33 +357,27 @@
         this.bitmap = this._defaultBitmap;
       }
     }
-
     isButtonTouched() {
       const x = this.canvasToLocalX(TouchInput.x);
       const y = this.canvasToLocalY(TouchInput.y);
       return x >= 0 && y >= 0 && x < this.width * this.scale.x && y < this.height * this.scale.y;
     }
-
     isHovered() {
       return this.isButtonTouched() && !TouchInput.isPressed();
     }
-
     isPressed() {
       return (
         (this.isButtonTouched() && TouchInput.isPressed()) ||
         (this.isTriggered() && (Input.isPressed('cancel') || TouchInput.isCancelPressed()))
       );
     }
-
     isTriggered() {
       return this._isTriggered;
     }
-
     trigger() {
       this._isTriggered = true;
     }
   }
-
   /**
    * @param {Window_Selectable.prototype} windowClass
    */
@@ -407,6 +390,5 @@
       _processCancel.call(this);
     };
   }
-
   Window_Selectable_CancelButtonMixIn(Window_Selectable.prototype);
 })();
