@@ -1,9 +1,10 @@
-// DarkPlasma_TextLog 3.0.0
+// DarkPlasma_TextLog 3.1.0
 // Copyright (c) 2017 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2023/11/24 3.1.0 Scene_TextLog クラスを公開
  * 2023/11/23 3.0.0 typescript移行
  *                  YEP_MessageCore対応をオミット
  *                  スワイプの挙動を逆方向に変更
@@ -213,7 +214,7 @@
  * @default []
  *
  * @help
- * version: 3.0.0
+ * version: 3.1.0
  * イベントのテキストログを表示します。
  *
  * イベント会話中またはマップ上で pageup キー（L2ボタン）でログを表示します。
@@ -1111,5 +1112,6 @@
   TouchInput.isDownMoved = function () {
     return this._deltaY > 0 && this._pressedTime % 10 === 0;
   };
+  window.Scene_TextLog = Scene_TextLog;
   window.Window_TextLog = Window_TextLog;
 })();
