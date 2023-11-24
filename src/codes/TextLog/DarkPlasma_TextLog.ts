@@ -936,8 +936,11 @@ TouchInput.isDownMoved = function () {
   return this._deltaY > 0 && this._pressedTime % 10 === 0;
 };
 
+type _Scene_TextLog = typeof Scene_TextLog;
 type _Window_TextLog = typeof Window_TextLog;
 declare global {
+  var Scene_TextLog: _Scene_TextLog;
   var Window_TextLog: _Window_TextLog;
 }
+window.Scene_TextLog = Scene_TextLog;
 window.Window_TextLog = Window_TextLog;

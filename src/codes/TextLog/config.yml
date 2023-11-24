@@ -4,6 +4,9 @@ DarkPlasma_TextLog:
   license: MIT
   excludeLicenseManager: false
   histories:
+    - date: 2023/11/24
+      version: 3.1.0
+      description: 'Scene_TextLog クラスを公開'
     - date: 2023/11/23
       version: 3.0.0
       description: 'typescript移行'
