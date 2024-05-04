@@ -9,12 +9,7 @@ class PluginLicense {
   }
 
   static fromObject(object) {
-    return new PluginLicense(
-      object.pluginName,
-      object.author,
-      object.copyright,
-      object.license.type
-    );
+    return new PluginLicense(object.pluginName, object.author, object.copyright, object.license.type);
   }
 
   get pluginName() {
@@ -35,17 +30,17 @@ class PluginLicense {
 
   toString() {
     return `${this._pluginName}
-${this._copyright ? this._copyright : ""}
+${this._copyright ? this._copyright : ''}
 ${this.licenseText()}
 ${this.licenseUrl()}`;
   }
 
   licenseText() {
-    return $dataLicense[this._licenseType] ? $dataLicense[this._licenseType].text : "";
+    return $dataLicense[this._licenseType] ? $dataLicense[this._licenseType].text : '';
   }
 
   licenseUrl() {
-    return $dataLicense[this._licenseType] ? $dataLicense[this._licenseType].url : "";
+    return $dataLicense[this._licenseType] ? $dataLicense[this._licenseType].url : '';
   }
 }
 
@@ -55,52 +50,47 @@ ${this.licenseUrl()}`;
 const pluginLicenses = [];
 
 const LICENSE_TYPE = {
-  MIT: "MIT",
-  BSD2: "BSD-2-Clause",
-  BSD3: "BSD-3-Clause",
-  GPL3: "GPL 3.0",
-  CC0: "CC0",
-  PD: "public domain",
-  NYSL: "NYSL 0.9982",
-  WTFPL: "WTFPL",
-  NL: "No License",
+  MIT: 'MIT',
+  BSD2: 'BSD-2-Clause',
+  BSD3: 'BSD-3-Clause',
+  GPL3: 'GPL 3.0',
+  CC0: 'CC0',
+  PD: 'public domain',
+  NYSL: 'NYSL 0.9982',
+  NL: 'No License',
 };
 
 /**
  * ライセンス表示文のデフォルトセット
  */
 const DEFAULT_LICENSE = {
-  "MIT": {
-    "text": "This software is released under the MIT License.",
-    "url": "http://opensource.org/licenses/mit-license.php",
+  MIT: {
+    text: 'This software is released under the MIT License.',
+    url: 'https://opensource.org/license/mit',
   },
-  "BSD-2-Clause": {
-    "text": "This software is released under the FreeBSD License.",
-    "url": "https://opensource.org/licenses/BSD-2-Clause",
+  'BSD-2-Clause': {
+    text: 'This software is released under the FreeBSD License.',
+    url: 'https://opensource.org/licenses/BSD-2-Clause',
   },
-  "BSD-3-Clause": {
-    "text": "This software is released under the New BSD License.",
-    "url": "https://opensource.org/licenses/BSD-3-Clause",
+  'BSD-3-Clause': {
+    text: 'This software is released under the New BSD License.',
+    url: 'https://opensource.org/licenses/BSD-3-Clause',
   },
-  "GPL 3.0": {
-    "text": "This software is released under the GPL 3.0.",
-    "url": "https://opensource.org/licenses/GPL-3.0",
+  'GPL 3.0': {
+    text: 'This software is released under the GPL 3.0.',
+    url: 'https://opensource.org/licenses/GPL-3.0',
   },
-  "CC0": {
-    "text": "This software is released under CC0.",
-    "url": "https://creativecommons.org/publicdomain/zero/1.0/deed",
+  CC0: {
+    text: 'This software is released under CC0.',
+    url: 'https://creativecommons.org/publicdomain/zero/1.0/deed',
   },
-  "public domain": {
-    "text": "This software is PUBLIC DOMAIN.",
-    "url": "",
+  'public domain': {
+    text: 'This software is PUBLIC DOMAIN.',
+    url: '',
   },
-  "NYSL 0.9982": {
-    "text": "This software is released under the NYSL 0.9982.",
-    "url": "http://www.kmonos.net/nysl/",
-  },
-  "WTFPL": {
-    "text": "This software is released under the WTFPL.",
-    "url": "http://www.wtfpl.net/",
+  'NYSL 0.9982': {
+    text: 'This software is released under the NYSL 0.9982.',
+    url: 'https://www.kmonos.net/nysl/',
   },
 };
 
@@ -120,13 +110,11 @@ function Scene_Boot_LicenseManagerMixIn(sceneBoot) {
   sceneBoot.create = function () {
     _create.call(this);
     // プラグインからライセンス情報をロード
-    $plugins
-      .filter(plugin => plugin.status)
-      .forEach(plugin => this.loadPluginLicense(plugin.name));
+    $plugins.filter((plugin) => plugin.status).forEach((plugin) => this.loadPluginLicense(plugin.name));
   };
 
-  sceneBoot.loadPluginLicense = function(pluginName) {
-    const filepath = "js/plugins/" + pluginName + ".js";
+  sceneBoot.loadPluginLicense = function (pluginName) {
+    const filepath = 'js/plugins/' + pluginName + '.js';
     const xhr = new XMLHttpRequest();
     xhr.open('GET', filepath, true);
     xhr.onload = function (e) {
@@ -139,23 +127,23 @@ function Scene_Boot_LicenseManagerMixIn(sceneBoot) {
       plugin.copyright = null;
       plugin.excluded = false;
       plugin.license = {
-        type: null,       // ライセンスの種類
-        exact: false,     // 確度の高い情報かどうか
-        atlicense: false  // @licenseによる情報かどうか
+        type: null, // ライセンスの種類
+        exact: false, // 確度の高い情報かどうか
+        atlicense: false, // @licenseによる情報かどうか
       };
-  
+
       const content = xhr.responseText;
       const lines = content.split('\n');
       let commentRegion = false;
-      lines.forEach(line => {
+      lines.forEach((line) => {
         let commentText = getCommentText(line, commentRegion);
         // 次の行もコメント領域かどうか取得しておく
         commentRegion = isCommentRegion(line, commentRegion);
         // CR等の端の空白を除去
         commentText = commentText.trim();
-  
+
         // 空行は無視する
-        if (commentText === "") {
+        if (commentText === '') {
           return;
         }
         // 除外プラグイン
@@ -166,7 +154,7 @@ function Scene_Boot_LicenseManagerMixIn(sceneBoot) {
         // 著者
         if (plugin.author === null) {
           plugin.author = searchAuthor(commentText);
-          const convertRule = settings.convertAuthorRules.find(convert => convert.from.includes(plugin.author));
+          const convertRule = settings.convertAuthorRules.find((convert) => convert.from.includes(plugin.author));
           if (convertRule) {
             plugin.author = convertRule.to;
           }
@@ -178,13 +166,13 @@ function Scene_Boot_LicenseManagerMixIn(sceneBoot) {
         // ライセンス判定
         if (!plugin.license.exact && !plugin.license.atlicense) {
           const searchedLicense = searchLicense(commentText);
-          if (searchedLicense.type != null && (plugin.license.type == null || searchedLicense.exact)) {
+          if (searchedLicense.type !== null && (plugin.license.type === null || searchedLicense.exact)) {
             plugin.license = searchedLicense;
           }
         }
       });
       // プラグインパラメータでライセンスが明示設定されている場合、最優先に設定する
-      const explicitLicense = settings.explicitLicenses.find(license => license.plugins.includes(plugin.pluginName));
+      const explicitLicense = settings.explicitLicenses.find((license) => license.plugins.includes(plugin.pluginName));
       if (explicitLicense) {
         plugin.license = {
           type: explicitLicense.licenseType,
@@ -192,13 +180,13 @@ function Scene_Boot_LicenseManagerMixIn(sceneBoot) {
         };
       }
       // 除外設定プラグインに含まれているかどうか
-      plugin.excluded |= settings.excludePlugins.some(excludedPlugin =>excludedPlugin === plugin.pluginName);
+      plugin.excluded |= settings.excludePlugins.some((excludedPlugin) => excludedPlugin === plugin.pluginName);
       if (!plugin.excluded) {
         pluginLicenses.push(PluginLicense.fromObject(plugin));
       }
     };
     xhr.send();
-  }
+  };
 }
 
 Scene_Boot_LicenseManagerMixIn(Scene_Boot.prototype);
@@ -289,14 +277,14 @@ class Window_LicenseCommand extends Window_Command {
 
   /**
    * リスト表示ウィンドウを設定する
-   * 
+   *
    * @param {Window_PluginList} listWindow プラグインリストウィンドウ
    */
   setListWindow(listWindow) {
     this._listWindow = listWindow;
     this.update();
   }
-  
+
   setLicenseWindow(licenseWindow) {
     this._licenseWindow = licenseWindow;
   }
@@ -315,7 +303,7 @@ class Window_LicenseCommand extends Window_Command {
   updateHelp() {
     this.setHelpWindowItem(this.currentData().name);
     if (this._licenseWindow) {
-      this._licenseWindow.setText("");
+      this._licenseWindow.setText('');
     }
   }
 
@@ -338,7 +326,7 @@ class Window_PluginAuthorName extends Window_Help {
 
   /**
    * 著者の名前を設定する
-   * 
+   *
    * @param {string} authorName 著者名
    */
   setItem(authorName) {
@@ -376,7 +364,7 @@ class Window_PluginList extends Window_Selectable {
 
   /**
    * 著者名を設定する
-   * 
+   *
    * @param {string} author 著者
    */
   setAuthor(author) {
@@ -395,7 +383,7 @@ class Window_PluginList extends Window_Selectable {
       return [];
     }
     // 名無しのみ特殊判定
-    if (this._author === "?") {
+    if (this._author === '?') {
       return pluginLicense.author === null;
     }
     // 現在選択している著者のみ
@@ -404,7 +392,7 @@ class Window_PluginList extends Window_Selectable {
   }
 
   makeItemList() {
-    this._data = pluginLicenses.filter(license => this.includes(license));
+    this._data = pluginLicenses.filter((license) => this.includes(license));
   }
 
   drawItem(index) {
@@ -462,56 +450,56 @@ class Window_License extends Window_Help {
  * @param {boolean} isInCommentRegion コメント領域かどうか
  * @return {string} コメントテキスト
  */
-function getCommentText (line, isInCommentRegion) {
+function getCommentText(line, isInCommentRegion) {
   if (isInCommentRegion) {
     // コメント領域内だった場合、末尾または*/までをコメントとみなす
-    if (line.indexOf("*/") >= 0) {
-      return line.substring(0, line.indexOf("*/"));
+    if (line.indexOf('*/') >= 0) {
+      return line.substring(0, line.indexOf('*/'));
     }
     return line;
   } else {
     line = line.trim();
     // コメントでない
-    if (line.indexOf("/*") < 0 && line.indexOf("//") < 0) {
-      return "";
+    if (line.indexOf('/*') < 0 && line.indexOf('//') < 0) {
+      return '';
     }
-    const commentRegionStart = line.indexOf("/*");
-    const commentRegionEnd = line.indexOf("*/");
+    const commentRegionStart = line.indexOf('/*');
+    const commentRegionEnd = line.indexOf('*/');
     if (commentRegionStart >= 0) {
       if (commentRegionEnd > commentRegionStart) {
         // 行内でコメント領域が完結している
         return line.substring(commentRegionStart, commentRegionEnd);
       }
-      return line.substring(line.indexOf("/*"));
+      return line.substring(line.indexOf('/*'));
     }
-    return line.substring(line.indexOf("//"));
+    return line.substring(line.indexOf('//'));
   }
-};
+}
 
 /**
  * 次の行開始がコメント領域かどうか
  * @param {string} line 行テキスト
  * @param {boolean} isInCommentRegion 今の行開始がコメントテキストかどうか
  */
-function isCommentRegion (line, isInCommentRegion) {
+function isCommentRegion(line, isInCommentRegion) {
   if (isInCommentRegion) {
     // コメント領域が終わらなければ真
-    return line.indexOf("*/") < 0;
+    return line.indexOf('*/') < 0;
   } else {
     // コメント領域が始まる かつ コメント領域が終わらなければ真
-    const commentRegionStart = line.indexOf("/*");
-    return commentRegionStart >= 0 && line.indexOf("*/") < commentRegionStart;
+    const commentRegionStart = line.indexOf('/*');
+    return commentRegionStart >= 0 && line.indexOf('*/') < commentRegionStart;
   }
-};
+}
 
 /**
  * 除外フラグを探す
  * 除外フラグがあればtrue なければfalse
  */
-function searchExcluded (text) {
-  const match = (/@excludeLicenseManager/).exec(text);
-  return match != null;
-};
+function searchExcluded(text) {
+  const match = /@excludeLicenseManager/.exec(text);
+  return match !== null;
+}
 
 /**
  * 著者表記を探す
@@ -520,18 +508,18 @@ function searchExcluded (text) {
  * @return {string|null}
  */
 function searchAuthor(line) {
-  const match = (/@author[ \t]+(.*)$/).exec(line);
-  return match != null ? match[1] : null;
-};
+  const match = /@author[ \t]+(.*)$/.exec(line);
+  return match !== null ? match[1] : null;
+}
 
 /**
  * Copyright (c) year author の形式を探す
  * 見つからなかったらnullを返す
  */
 function searchCopyright(line) {
-  const match = (/Copyright \(c\) (\d{4}|\d{4}\-\d{4}) .*$/).exec(line);
-  return match != null ? match[0] : null;
-};
+  const match = /Copyright \(c\) (\d{4}|\d{4}\-\d{4}) .*$/.exec(line);
+  return match !== null ? match[0] : null;
+}
 
 /**
  * ライセンスを探す
@@ -540,14 +528,14 @@ function searchCopyright(line) {
  */
 function searchLicense(text) {
   // @licenseが含まれるコメントを最優先する
-  const match = (/@license (.*)$/).exec(text);
-  if (match != null) {
+  const match = /@license (.*)$/.exec(text);
+  if (match !== null) {
     const ret = checkLicenseType(text);
     ret.atlicense = true;
     return ret;
   }
   return checkLicenseType(text);
-};
+}
 
 /**
  * ライセンスの種類を探る
@@ -556,87 +544,87 @@ function checkLicenseType(text) {
   const ret = {
     type: LICENSE_TYPE.NL,
     exact: false,
-    atlicense: false
+    atlicense: false,
   };
 
   // 大文字のMIT, mit-licenseのURLが含まれるなら確度の高いMIT
-  if (text.indexOf("MIT") >= 0 || text.indexOf("mit-license") >= 0) {
+  if (text.indexOf('MIT') >= 0 || text.indexOf('mit-license') >= 0) {
     ret.type = LICENSE_TYPE.MIT;
     ret.exact = true;
     return ret;
   }
 
-  if (text.indexOf("BSD") >= 0) {
+  if (text.indexOf('BSD') >= 0) {
     // BSDはそれ単体では確度が低い（clauseまで明記されていない場合は2-clauseと判定する）
     ret.type = LICENSE_TYPE.BSD2;
-    var clauseMatch = (/2-[C|c]lause/).exec(text);
-    if (clauseMatch != null) {
+    let clauseMatch = /2-[C|c]lause/.exec(text);
+    if (clauseMatch !== null) {
       ret.exact = true;
     }
-    clauseMatch = (/3-[C|c]lause/).exec(text);
-    if (clauseMatch != null) {
+    clauseMatch = /3-[C|c]lause/.exec(text);
+    if (clauseMatch !== null) {
       ret.type = LICENSE_TYPE.BSD3;
       ret.exact = true;
     }
     return ret;
   }
 
-  if (text.indexOf("GPL") >= 0) {
+  if (text.indexOf('GPL') >= 0) {
     ret.type = LICENSE_TYPE.GPL3;
     return ret;
   }
 
-  if (text.indexOf("CC0") >= 0) {
+  if (text.indexOf('CC0') >= 0) {
     ret.type = LICENSE_TYPE.CC0;
     ret.exact = true;
     return ret;
   }
 
-  if (text.indexOf("public domain") >= 0) {
+  if (text.indexOf('public domain') >= 0) {
     ret.type = LICENSE_TYPE.PD;
     ret.exact = true;
     return ret;
   }
 
-  if (text.indexOf("NYSL") >= 0) {
+  if (text.indexOf('NYSL') >= 0) {
     // NYSLはバージョンが付与されていない場合確度が低い
     ret.type = LICENSE_TYPE.NYSL;
-    var versionMatch = (/0\.9982/).exec(text);
-    if (versionMatch != null) {
+    let versionMatch = /0\.9982/.exec(text);
+    if (versionMatch !== null) {
       ret.exact = true;
     }
     return ret;
   }
 
-  if (text.indexOf("WTFPL") >= 0) {
-    ret.type = LICENSE_TYPE.WTFPL;
-    return ret;
-  }
-
   return ret;
-};
+}
 
 /**
  * pluginData から著者リストを取得する
  * @return {string[]}
  */
 function getAuthorList() {
-  return [...new Set(pluginLicenses.map(plugin => plugin.author != null ? plugin.author : "?"))];
-};
+  return [...new Set(pluginLicenses.map((plugin) => (plugin.author !== null ? plugin.author : '?')))];
+}
 
 /**
  * セーブ/ロード周り
  */
 DataManager._databaseLicense = {
   name: '$dataLicense',
-  src: 'License.json'
+  src: 'License.json',
 };
 
-var _DataManager_loadDatabase = DataManager.loadDatabase;
+let _DataManager_loadDatabase = DataManager.loadDatabase;
 DataManager.loadDatabase = function () {
   _DataManager_loadDatabase.apply(this, arguments);
   const errorMessage = this._databaseLicense.src + 'が見つかりませんでした。';
-  this.loadDataFileAllowErrorWithCallBack(this._databaseLicense.name, this._databaseLicense.src, errorMessage, DataManager.saveDefaultLicense.bind(this));
+  this.loadDataFileAllowErrorWithCallBack(
+    this._databaseLicense.name,
+    this._databaseLicense.src,
+    errorMessage,
+    DataManager.saveDefaultLicense.bind(this)
+  );
 };
 
 DataManager.loadDataFileAllowErrorWithCallBack = function (name, src, errorMessage, callback) {
@@ -664,13 +652,11 @@ DataManager.loadDataFileAllowErrorWithCallBack = function (name, src, errorMessa
 
 DataManager.onDataFileNotFound = function (name, errorMessage) {
   window[name] = {};
-  console.warn(errorMessage);
 };
 
 const _DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
 DataManager.isDatabaseLoaded = function () {
-  return _DataManager_isDatabaseLoaded.apply(this, arguments) &&
-    window[this._databaseLicense.name];
+  return _DataManager_isDatabaseLoaded.apply(this, arguments) && window[this._databaseLicense.name];
 };
 
 DataManager.saveDefaultLicense = function () {
@@ -695,7 +681,7 @@ StorageManager.saveToLocalDataFile = function (fileName, json) {
 };
 
 StorageManager.localDataFileDirectoryPath = function () {
-  var path = require('path');
-  var base = path.dirname(process.mainModule.filename);
+  let path = require('path');
+  let base = path.dirname(process.mainModule.filename);
   return path.join(base, 'data/');
 };
