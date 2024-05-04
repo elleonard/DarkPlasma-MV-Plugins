@@ -1,16 +1,17 @@
-// DarkPlasma_LicenseManager 2.0.0
+// DarkPlasma_LicenseManager 3.0.0
 // Copyright (c) 2017 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2024/05/04 3.0.0 WTFPLをプリセットから削除
  * 2021/10/30 2.0.0 rollup構成へ移行
  * 2019/08/23 1.0.2 最新のNW.jsに対応
  * 2018/10/23 1.0.1 表示すべきプラグインがすべて除外されている著者が表示される不具合の修正
  * 2017/11/23 1.0.0 公開
  */
 
-/*:ja
+/*:
  * @plugindesc プラグインのライセンスをゆるく管理する
  * @author DarkPlasma
  * @license MIT
@@ -43,7 +44,7 @@
  * @default []
  *
  * @help
- * version: 2.0.0
+ * version: 3.0.0
  * このプラグインはオープンソースライセンスをゆるく運用するためのものです。
  * （厳密に運用するためのものでないことに注意してください）
  * 読み込んでいるプラグインの著作権表示、ライセンス、必要に応じて
@@ -79,7 +80,6 @@
  * @option CC0
  * @option public domain
  * @option NYSL 0.9982
- * @option WTFPL
  * @option BSD-2-Clause
  * @option BSD-3-Clause
  * @option GPL 3.0
@@ -198,7 +198,6 @@ ${this.licenseUrl()}`;
     CC0: 'CC0',
     PD: 'public domain',
     NYSL: 'NYSL 0.9982',
-    WTFPL: 'WTFPL',
     NL: 'No License',
   };
 
@@ -208,7 +207,7 @@ ${this.licenseUrl()}`;
   const DEFAULT_LICENSE = {
     MIT: {
       text: 'This software is released under the MIT License.',
-      url: 'http://opensource.org/licenses/mit-license.php',
+      url: 'https://opensource.org/license/mit',
     },
     'BSD-2-Clause': {
       text: 'This software is released under the FreeBSD License.',
@@ -232,11 +231,7 @@ ${this.licenseUrl()}`;
     },
     'NYSL 0.9982': {
       text: 'This software is released under the NYSL 0.9982.',
-      url: 'http://www.kmonos.net/nysl/',
-    },
-    WTFPL: {
-      text: 'This software is released under the WTFPL.',
-      url: 'http://www.wtfpl.net/',
+      url: 'https://www.kmonos.net/nysl/',
     },
   };
 
@@ -312,7 +307,7 @@ ${this.licenseUrl()}`;
           // ライセンス判定
           if (!plugin.license.exact && !plugin.license.atlicense) {
             const searchedLicense = searchLicense(commentText);
-            if (searchedLicense.type != null && (plugin.license.type == null || searchedLicense.exact)) {
+            if (searchedLicense.type !== null && (plugin.license.type === null || searchedLicense.exact)) {
               plugin.license = searchedLicense;
             }
           }
@@ -623,6 +618,7 @@ ${this.licenseUrl()}`;
       return line.substring(line.indexOf('//'));
     }
   }
+
   /**
    * 次の行開始がコメント領域かどうか
    * @param {string} line 行テキスト
@@ -638,14 +634,16 @@ ${this.licenseUrl()}`;
       return commentRegionStart >= 0 && line.indexOf('*/') < commentRegionStart;
     }
   }
+
   /**
    * 除外フラグを探す
    * 除外フラグがあればtrue なければfalse
    */
   function searchExcluded(text) {
     const match = /@excludeLicenseManager/.exec(text);
-    return match != null;
+    return match !== null;
   }
+
   /**
    * 著者表記を探す
    * 見つからなかったらnullを返す
@@ -654,16 +652,18 @@ ${this.licenseUrl()}`;
    */
   function searchAuthor(line) {
     const match = /@author[ \t]+(.*)$/.exec(line);
-    return match != null ? match[1] : null;
+    return match !== null ? match[1] : null;
   }
+
   /**
    * Copyright (c) year author の形式を探す
    * 見つからなかったらnullを返す
    */
   function searchCopyright(line) {
     const match = /Copyright \(c\) (\d{4}|\d{4}\-\d{4}) .*$/.exec(line);
-    return match != null ? match[0] : null;
+    return match !== null ? match[0] : null;
   }
+
   /**
    * ライセンスを探す
    * 判定できなかった場合はtype = NL
@@ -672,13 +672,14 @@ ${this.licenseUrl()}`;
   function searchLicense(text) {
     // @licenseが含まれるコメントを最優先する
     const match = /@license (.*)$/.exec(text);
-    if (match != null) {
+    if (match !== null) {
       const ret = checkLicenseType(text);
       ret.atlicense = true;
       return ret;
     }
     return checkLicenseType(text);
   }
+
   /**
    * ライセンスの種類を探る
    */
@@ -699,12 +700,12 @@ ${this.licenseUrl()}`;
     if (text.indexOf('BSD') >= 0) {
       // BSDはそれ単体では確度が低い（clauseまで明記されていない場合は2-clauseと判定する）
       ret.type = LICENSE_TYPE.BSD2;
-      var clauseMatch = /2-[C|c]lause/.exec(text);
-      if (clauseMatch != null) {
+      let clauseMatch = /2-[C|c]lause/.exec(text);
+      if (clauseMatch !== null) {
         ret.exact = true;
       }
       clauseMatch = /3-[C|c]lause/.exec(text);
-      if (clauseMatch != null) {
+      if (clauseMatch !== null) {
         ret.type = LICENSE_TYPE.BSD3;
         ret.exact = true;
       }
@@ -731,27 +732,24 @@ ${this.licenseUrl()}`;
     if (text.indexOf('NYSL') >= 0) {
       // NYSLはバージョンが付与されていない場合確度が低い
       ret.type = LICENSE_TYPE.NYSL;
-      var versionMatch = /0\.9982/.exec(text);
-      if (versionMatch != null) {
+      let versionMatch = /0\.9982/.exec(text);
+      if (versionMatch !== null) {
         ret.exact = true;
       }
       return ret;
     }
 
-    if (text.indexOf('WTFPL') >= 0) {
-      ret.type = LICENSE_TYPE.WTFPL;
-      return ret;
-    }
-
     return ret;
   }
+
   /**
    * pluginData から著者リストを取得する
    * @return {string[]}
    */
   function getAuthorList() {
-    return [...new Set(pluginLicenses.map((plugin) => (plugin.author != null ? plugin.author : '?')))];
+    return [...new Set(pluginLicenses.map((plugin) => (plugin.author !== null ? plugin.author : '?')))];
   }
+
   /**
    * セーブ/ロード周り
    */
@@ -760,7 +758,7 @@ ${this.licenseUrl()}`;
     src: 'License.json',
   };
 
-  var _DataManager_loadDatabase = DataManager.loadDatabase;
+  let _DataManager_loadDatabase = DataManager.loadDatabase;
   DataManager.loadDatabase = function () {
     _DataManager_loadDatabase.apply(this, arguments);
     const errorMessage = this._databaseLicense.src + 'が見つかりませんでした。';
@@ -797,7 +795,6 @@ ${this.licenseUrl()}`;
 
   DataManager.onDataFileNotFound = function (name, errorMessage) {
     window[name] = {};
-    console.warn(errorMessage);
   };
 
   const _DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
@@ -827,8 +824,8 @@ ${this.licenseUrl()}`;
   };
 
   StorageManager.localDataFileDirectoryPath = function () {
-    var path = require('path');
-    var base = path.dirname(process.mainModule.filename);
+    let path = require('path');
+    let base = path.dirname(process.mainModule.filename);
     return path.join(base, 'data/');
   };
 })();
