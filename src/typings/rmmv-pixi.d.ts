@@ -4334,14 +4334,14 @@ declare class WindowLayer extends PIXI.Container {
      * @param {Window} window
      * @private
      */
-    protected _canvasClearWindowRect(renderSession: PIXI.CanvasRenderer, window: Window): void;
+    _canvasClearWindowRect(renderSession: PIXI.CanvasRenderer, window: Window): void;
 
     /**
      * @method _maskWindow
      * @param {Window} window
      * @private
      */
-     protected _maskWindow(window: Window): void;
+     _maskWindow(window: Window): void;
 }
 
 declare class CacheEntry {

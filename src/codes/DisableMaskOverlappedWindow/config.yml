@@ -1,0 +1,24 @@
+DarkPlasma_DisableMaskOverlappedWindow:
+  name: DarkPlasma_DisableMaskOverlappedWindow
+  year: 2024
+  license: MIT
+  excludeLicenseManager: false
+  histories:
+    - date: 2024/06/01
+      version: 1.0.0
+      description: '公開'
+
+  locates:
+    - ja
+  plugindesc:
+    ja: '重なったウィンドウをくり抜かない'
+  parameters: []
+  commands: []
+  structures:
+  dependencies:
+    base: []
+    orderAfter: []
+    orderBefore: []
+  help:
+    ja: |
+      重なったウィンドウをくり抜く仕様を無効化します。
