@@ -151,7 +151,6 @@ class Window_TextLog extends Window_Base {
   _viewTexts: LogMessage[];
   _cursor: number;
   _handlers: { [symbol: string]: () => void };
-  _maxViewCount: number;
   _needRefresh: boolean;
   _calcMode: boolean;
   _lineNumber: number;
@@ -179,7 +178,6 @@ class Window_TextLog extends Window_Base {
     }
     this._cursor = this.calcDefaultCursor();
     this._handlers = {};
-    this._maxViewCount = settings.maxVisibleMessages;
   }
 
   standardFontSize() {
@@ -228,6 +226,9 @@ class Window_TextLog extends Window_Base {
    */
   isCursorMax() {
     const size = this._viewTexts.length;
+    if (size - this.cursorPosition() > settings.maxVisibleMessages) {
+      return false;
+    }
     let height = 0;
     for (let i = this.cursorPosition(); i < size; i++) {
       const text = this._viewTexts[i].text;
@@ -308,7 +309,7 @@ class Window_TextLog extends Window_Base {
 
   drawTextLog() {
     let height = 0;
-    for (let i = this.cursorPosition(); i < this.cursorPosition() + this._maxViewCount; i++) {
+    for (let i = this.cursorPosition(); i < this.cursorPosition() + settings.maxVisibleMessages; i++) {
       if (i < this._viewTexts.length) {
         const text = this._viewTexts[i].text;
         const textHeight = this._viewTexts[i].height;
@@ -327,7 +328,6 @@ class Window_TextLog extends Window_Base {
 
   /**
    * デフォルトのスクロール位置を計算する
-   * @return {number}
    */
   calcDefaultCursor() {
     let height = 0;
@@ -336,7 +336,7 @@ class Window_TextLog extends Window_Base {
       const viewText = this._viewTexts[size - 1 - i];
       viewText.setHeight(this.calcMessageHeight(viewText.text));
       height += viewText.height;
-      if (height > Graphics.boxHeight - this.lineHeight()) {
+      if (i === settings.maxVisibleMessages || height > Graphics.boxHeight - this.lineHeight()) {
         return i > 0 ? size - i : size - 1;
       }
     }

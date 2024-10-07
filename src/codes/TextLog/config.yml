@@ -4,6 +4,9 @@ DarkPlasma_TextLog:
   license: MIT
   excludeLicenseManager: false
   histories:
+    - date: 2024/10/08
+      version: 3.1.1
+      description: '表示行数の設定が少ない場合に、カーソル位置とスクロール可否の計算結果が異常になる不具合を修正'
     - date: 2023/11/24
       version: 3.1.0
       description: 'Scene_TextLog クラスを公開'
