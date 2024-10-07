@@ -1,9 +1,10 @@
-// DarkPlasma_TextLog 3.1.0
+// DarkPlasma_TextLog 3.1.1
 // Copyright (c) 2017 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2024/10/08 3.1.1 表示行数の設定が少ない場合に、カーソル位置とスクロール可否の計算結果が異常になる不具合を修正
  * 2023/11/24 3.1.0 Scene_TextLog クラスを公開
  * 2023/11/23 3.0.0 typescript移行
  *                  YEP_MessageCore対応をオミット
@@ -214,7 +215,7 @@
  * @default []
  *
  * @help
- * version: 3.1.0
+ * version: 3.1.1
  * イベントのテキストログを表示します。
  *
  * イベント会話中またはマップ上で pageup キー（L2ボタン）でログを表示します。
@@ -437,7 +438,6 @@
       }
       this._cursor = this.calcDefaultCursor();
       this._handlers = {};
-      this._maxViewCount = settings.maxVisibleMessages;
     }
     standardFontSize() {
       return settings.standardFontSize ? settings.standardFontSize : super.standardFontSize();
@@ -478,6 +478,9 @@
      */
     isCursorMax() {
       const size = this._viewTexts.length;
+      if (size - this.cursorPosition() > settings.maxVisibleMessages) {
+        return false;
+      }
       let height = 0;
       for (let i = this.cursorPosition(); i < size; i++) {
         const text = this._viewTexts[i].text;
@@ -548,7 +551,7 @@
     }
     drawTextLog() {
       let height = 0;
-      for (let i = this.cursorPosition(); i < this.cursorPosition() + this._maxViewCount; i++) {
+      for (let i = this.cursorPosition(); i < this.cursorPosition() + settings.maxVisibleMessages; i++) {
         if (i < this._viewTexts.length) {
           const text = this._viewTexts[i].text;
           const textHeight = this._viewTexts[i].height;
@@ -566,7 +569,6 @@
     }
     /**
      * デフォルトのスクロール位置を計算する
-     * @return {number}
      */
     calcDefaultCursor() {
       let height = 0;
@@ -575,7 +577,7 @@
         const viewText = this._viewTexts[size - 1 - i];
         viewText.setHeight(this.calcMessageHeight(viewText.text));
         height += viewText.height;
-        if (height > Graphics.boxHeight - this.lineHeight()) {
+        if (i === settings.maxVisibleMessages || height > Graphics.boxHeight - this.lineHeight()) {
           return i > 0 ? size - i : size - 1;
         }
       }
