@@ -941,6 +941,8 @@ type _Window_TextLog = typeof Window_TextLog;
 declare global {
   var Scene_TextLog: _Scene_TextLog;
   var Window_TextLog: _Window_TextLog;
+  var Game_EventTextLog: typeof EventTextLog;
 }
 window.Scene_TextLog = Scene_TextLog;
 window.Window_TextLog = Window_TextLog;
+window.Game_EventTextLog = EventTextLog;
