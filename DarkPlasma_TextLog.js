@@ -1,9 +1,10 @@
-// DarkPlasma_TextLog 3.1.1
+// DarkPlasma_TextLog 3.2.0
 // Copyright (c) 2017 DarkPlasma
 // This software is released under the MIT license.
 // http://opensource.org/licenses/mit-license.php
 
 /**
+ * 2024/10/11 3.2.0 Game_EventTextLogクラスを公開
  * 2024/10/08 3.1.1 表示行数の設定が少ない場合に、カーソル位置とスクロール可否の計算結果が異常になる不具合を修正
  * 2023/11/24 3.1.0 Scene_TextLog クラスを公開
  * 2023/11/23 3.0.0 typescript移行
@@ -215,7 +216,7 @@
  * @default []
  *
  * @help
- * version: 3.1.1
+ * version: 3.2.0
  * イベントのテキストログを表示します。
  *
  * イベント会話中またはマップ上で pageup キー（L2ボタン）でログを表示します。
@@ -1116,4 +1117,5 @@
   };
   window.Scene_TextLog = Scene_TextLog;
   window.Window_TextLog = Window_TextLog;
+  window.Game_EventTextLog = EventTextLog;
 })();
