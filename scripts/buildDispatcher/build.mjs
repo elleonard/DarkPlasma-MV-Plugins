@@ -7,13 +7,14 @@
 
 const target = argv.target;
 const path = argv.exclude ? `./src/excludes/${target}` : `./src/codes/${target}`;
+const pluginTitle = target.split("/").slice(-1)[0];
 
 await $`yarn node ./scripts/generateFromConfig -f ${target} ${argv.exclude ? "-e" : ""}`;
 if (!argv.js) {
   if (!argv.configOnly) {
     fs.copyFileSync('./tsconfig_template.json', `${path}/tsconfig.json`);
     await $`yarn tsc -b ${path}`;
-    await $`yarn prettier ${path}/DarkPlasma_${target}.js`
+    await $`yarn prettier ${path}/DarkPlasma_${pluginTitle}.js`
   }
 }
 

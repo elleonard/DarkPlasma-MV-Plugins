@@ -1,17 +1,21 @@
-const path = require('path');
-const prettier = require('prettier');
-const { generateParser } = require('./generateParser');
-const { SYMBOL_TYPE } = require('./parameterSymbolType');
+import path from 'path';
+import prettier from 'prettier';
+import { fileURLToPath } from 'url';
+import { generateParser } from './generateParser.js';
+import { SYMBOL_TYPE } from './parameterSymbolType.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const prettierConfig = path.resolve(__dirname, '..', '..', '.prettierrc');
+const pluginParametersDir = path.resolve(__dirname, '..', '..', 'src', 'common', 'pluginParameters');
 
-function generateParameterReader(config) {
+export function generateParameterReader(config, destDir) {
   const parameters = configToParameters(config, SYMBOL_TYPE.PLUGIN_PARAMETERS);
 
   return prettier.resolveConfig(prettierConfig).then((options) => {
     options.parser = 'babel';
 
-    const pluginParameterPath = '../../../common/pluginParameters';
+    const pluginParameterPath = path.relative(destDir, pluginParametersDir).replaceAll('\\', '/');
     const code = `import { pluginParameters } from '${pluginParameterPath}';
     
     export const settings = {
@@ -35,7 +39,3 @@ function configToParameters(config, symbolType) {
         })
     : [];
 }
-
-module.exports = {
-  generateParameterReader,
-};

@@ -1,10 +1,14 @@
-const path = require('path');
-const prettier = require('prettier');
+import path from 'path';
+import prettier from 'prettier';
+import { fileURLToPath } from 'url';
+
+import { toJsTypeCategory, TYPE_CATEGORIES } from "./generateParser.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const prettierConfig = path.resolve(__dirname, '..', '..', '.prettierrc');
 
-const { toJsTypeCategory, TYPE_CATEGORIES } = require("./generateParser");
 
-function generateParameterType(config, pluginId) {
+export function generateParameterType(config, pluginId) {
   let result = "";
   if (config.structures) {
     result += Object.entries(config.structures).map(([name, structure]) => {
@@ -49,7 +53,3 @@ function paramToType(pluginId, param) {
   }
   return "";
 }
-
-module.exports = {
-  generateParameterType
-};

@@ -1,12 +1,12 @@
-const fs = require('fs');
-const path = require('path');
-const YAML = require('yaml');
-const mkdirp = require('mkdirp');
-const { generateHeader } = require('./generateHeader');
-const { generateParameterReader } = require('./generateParameterReader');
-const { generateParameterType } = require('./generateParameterType');
+import fs from 'fs';
+import path from 'path';
+import YAML from 'yaml';
+import * as mkdirp from 'mkdirp';
+import { generateHeader } from './generateHeader.js';
+import { generateParameterReader } from './generateParameterReader.js';
+import { generateParameterType } from './generateParameterType.js';
 
-async function generateFromConfig(file) {
+export async function generateFromConfig(file) {
   const config = loadConfig(file);
   const distDir = path.resolve(file, '..', '_build');
   mkdirp.sync(distDir);
@@ -14,7 +14,7 @@ async function generateFromConfig(file) {
   for (let key of Object.keys(config)) {
     const currentConfig = config[key];
     fs.writeFileSync(path.resolve(distDir, `${key}_header.js`), generateHeader(currentConfig));
-    const parameterReader = await generateParameterReader(currentConfig);
+    const parameterReader = await generateParameterReader(currentConfig, distDir);
     fs.writeFileSync(path.resolve(distDir, `${key}_parameters.js`), parameterReader);
     const parameterType = await generateParameterType(currentConfig, key.replace('DarkPlasma_', ''));
     fs.writeFileSync(path.resolve(distDir, `${key}_parameters.d.ts`), parameterType);
@@ -27,7 +27,3 @@ async function generateFromConfig(file) {
 function loadConfig(configPath) {
   return YAML.parse(fs.readFileSync(configPath, 'UTF-8'), { merge: true });
 }
-
-module.exports = {
-  generateFromConfig,
-};

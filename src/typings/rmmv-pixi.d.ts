@@ -6577,7 +6577,7 @@ declare class DataManager {
    * @static
    * @memberof DataManager
    */
-  static makeSavefileInfo(): void;
+  static makeSavefileInfo(): MV.SaveFileInfo;
   /**
    * Creates the save file contents when saving your game.
    * Good for aliasing when you want to add more data
